@@ -117,14 +117,14 @@ const SCENARIOS = [
       { label:"Simple Wedding", sub:"Intimate and meaningful  (-$25,000)", cost:-25000, value:"simple_wedding" }
     ]},
 
-  { id:"S10", day:2, age:"Age 31", tag:"Scenario 10", title:"Buy a Car?",
+  { id:"S10", day:2, age:"Age 31", tag:"Scenario 9", title:"Buy a Car?",
     story:"COE is available! A car means convenience — but it is a depreciating asset at $90,000 all in.",
     type:"choice", payoffNote:"Car resale value revealed on Day 3...",
     choices:[
       { label:"Buy a Car",        sub:"Convenience and status  (-$90,000)", cost:-90000, value:"car" },
       { label:"Public Transport", sub:"Save the money", cost:0, value:"no_car" }
     ]},
-  { id:"S11", day:2, age:"Age 32", tag:"Scenario 11", title:"Small Cap DELISTED!",
+  { id:"S11", day:2, age:"Age 32", tag:"Scenario 10", title:"Small Cap DELISTED!",
     story:"BREAKING: The small cap tech company has been delisted. All shareholders lose everything.",
     type:"reveal", compute: computeS11 },
   { id:"S10b", day:2, age:"Age 33", tag:"Everyone", title:"Parents Rising Premiums",
@@ -135,26 +135,26 @@ const SCENARIOS = [
     story:"You have been promoted! Everyone receives +$200,000 from years of career growth and compounding.",
     type:"automatic", gain:200000,
     note:"This reflects years of income, savings and compound growth. Everyone gets this!" },
-  { id:"S14", day:3, age:"Age 35", tag:"Scenario 14", title:"1 in 4: Critical Illness",
-    story:"Statistics show 1 in 4 people face CI in their lifetime. The facilitator has randomly selected 7 players who are affected. Check the facilitator screen to see if you are one of them — then tap your answer below.",
+  { id:"S14", day:3, age:"Age 35", tag:"Scenario 11", title:"1 in 4: Critical Illness",
+    story:"The facilitator has spun the wheel and selected 7 players with CI. If your name was called out, tap YES below. If you were NOT selected, tap NO. Those with insurance are fully covered — those without lose $100,000.",
     type:"ci", compute: computeCI,
     choices:[
-      { label:"Yes — I was affected by CI", value:"ci_yes" },
-      { label:"No — All clear for me",      value:"ci_no" }
+      { label:"Yes — I got CI", value:"ci_yes" },
+      { label:"No — I was not selected", value:"ci_no" }
     ]},
-  { id:"S15", day:3, age:"Age 36", tag:"Scenario 15", title:"Sell Your Car",
+  { id:"S15", day:3, age:"Age 36", tag:"Scenario 12", title:"Sell Your Car",
     story:"Time to let go of the car. Depreciation and maintenance costs over the years add up.",
     type:"reveal", compute: computeS15 },
-  { id:"S16", day:3, age:"Age 37", tag:"Scenario 16", title:"Sell Your Property!",
+  { id:"S16", day:3, age:"Age 37", tag:"Scenario 13", title:"Sell Your Property!",
     story:"The property market has grown. Time to cash out — your Day 1 choice determines your profit.",
     type:"reveal", compute: computeS16 },
-  { id:"S17", day:3, age:"Age 38", tag:"Scenario 17", title:"Inheritance",
+  { id:"S17", day:3, age:"Age 38", tag:"Scenario 14", title:"Inheritance",
     story:"Your grandparents have passed. Assuming you did a Will for your grandparents, those with a Will and LPA receive their inheritance much faster and without legal complications.",
     type:"reveal", compute: computeS17 },
   { id:"S4p", day:3, age:"Age 39", tag:"S4 Payoff", title:"T-Bills Mature!",
     story:"Your T-Bills have matured with 3% compounded returns. Boring wins the long game.",
     type:"reveal", compute: computeS4p },
-  { id:"S18", day:3, age:"Age 40", tag:"Scenario 18", title:"Tech ETF Booms!",
+  { id:"S18", day:3, age:"Age 40", tag:"Scenario 15", title:"Tech ETF Booms!",
     story:"The tech ETF has absolutely skyrocketed. Lock in your profits! Those who invested in Scenario 5 reap the rewards.",
     type:"reveal", compute: computeS18 },
 ];
@@ -299,19 +299,19 @@ export default function App() {
       });
     }
     poll();
+    // Immediately fetch all player data for leaderboard
+    function fetchAllPlayers() {
+      var promises = Array.from({length:20}, function(_,i) { return sGet("player_" + (i+1)); });
+      Promise.all(promises).then(function(results) {
+        var all = {};
+        results.forEach(function(pd, i) { if (pd) all[i+1] = pd; });
+        setAllPlayersNav(all);
+      });
+    }
+    fetchAllPlayers();
     var iv = setInterval(function() {
       poll();
-      // Also fetch all players data for leaderboard
-      sGet("global_idx").then(function(gi) {
-        if (gi === SCENARIOS.length - 1) {
-          var promises = Array.from({length:20}, function(_,i) { return sGet("player_" + (i+1)); });
-          Promise.all(promises).then(function(results) {
-            var all = {};
-            results.forEach(function(pd, i) { if (pd) all[i+1] = pd; });
-            setAllPlayersNav(all);
-          });
-        }
-      });
+      fetchAllPlayers();
     }, 3000);
     return function() { clearInterval(iv); };
   }, [mode, playerNum]);
@@ -615,9 +615,9 @@ export default function App() {
                                 transform: "rotate(" + angle + "deg) translateX(-110px)",
                                 opacity: isPicked ? 0.3 : 1,
                               }}>
-                                <div style={{position:"absolute", top:"55px", left:"-30px", width:"60px", textAlign:"center",
-                                  fontSize:"9px", fontWeight:"800", color:"white",
-                                  transform:"rotate(" + (segAngle/2) + "deg)"}}>
+                                <div style={{position:"absolute", top:"40px", left:"-34px", width:"68px", textAlign:"center",
+                                  fontSize:"8px", fontWeight:"900", color:"white", textShadow:"0 1px 2px rgba(0,0,0,0.8)",
+                                  transform:"rotate(" + (segAngle/2) + "deg)", lineHeight:"1.1", wordBreak:"break-word"}}>
                                   {p.name}
                                 </div>
                               </div>
@@ -670,9 +670,16 @@ export default function App() {
             )}
             <div style={{display:"flex", gap:"8px"}}>
               <button style={Object.assign({}, s.btnS, {flex:"1"})} onClick={facilBack} disabled={globalIdx === 0}>Prev</button>
-              <button style={Object.assign({}, s.btnP, {flex:"2", padding:"11px"})} onClick={facilAdvance} disabled={globalIdx === SCENARIOS.length - 1}>
-                Unlock Next Scenario
-              </button>
+              {globalIdx < SCENARIOS.length - 1 && (
+                <button style={Object.assign({}, s.btnP, {flex:"2", padding:"11px"})} onClick={facilAdvance}>
+                  Unlock Next Scenario
+                </button>
+              )}
+              {globalIdx === SCENARIOS.length - 1 && (
+                <div style={Object.assign({}, s.btnP, {flex:"2", padding:"11px", background:"rgba(74,222,128,0.15)", color:"#4ade80", textAlign:"center", cursor:"default"})}>
+                  Game Complete!
+                </div>
+              )}
             </div>
             <div style={{textAlign:"center", color:"#334155", fontSize:"11px", marginTop:"6px"}}>{globalIdx + 1} / {SCENARIOS.length}</div>
           </div>
@@ -964,9 +971,9 @@ export default function App() {
           var nav = computeNAV(myDecisions, myCompleted);
           var allNavs = Array.from({length:20}, function(_,i) {
             var n = i+1;
-            var pd = allPlayerDataRef.current ? allPlayerDataRef.current[n] : null;
-            var dec = pd ? (pd.decisions||{}) : n===playerNum ? myDecisions : {};
-            var comp = pd ? new Set(pd.completed||[]) : n===playerNum ? myCompleted : new Set();
+            var pd = allPlayersNav[n];
+            var dec = pd ? (pd.decisions||{}) : (n===playerNum ? myDecisions : {});
+            var comp = pd ? new Set(pd.completed||[]) : (n===playerNum ? myCompleted : new Set());
             return { n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec,comp).nav };
           }).sort(function(a,b){return b.nav - a.nav;});
           var myRank = allNavs.findIndex(function(x){return x.n===playerNum;}) + 1;
