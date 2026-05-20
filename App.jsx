@@ -55,7 +55,7 @@ function computeS18(d) {
 const SCENARIOS = [
   { id:"S1", day:1, age:"Age 22", tag:"Scenario 1", title:"Protect Yourself First",
     story:"You just landed your first job! Getting insured while young costs $10,000 now — but could save you much more later.",
-    type:"choice", payoffNote:"This choice will matter on Day 3...",
+    type:"choice",
     choices:[
       { label:"Buy Insurance", sub:"HSGM + PA + CI", cost:-10000, value:"insured" },
       { label:"Skip It",       sub:"Im young, Ill be fine", cost:0, value:"uninsured" }
@@ -102,12 +102,16 @@ const SCENARIOS = [
       { label:"Do Up Will and LPA", sub:"Protect the family  (-$1,000)", cost:-1000, value:"will_lpa" },
       { label:"Not Now",            sub:"Too young to worry", cost:0, value:"no_will" }
     ]},
-  { id:"S7", day:2, age:"Age 29", tag:"Scenario 7", title:"Continue Insurance Premiums?",
-    story:"Insurance premiums are due again. $10,000 to keep coverage — is it worth continuing?",
-    type:"choice", payoffNote:"Critical if CI strikes on Day 3...",
-    choices:[
-      { label:"Keep Paying",   sub:"Stay protected  (-$10,000)", cost:-10000, value:"cont_insurance" },
-      { label:"Cancel Policy", sub:"Save the money now", cost:0, value:"cancel_insurance" }
+  { id:"S7", day:2, age:"Age 29", tag:"Scenario 7", title:"Insurance Check-In",
+    story:"Time to review your insurance situation. Your decision from Day 1 affects what options you have now.",
+    type:"insurance_s7", payoffNote:"Critical if CI strikes on Day 3...",
+    choices_existing:[
+      { label:"Continue Paying Premiums", sub:"Stay protected  (-$10,000)", cost:-10000, value:"cont_insurance" },
+      { label:"Cancel Policy",            sub:"Save the money now", cost:0, value:"cancel_insurance" }
+    ],
+    choices_new:[
+      { label:"Buy Insurance Now",  sub:"Better late than never  (-$25,000)", cost:-25000, value:"cont_insurance" },
+      { label:"Skip Again",         sub:"Still not insured", cost:0, value:"cancel_insurance" }
     ]},
   { id:"S8", day:2, age:"Age 30", tag:"Scenario 8", title:"Your Dream Wedding",
     story:"Getting married! Angpaos from guests will NOT fully cover the cost.",
@@ -523,11 +527,11 @@ export default function App() {
               </div>
             </div>
             <p style={{color:"#64748b", fontSize:"13px", lineHeight:"1.6", margin:"0 0 12px"}}>{fs ? fs.story : ""}</p>
-            {fs && fs.choices && (
+            {fs && (fs.choices || fs.choices_existing) && (
               <div style={{display:"flex", flexWrap:"wrap", gap:"6px", marginBottom:"12px"}}>
-                {fs.choices.map(function(c) {
+                {(fs.choices || []).concat(fs.choices_existing || []).concat(fs.choices_new || []).filter(function(c,i,arr){return arr.findIndex(function(x){return x.value===c.value&&x.label===c.label;})===i;}).map(function(c) {
                   return (
-                    <div key={c.value} style={{background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"8px", padding:"6px 12px", fontSize:"12px"}}>
+                    <div key={c.label} style={{background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"8px", padding:"6px 12px", fontSize:"12px"}}>
                       <span style={{color:"#e2e8f0"}}>{c.label}</span>
                       {(c.cost || c.gain) ? (
                         <span style={{color:c.cost && c.cost < 0 ? "#f87171" : "#4ade80", fontWeight:"700", marginLeft:"6px"}}>
@@ -595,38 +599,53 @@ export default function App() {
                         <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
                       </div>
 
-                      <div style={{position:"relative", width:"220px", height:"220px", margin:"0 auto 12px"}}>
-                        <div style={{position:"absolute", top:"-10px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10}}>▼</div>
-                        <div style={{width:"220px", height:"220px", borderRadius:"50%", overflow:"hidden", position:"relative",
+                      <div style={{position:"relative", width:"280px", height:"280px", margin:"0 auto 12px"}}>
+                        <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10, lineHeight:"1"}}>▼</div>
+                        <svg width="280" height="280" viewBox="0 0 280 280" style={{
                           transform:"rotate(" + wheelAngle + "deg)",
                           transition:wheelSpinning?"transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)":"none",
-                          border:"3px solid rgba(255,255,255,0.15)"}}>
+                          borderRadius:"50%",
+                          filter:"drop-shadow(0 0 12px rgba(99,102,241,0.3))"
+                        }}>
                           {segments.map(function(p, i) {
-                            var angle = i * segAngle;
                             var isPicked = wheelPicked.indexOf(p.n) !== -1;
-                            var col = isPicked ? "#334155" : wheelColors[i % wheelColors.length];
+                            var col = isPicked ? "#1e293b" : wheelColors[i % wheelColors.length];
+                            var startAngle = (i * segAngle - 90) * Math.PI / 180;
+                            var endAngle = ((i + 1) * segAngle - 90) * Math.PI / 180;
+                            var r = 130;
+                            var cx = 140; var cy = 140;
+                            var x1 = cx + r * Math.cos(startAngle);
+                            var y1 = cy + r * Math.sin(startAngle);
+                            var x2 = cx + r * Math.cos(endAngle);
+                            var y2 = cy + r * Math.sin(endAngle);
+                            var largeArc = segAngle > 180 ? 1 : 0;
+                            var pathD = "M " + cx + " " + cy + " L " + x1 + " " + y1 + " A " + r + " " + r + " 0 " + largeArc + " 1 " + x2 + " " + y2 + " Z";
+                            var midAngle = ((i + 0.5) * segAngle - 90) * Math.PI / 180;
+                            var textR = r * 0.65;
+                            var tx = cx + textR * Math.cos(midAngle);
+                            var ty = cy + textR * Math.sin(midAngle);
+                            var textRotation = (i + 0.5) * segAngle;
+                            var firstName = p.name.split(" ")[0];
                             return (
-                              <div key={p.n} style={{
-                                position:"absolute", width:"0", height:"0", top:"50%", left:"50%",
-                                borderLeft: "110px solid transparent",
-                                borderRight: "110px solid transparent",
-                                borderBottom: "110px solid " + col,
-                                transformOrigin: "0 0",
-                                transform: "rotate(" + angle + "deg) translateX(-110px)",
-                                opacity: isPicked ? 0.3 : 1,
-                              }}>
-                                <div style={{position:"absolute", top:"40px", left:"-34px", width:"68px", textAlign:"center",
-                                  fontSize:"8px", fontWeight:"900", color:"white", textShadow:"0 1px 2px rgba(0,0,0,0.8)",
-                                  transform:"rotate(" + (segAngle/2) + "deg)", lineHeight:"1.1", wordBreak:"break-word"}}>
-                                  {p.name}
-                                </div>
-                              </div>
+                              <g key={p.n}>
+                                <path d={pathD} fill={col} stroke="#0f172a" strokeWidth="1.5" opacity={isPicked?0.35:1}/>
+                                <text
+                                  x={tx} y={ty}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                  fill="white"
+                                  fontSize={segAngle > 25 ? "10" : "8"}
+                                  fontWeight="800"
+                                  fontFamily="Georgia, serif"
+                                  style={{textShadow:"0 1px 3px rgba(0,0,0,0.9)"}}
+                                  transform={"rotate(" + textRotation + " " + tx + " " + ty + ")"}
+                                  opacity={isPicked?0.4:1}
+                                >{firstName}</text>
+                              </g>
                             );
                           })}
-                          <div style={{position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)",
-                            width:"40px", height:"40px", borderRadius:"50%", background:"#0f172a",
-                            border:"3px solid rgba(255,255,255,0.2)", zIndex:5}} />
-                        </div>
+                          <circle cx="140" cy="140" r="22" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
+                        </svg>
                       </div>
 
                       {wheelResult && !wheelSpinning && (
@@ -738,6 +757,57 @@ export default function App() {
               </tfoot>
             </table>
           </div>
+
+          {/* Kahoot-style leaderboard for facilitator */}
+          {(function() {
+            var allNavs = Array.from({length:20}, function(_,i) {
+              var n = i+1;
+              var pd = allPlayerData[n];
+              var dec = pd ? (pd.decisions||{}) : {};
+              var comp = new Set(pd ? (pd.completed||[]) : []);
+              return { n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec,comp).nav };
+            }).sort(function(a,b){return b.nav-a.nav;});
+            var medals = ["🥇","🥈","🥉"];
+            var podiumBg = ["linear-gradient(135deg,#854d0e,#713f12)","linear-gradient(135deg,#1e293b,#0f172a)","linear-gradient(135deg,#431407,#1c0a03)"];
+            var podiumColors = ["#facc15","#94a3b8","#b45309"];
+            var podiumHeight = ["80px","60px","48px"];
+            var top3 = allNavs.slice(0,3);
+            return (
+              <div style={Object.assign({}, s.card, {padding:"16px"})}>
+                <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"14px", textAlign:"center"}}>LEADERBOARD</div>
+                <div style={{display:"flex", alignItems:"flex-end", justifyContent:"center", gap:"6px", marginBottom:"16px"}}>
+                  {[top3[1], top3[0], top3[2]].map(function(p, pos) {
+                    if (!p) return null;
+                    var realRank = pos===0?1:pos===1?0:2;
+                    var col = podiumColors[realRank];
+                    var ht = podiumHeight[realRank];
+                    return (
+                      <div key={p.n} style={{flex:"1", display:"flex", flexDirection:"column", alignItems:"center"}}>
+                        <div style={{fontSize:realRank===0?"28px":"22px", marginBottom:"4px"}}>{medals[realRank]}</div>
+                        <div style={{color:col, fontWeight:"900", fontSize:"13px", marginBottom:"2px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                        <div style={{color:"#4ade80", fontWeight:"800", fontSize:"12px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
+                        <div style={{width:"100%", height:ht, background:podiumBg[realRank], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
+                          <span style={{color:col, fontWeight:"900", fontSize:"20px"}}>{"#"+(realRank+1)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"6px"}}>
+                  {allNavs.slice(3).map(function(p, i) {
+                    var rank = i+4;
+                    return (
+                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"8px", padding:"7px 10px", borderRadius:"8px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.05)"}}>
+                        <span style={{color:"#475569", fontWeight:"800", fontSize:"12px", width:"22px"}}>{"#"+rank}</span>
+                        <span style={{color:"#94a3b8", fontWeight:"700", fontSize:"12px", flex:"1"}}>{p.name.split(" ")[0]}</span>
+                        <span style={{color:"#4ade80", fontWeight:"800", fontSize:"12px"}}>{fmt(p.nav)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     );
@@ -855,10 +925,11 @@ export default function App() {
               <div style={{color:"#a5b4fc", fontWeight:"700", fontSize:"14px", marginBottom:"8px"}}>
                 Decision recorded!
               </div>
-              {currentS && currentS.choices && myDecisions[currentS.id] && (
+              {currentS && myDecisions[currentS.id] && (
                 <div style={{background:"rgba(255,255,255,0.05)", borderRadius:"8px", padding:"8px 12px", marginBottom:revealResult?"10px":"0", fontSize:"13px", color:"#e2e8f0"}}>
                   {(function() {
-                    var chosen = currentS.choices.find(function(c){return c.value === myDecisions[currentS.id];});
+                    var allChoices = (currentS.choices||[]).concat(currentS.choices_existing||[]).concat(currentS.choices_new||[]);
+                    var chosen = allChoices.find(function(c){return c.value === myDecisions[currentS.id];});
                     return chosen ? ("You chose: " + chosen.label) : "";
                   })()}
                 </div>
@@ -879,6 +950,45 @@ export default function App() {
 
           {!thisDone && currentS && (
             <div>
+              {currentS.type === "insurance_s7" && (
+                <div>
+                  {(function() {
+                    var hadInsurance = myDecisions["S1"] === "insured";
+                    var choices = hadInsurance ? currentS.choices_existing : currentS.choices_new;
+                    var storyOverride = hadInsurance
+                      ? "You bought insurance in Scenario 1. Pay $10,000 to keep your coverage active — or cancel and lose protection."
+                      : "You skipped insurance in Scenario 1. You can buy it now for $25,000, or continue without coverage.";
+                    return (
+                      <div>
+                        <p style={{color:"#facc15", fontSize:"13px", lineHeight:"1.6", margin:"0 0 14px", padding:"10px 12px", background:"rgba(250,204,21,0.08)", borderRadius:"8px", border:"1px solid rgba(250,204,21,0.2)"}}>
+                          {storyOverride}
+                        </p>
+                        {choices.map(function(c) {
+                          var currentCashCheck = computeNW(myDecisions, myCompleted);
+                          var wouldGoNegative = c.cost && c.cost < 0 && (currentCashCheck + c.cost) < 0;
+                          return (
+                            <div key={c.value}>
+                              <button style={Object.assign({}, s.cBtn, wouldGoNegative ? {opacity:"0.4", cursor:"not-allowed"} : {})}
+                                onClick={function(){if(!wouldGoNegative) submitDecision(currentS.id, c.value);}}
+                                disabled={wouldGoNegative}>
+                                <div style={{flex:"1", textAlign:"left"}}>
+                                  <div style={{color:"#e2e8f0", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
+                                  <div style={{color:"#64748b", fontSize:"12px", marginTop:"1px"}}>{c.sub}</div>
+                                </div>
+                                <span style={{fontWeight:"900", fontSize:"13px", whiteSpace:"nowrap", color:c.cost&&c.cost<0?"#f87171":"#94a3b8"}}>
+                                  {c.cost && c.cost !== 0 ? ("-" + fmt(Math.abs(c.cost))) : "—"}
+                                </span>
+                              </button>
+                              {wouldGoNegative && <div style={{color:"#f87171", fontSize:"11px", textAlign:"center", marginTop:"-6px", marginBottom:"6px"}}>Not enough cash!</div>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
               {currentS.type === "choice" && (
                 <div>
                   {currentS.choices.map(function(c) {
