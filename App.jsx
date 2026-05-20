@@ -31,13 +31,12 @@ function computeS11(d) {
   return { gain: 0, msg: "You stayed away. That was the right call!", color: "#4ade80" };
 }
 function computeS15(d) {
-  if (d.S10 === "car") return { gain: 10000, msg: "Car sold for $10,000 back — but net loss ~$80,000 overall.", color: "#facc15" };
-  return { gain: 0, msg: "No car, no loss! Public transport saved you tens of thousands.", color: "#4ade80" };
+  if (d.S10 === "car") return { gain: 10000, msg: "Car sold for $10,000 back — but net loss ~$80,000 overall including maintenance.", color: "#facc15" };
+  return { gain: 0, msg: "No car — but you saved smartly! No changes to your savings.", color: "#4ade80" };
 }
-// Note: S15 only gives +10k if player explicitly chose "car" in S10
 function computeS16(d) {
-  if (d.S2 === "hdb")   return { gain: 100000, msg: "HDB sold! Property gains: +$100,000!", color: "#4ade80" };
-  if (d.S2 === "condo") return { gain: 200000, msg: "Condo sold! Gains: +$200,000!", color: "#4ade80" };
+  if (d.S2 === "hdb")   return { gain: 240000, msg: "BTO sold! You get back $240,000 (capital + $200,000 profit)!", color: "#4ade80" };
+  if (d.S2 === "condo") return { gain: 280000, msg: "Condo sold! You get back $280,000 (capital + $200,000 profit)!", color: "#4ade80" };
   return { gain: 0, msg: "No property bought — no gains here.", color: "#94a3b8" };
 }
 function computeS17(d) {
@@ -49,8 +48,8 @@ function computeS4p(d) {
   return { gain: 0, msg: "No T-Bills — missed out on safe guaranteed returns.", color: "#94a3b8" };
 }
 function computeS18(d) {
-  if (d.S5 === "etf" || d.S9 === "etf_more") return { gain: 100000, msg: "ETF boom! Profits locked in: +$100,000!", color: "#4ade80" };
-  return { gain: 0, msg: "No ETF investment — missed the boom.", color: "#94a3b8" };
+  if (d.S5 === "etf") return { gain: 100000, msg: "ETF boom! You bought in early — profits locked in: +$100,000!", color: "#4ade80" };
+  return { gain: 0, msg: "You did not invest in the ETF — no profits added.", color: "#94a3b8" };
 }
 
 const SCENARIOS = [
@@ -117,13 +116,7 @@ const SCENARIOS = [
       { label:"Luxury Wedding", sub:"Grand celebration  (-$50,000)", cost:-50000, value:"luxury_wedding" },
       { label:"Simple Wedding", sub:"Intimate and meaningful  (-$25,000)", cost:-25000, value:"simple_wedding" }
     ]},
-  { id:"S9", day:2, age:"Age 31", tag:"Scenario 9", title:"Tech ETF Is Pumping!",
-    story:"Your ETF has grown! Buy more for $15,000? Those who bought in S5 also get a +$10,000 bonus.",
-    type:"choice", payoffNote:"ETF boom profits locked in on Day 3!",
-    choices:[
-      { label:"Buy More ETF",     sub:"Double down  (-$15,000)", cost:-15000, value:"etf_more" },
-      { label:"Hold What I Have", sub:"Do not get greedy", cost:0, value:"no_etf_more" }
-    ]},
+
   { id:"S10", day:2, age:"Age 31", tag:"Scenario 10", title:"Buy a Car?",
     story:"COE is available! A car means convenience — but it is a depreciating asset at $90,000 all in.",
     type:"choice", payoffNote:"Car resale value revealed on Day 3...",
@@ -143,7 +136,7 @@ const SCENARIOS = [
     type:"automatic", gain:200000,
     note:"This reflects years of income, savings and compound growth. Everyone gets this!" },
   { id:"S14", day:3, age:"Age 35", tag:"Scenario 14", title:"1 in 4: Critical Illness",
-    story:"1 in 4 people face CI in their lifetime. Facilitator will announce if you are affected — then tap your answer.",
+    story:"Statistics show 1 in 4 people face CI in their lifetime. The facilitator has randomly selected 7 players who are affected. Check the facilitator screen to see if you are one of them — then tap your answer below.",
     type:"ci", compute: computeCI,
     choices:[
       { label:"Yes — I was affected by CI", value:"ci_yes" },
@@ -162,7 +155,7 @@ const SCENARIOS = [
     story:"Your T-Bills have matured with 3% compounded returns. Boring wins the long game.",
     type:"reveal", compute: computeS4p },
   { id:"S18", day:3, age:"Age 40", tag:"Scenario 18", title:"Tech ETF Booms!",
-    story:"The tech ETF has absolutely skyrocketed. Lock in your profits!",
+    story:"The tech ETF has absolutely skyrocketed. Lock in your profits! Those who invested in Scenario 5 reap the rewards.",
     type:"reveal", compute: computeS18 },
 ];
 
@@ -199,7 +192,7 @@ function computeNW(decisions, completed) {
         if (r) nw += r.gain;
       }
     }
-    if (s.id === "S9" && decisions["S5"] === "etf" && completed.has("S9") && completed.has("S5")) nw += 10000;
+
   }
   return nw;
 }
@@ -210,14 +203,12 @@ function computeNAV(decisions, completed) {
   var cash = computeNW(decisions, completed);
   var property = 0;
   if (c.has("S2")) {
-    if (d.S2 === "hdb")   property = 150000;
-    if (d.S2 === "condo") property = 300000;
+    if (d.S2 === "hdb")   property = 240000;
+    if (d.S2 === "condo") property = 280000;
   }
   if (c.has("S16")) property = 0;
   var etf = 0;
   if (c.has("S5") && d.S5 === "etf")      etf += 10000;
-  if (c.has("S9") && d.S9 === "etf_more") etf += 15000;
-  if (c.has("S5") && d.S5 === "etf" && c.has("S9")) etf += 10000;
   if (c.has("S18")) etf = 0;
   var tbills = 0;
   if (c.has("S4") && d.S4 === "tbills") tbills = 10000;
@@ -240,6 +231,12 @@ export default function App() {
   var [facilPass, setFacilPass] = useState("");
   var [globalIdx, setGlobalIdx] = useState(0);
   var [allPlayerData, setAllPlayerData] = useState({});
+  var [ciAffected, setCiAffected] = useState([]);
+  var [wheelSpinning, setWheelSpinning] = useState(false);
+  var [wheelAngle, setWheelAngle] = useState(0);
+  var [wheelResult, setWheelResult] = useState(null);
+  var [wheelPool, setWheelPool] = useState([]);
+  var [wheelPicked, setWheelPicked] = useState([]);
   var [playerNum, setPlayerNum] = useState(null);
   var [numInput, setNumInput] = useState("");
   var [myDecisions, setMyDecisions] = useState({});
@@ -247,6 +244,8 @@ export default function App() {
   var [liveGlobalIdx, setLiveGlobalIdx] = useState(0);
   var [pendingCi, setPendingCi] = useState(null);
   var [revealResult, setRevealResult] = useState(null);
+  var [allPlayersNav, setAllPlayersNav] = useState({});
+  var allPlayerDataRef = { current: allPlayersNav };
   var [passwordInput, setPasswordInput] = useState("");
   var [passwordError, setPasswordError] = useState("");
   var [settingPassword, setSettingPassword] = useState(false);
@@ -300,7 +299,20 @@ export default function App() {
       });
     }
     poll();
-    var iv = setInterval(poll, 3000);
+    var iv = setInterval(function() {
+      poll();
+      // Also fetch all players data for leaderboard
+      sGet("global_idx").then(function(gi) {
+        if (gi === SCENARIOS.length - 1) {
+          var promises = Array.from({length:20}, function(_,i) { return sGet("player_" + (i+1)); });
+          Promise.all(promises).then(function(results) {
+            var all = {};
+            results.forEach(function(pd, i) { if (pd) all[i+1] = pd; });
+            setAllPlayersNav(all);
+          });
+        }
+      });
+    }, 3000);
     return function() { clearInterval(iv); };
   }, [mode, playerNum]);
 
@@ -318,6 +330,11 @@ export default function App() {
     if (!window.confirm("Reset ALL player data and restart?")) return;
     setGlobalIdx(0);
     setAllPlayerData({});
+    setCiAffected([]);
+    setWheelPool([]);
+    setWheelPicked([]);
+    setWheelResult(null);
+    setWheelAngle(0);
     sSet("global_idx", 0);
     for (var i = 1; i <= 20; i++) sSet("player_" + i, { decisions:{}, completed:[] });
   }
@@ -376,10 +393,22 @@ export default function App() {
     var arr = Array.from(myCompleted);
     arr.push(scenarioId);
     var nc = new Set(arr);
+
+    // Guard: check if this choice would cause negative cash BEFORE applying
+    var s = SCENARIOS.find(function(x) { return x.id === scenarioId; });
+    if (s && s.choices) {
+      var chosen = s.choices.find(function(c) { return c.value === choiceValue; });
+      if (chosen && chosen.cost && chosen.cost < 0) {
+        var currentCash = computeNW(myDecisions, myCompleted);
+        if (currentCash + chosen.cost < 0) {
+          return; // Block negative cash at submission time too
+        }
+      }
+    }
+
     setMyDecisions(nd);
     setMyCompleted(nc);
     setPendingCi(null);
-    var s = SCENARIOS.find(function(x) { return x.id === scenarioId; });
     if (s && s.type === "reveal") {
       setRevealResult(s.compute(nd));
     } else if (s && s.type === "ci") {
@@ -513,6 +542,130 @@ export default function App() {
             {fs && fs.type === "automatic" && (
               <div style={{background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"8px", padding:"10px 12px", fontSize:"12px", color:"#a5b4fc", marginBottom:"12px"}}>
                 {fs.note}
+              </div>
+            )}
+            {fs && fs.id === "S14" && (
+              <div style={{marginBottom:"12px"}}>
+                {(function() {
+                  var allNames = PLAYER_NAMES.map(function(name, i) { return {n:i+1, name:name.split(" ")[0]}; });
+                  var remaining = allNames.filter(function(p) { return wheelPicked.indexOf(p.n) === -1; });
+                  var segments = remaining.length > 0 ? remaining : allNames;
+                  var segAngle = 360 / segments.length;
+                  var needsInit = wheelPool.length === 0;
+
+                  function initWheel() {
+                    var nums = Array.from({length:20}, function(_,i){return i+1;});
+                    var shuffled = nums.slice().sort(function(){return Math.random()-0.5;});
+                    var ci7 = shuffled.slice(0,7);
+                    setWheelPool(ci7);
+                    setWheelPicked([]);
+                    setCiAffected([]);
+                    setWheelResult(null);
+                    setWheelAngle(0);
+                  }
+
+                  function spinWheel() {
+                    if (wheelSpinning || wheelPicked.length >= 7) return;
+                    if (wheelPool.length === 0) { initWheel(); return; }
+                    var nextPick = wheelPool.find(function(n){ return wheelPicked.indexOf(n) === -1; });
+                    if (!nextPick) return;
+                    var targetIdx = segments.findIndex(function(p){ return p.n === nextPick; });
+                    var spins = 5 + Math.floor(Math.random()*3);
+                    var targetAngle = wheelAngle + spins*360 + (360 - targetIdx*segAngle - segAngle/2);
+                    setWheelSpinning(true);
+                    setWheelResult(null);
+                    setWheelAngle(targetAngle);
+                    setTimeout(function() {
+                      setWheelSpinning(false);
+                      setWheelResult(nextPick);
+                      setWheelPicked(function(prev) {
+                        var next = prev.concat([nextPick]);
+                        setCiAffected(next);
+                        return next;
+                      });
+                    }, 3500);
+                  }
+
+                  var wheelColors = ["#f87171","#fb923c","#facc15","#4ade80","#60a5fa","#a78bfa","#f472b6","#34d399","#f97316","#818cf8","#22d3ee","#e879f9","#a3e635","#fb7185","#fbbf24","#6ee7b7","#93c5fd","#c4b5fd","#fda4af","#86efac"];
+
+                  return (
+                    <div>
+                      <div style={{textAlign:"center", marginBottom:"10px"}}>
+                        <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
+                        <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
+                      </div>
+
+                      <div style={{position:"relative", width:"220px", height:"220px", margin:"0 auto 12px"}}>
+                        <div style={{position:"absolute", top:"-10px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10}}>▼</div>
+                        <div style={{width:"220px", height:"220px", borderRadius:"50%", overflow:"hidden", position:"relative",
+                          transform:"rotate(" + wheelAngle + "deg)",
+                          transition:wheelSpinning?"transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)":"none",
+                          border:"3px solid rgba(255,255,255,0.15)"}}>
+                          {segments.map(function(p, i) {
+                            var angle = i * segAngle;
+                            var isPicked = wheelPicked.indexOf(p.n) !== -1;
+                            var col = isPicked ? "#334155" : wheelColors[i % wheelColors.length];
+                            return (
+                              <div key={p.n} style={{
+                                position:"absolute", width:"0", height:"0", top:"50%", left:"50%",
+                                borderLeft: "110px solid transparent",
+                                borderRight: "110px solid transparent",
+                                borderBottom: "110px solid " + col,
+                                transformOrigin: "0 0",
+                                transform: "rotate(" + angle + "deg) translateX(-110px)",
+                                opacity: isPicked ? 0.3 : 1,
+                              }}>
+                                <div style={{position:"absolute", top:"55px", left:"-30px", width:"60px", textAlign:"center",
+                                  fontSize:"9px", fontWeight:"800", color:"white",
+                                  transform:"rotate(" + (segAngle/2) + "deg)"}}>
+                                  {p.name}
+                                </div>
+                              </div>
+                            );
+                          })}
+                          <div style={{position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+                            width:"40px", height:"40px", borderRadius:"50%", background:"#0f172a",
+                            border:"3px solid rgba(255,255,255,0.2)", zIndex:5}} />
+                        </div>
+                      </div>
+
+                      {wheelResult && !wheelSpinning && (
+                        <div style={{textAlign:"center", background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"12px", padding:"10px", marginBottom:"10px"}}>
+                          <div style={{color:"#fca5a5", fontSize:"11px", marginBottom:"2px"}}>CI goes to...</div>
+                          <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>#{wheelResult} {PLAYER_NAMES[wheelResult-1].split(" ")[0]}!</div>
+                        </div>
+                      )}
+
+                      <div style={{display:"flex", gap:"8px", marginBottom:"8px"}}>
+                        {needsInit ? (
+                          <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px"})} onClick={initWheel}>
+                            Start Wheel
+                          </button>
+                        ) : (
+                          <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px",
+                            opacity:wheelSpinning||wheelPicked.length>=7?0.4:1,
+                            background:"linear-gradient(135deg,#dc2626,#991b1b)"})}
+                            onClick={spinWheel}
+                            disabled={wheelSpinning||wheelPicked.length>=7}>
+                            {wheelSpinning ? "Spinning..." : wheelPicked.length >= 7 ? "All 7 Picked!" : "Spin! (" + (7-wheelPicked.length) + " left)"}
+                          </button>
+                        )}
+                        <button style={Object.assign({}, s.btnS, {padding:"10px 14px"})} onClick={initWheel}>Reset</button>
+                      </div>
+
+                      {wheelPicked.length > 0 && (
+                        <div style={{background:"rgba(248,113,113,0.08)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"8px", padding:"10px 12px"}}>
+                          <div style={{color:"#fca5a5", fontWeight:"700", fontSize:"11px", marginBottom:"6px"}}>CI Affected ({wheelPicked.length}/7):</div>
+                          <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
+                            {wheelPicked.map(function(n) {
+                              return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>#{n} {PLAYER_NAMES[n-1].split(" ")[0]}</span>;
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
             <div style={{display:"flex", gap:"8px"}}>
@@ -722,7 +875,7 @@ export default function App() {
               {currentS.type === "choice" && (
                 <div>
                   {currentS.choices.map(function(c) {
-                    var wouldGoNegative = c.cost && c.cost < 0 && (myNW + c.cost) < 0;
+                    var currentCashCheck = computeNW(myDecisions, myCompleted); var wouldGoNegative = c.cost && c.cost < 0 && (currentCashCheck + c.cost) < 0;
                     return (
                       <div key={c.value}>
                         <button style={Object.assign({}, s.cBtn, wouldGoNegative ? {opacity:"0.4", cursor:"not-allowed"} : {})}
@@ -807,45 +960,113 @@ export default function App() {
           )}
         </div>
 
-        {liveGlobalIdx === SCENARIOS.length - 1 && thisDone && (
-          <div style={Object.assign({}, s.card, {marginTop:"10px", padding:"20px"})}>
-            <div style={{textAlign:"center", marginBottom:"16px"}}>
-              <div style={{fontSize:"30px", marginBottom:"6px"}}>🏁</div>
-              <div style={{color:"#facc15", fontWeight:"900", fontSize:"18px", marginBottom:"4px"}}>Journey Complete!</div>
-              <div style={{fontSize:"40px", fontWeight:"900", color:clr(nwDelta)}}>{fmt(myNW)}</div>
-              <div style={{color:"#64748b", fontSize:"12px", marginTop:"4px"}}>{nwDelta >= 0 ? "+" : ""}{nwDelta.toLocaleString()} from start</div>
-            </div>
-            <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:"14px"}}>
-              <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"1px", marginBottom:"10px"}}>YOUR ASSET BREAKDOWN</div>
-              {(function() {
-                var nav = computeNAV(myDecisions, myCompleted);
-                var rows = [
+        {liveGlobalIdx === SCENARIOS.length - 1 && thisDone && (function() {
+          var nav = computeNAV(myDecisions, myCompleted);
+          var allNavs = Array.from({length:20}, function(_,i) {
+            var n = i+1;
+            var pd = allPlayerDataRef.current ? allPlayerDataRef.current[n] : null;
+            var dec = pd ? (pd.decisions||{}) : n===playerNum ? myDecisions : {};
+            var comp = pd ? new Set(pd.completed||[]) : n===playerNum ? myCompleted : new Set();
+            return { n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec,comp).nav };
+          }).sort(function(a,b){return b.nav - a.nav;});
+          var myRank = allNavs.findIndex(function(x){return x.n===playerNum;}) + 1;
+          var medals = ["🥇","🥈","🥉"];
+          return (
+            <div style={Object.assign({}, s.card, {marginTop:"10px", padding:"20px"})}>
+              <div style={{textAlign:"center", marginBottom:"16px"}}>
+                <div style={{fontSize:"30px", marginBottom:"6px"}}>🏁</div>
+                <div style={{color:"#facc15", fontWeight:"900", fontSize:"18px", marginBottom:"4px"}}>Journey Complete!</div>
+                <div style={{fontSize:"40px", fontWeight:"900", color:clr(nwDelta)}}>{fmt(myNW)}</div>
+                <div style={{color:"#64748b", fontSize:"12px", marginTop:"4px"}}>{nwDelta >= 0 ? "+" : ""}{nwDelta.toLocaleString()} from start</div>
+                <div style={{marginTop:"8px", display:"inline-block", background:"rgba(250,204,21,0.1)", border:"1px solid rgba(250,204,21,0.3)", borderRadius:"20px", padding:"4px 16px", color:"#facc15", fontWeight:"800", fontSize:"14px"}}>
+                  You are #{myRank} out of 20
+                </div>
+              </div>
+
+              <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:"14px", marginBottom:"14px"}}>
+                <div style={{textAlign:"center", color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"2px", marginBottom:"14px"}}>LEADERBOARD</div>
+                {(function() {
+                  var podiumColors = ["#facc15","#94a3b8","#b45309"];
+                  var podiumBg = ["linear-gradient(135deg,#854d0e,#713f12)","linear-gradient(135deg,#1e293b,#0f172a)","linear-gradient(135deg,#431407,#1c0a03)"];
+                  var podiumHeight = ["80px","60px","48px"];
+                  var top3 = allNavs.slice(0,3);
+                  return (
+                    <div>
+                      <div style={{display:"flex", alignItems:"flex-end", justifyContent:"center", gap:"6px", marginBottom:"16px"}}>
+                        {[top3[1], top3[0], top3[2]].map(function(p, pos) {
+                          if (!p) return null;
+                          var realRank = pos === 0 ? 1 : pos === 1 ? 0 : 2;
+                          var isMe = p.n === playerNum;
+                          var col = podiumColors[realRank];
+                          var ht = podiumHeight[realRank];
+                          return (
+                            <div key={p.n} style={{flex:"1", display:"flex", flexDirection:"column", alignItems:"center"}}>
+                              <div style={{fontSize:realRank===0?"28px":"22px", marginBottom:"4px"}}>{medals[realRank]}</div>
+                              <div style={{color:isMe?"#facc15":col, fontWeight:"900", fontSize:"12px", marginBottom:"2px", textAlign:"center"}}>{p.name.split(" ")[0]}{isMe?" 👈":""}</div>
+                              <div style={{color:"#4ade80", fontWeight:"800", fontSize:"11px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
+                              <div style={{width:"100%", height:ht, background:podiumBg[realRank], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center",
+                                border:isMe?"2px solid #facc15":"none"}}>
+                                <span style={{color:col, fontWeight:"900", fontSize:"20px"}}>#{realRank+1}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {allNavs.slice(3,10).map(function(p, i) {
+                        var isMe = p.n === playerNum;
+                        var rank = i + 4;
+                        return (
+                          <div key={p.n} style={{display:"flex", alignItems:"center", gap:"10px", padding:"8px 12px", borderRadius:"8px", marginBottom:"4px",
+                            background:isMe?"rgba(250,204,21,0.12)":"rgba(255,255,255,0.03)",
+                            border:isMe?"1px solid rgba(250,204,21,0.4)":"1px solid rgba(255,255,255,0.05)"}}>
+                            <span style={{color:isMe?"#facc15":"#475569", fontWeight:"800", fontSize:"14px", width:"24px", textAlign:"center"}}>#{rank}</span>
+                            <div style={{flex:"1"}}>
+                              <span style={{color:isMe?"#facc15":"#94a3b8", fontWeight:"700", fontSize:"13px"}}>{p.name.split(" ")[0]}{isMe?" (You)":""}</span>
+                            </div>
+                            <span style={{color:"#4ade80", fontWeight:"800", fontSize:"13px"}}>{fmt(p.nav)}</span>
+                          </div>
+                        );
+                      })}
+                      {myRank > 10 && (
+                        <div style={{display:"flex", alignItems:"center", gap:"10px", padding:"8px 12px", borderRadius:"8px", marginBottom:"4px", background:"rgba(250,204,21,0.12)", border:"1px solid rgba(250,204,21,0.4)"}}>
+                          <span style={{color:"#facc15", fontWeight:"800", fontSize:"14px", width:"24px", textAlign:"center"}}>#{myRank}</span>
+                          <div style={{flex:"1"}}><span style={{color:"#facc15", fontWeight:"700", fontSize:"13px"}}>{PLAYER_NAMES[playerNum-1].split(" ")[0]} (You)</span></div>
+                          <span style={{color:"#4ade80", fontWeight:"800", fontSize:"13px"}}>{fmt(nav.nav)}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:"14px"}}>
+                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"1px", marginBottom:"10px"}}>YOUR ASSET BREAKDOWN</div>
+                {[
                   { label:"Cash", value:nav.cash, color:"#94a3b8" },
                   { label:"Property", value:nav.property, color:"#4ade80" },
                   { label:"ETF", value:nav.etf, color:"#a5b4fc" },
                   { label:"T-Bills", value:nav.tbills, color:"#4ade80" },
                   { label:"Car", value:nav.car, color:"#facc15" },
-                ];
-                return rows.filter(function(r){return r.value > 0;}).map(function(r) {
+                ].filter(function(r){return r.value > 0;}).map(function(r) {
                   return (
                     <div key={r.label} style={{display:"flex", justifyContent:"space-between", padding:"6px 0", borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                       <span style={{color:"#64748b", fontSize:"13px"}}>{r.label}</span>
                       <span style={{color:r.color, fontWeight:"700", fontSize:"13px"}}>{fmt(r.value)}</span>
                     </div>
                   );
-                });
-              })()}
-              <div style={{display:"flex", justifyContent:"space-between", padding:"10px 0 0"}}>
-                <span style={{color:"#f8fafc", fontWeight:"800", fontSize:"14px"}}>Total NAV</span>
-                <span style={{color:clr(computeNAV(myDecisions,myCompleted).nav - BASE_NW), fontWeight:"900", fontSize:"16px"}}>{fmt(computeNAV(myDecisions,myCompleted).nav)}</span>
-              </div>
-              <div style={{display:"flex", justifyContent:"space-between", padding:"4px 0 0"}}>
-                <span style={{color:"#64748b", fontSize:"12px"}}>Insurance</span>
-                <span style={{color:computeNAV(myDecisions,myCompleted).insured?"#4ade80":"#f87171", fontSize:"12px", fontWeight:"700"}}>{computeNAV(myDecisions,myCompleted).insured ? "Protected" : "Not insured"}</span>
+                })}
+                <div style={{display:"flex", justifyContent:"space-between", padding:"10px 0 0"}}>
+                  <span style={{color:"#f8fafc", fontWeight:"800", fontSize:"14px"}}>Total NAV</span>
+                  <span style={{color:clr(nav.nav - BASE_NW), fontWeight:"900", fontSize:"16px"}}>{fmt(nav.nav)}</span>
+                </div>
+                <div style={{display:"flex", justifyContent:"space-between", padding:"4px 0 0"}}>
+                  <span style={{color:"#64748b", fontSize:"12px"}}>Insurance</span>
+                  <span style={{color:nav.insured?"#4ade80":"#f87171", fontSize:"12px", fontWeight:"700"}}>{nav.insured ? "Protected" : "Not insured"}</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
