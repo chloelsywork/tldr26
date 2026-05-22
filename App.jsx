@@ -499,9 +499,9 @@ export default function App() {
                   <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
                   <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
                 </div>
-                <div style={{position:"relative", width:"280px", height:"280px", margin:"0 auto 12px"}}>
+                <div style={{position:"relative", width:"320px", height:"320px", margin:"0 auto 12px"}}>
                   <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10, lineHeight:"1"}}>▼</div>
-                  <svg width="280" height="280" viewBox="0 0 280 280" style={{transform:"rotate(" + wheelAngle + "deg)", transition:wheelSpinning?"transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)":"none", borderRadius:"50%", filter:"drop-shadow(0 0 12px rgba(99,102,241,0.3))"}}>
+                  <svg width="320" height="320" viewBox="0 0 280 280" style={{transform:"rotate(" + wheelAngle + "deg)", transition:wheelSpinning?"transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)":"none", borderRadius:"50%", filter:"drop-shadow(0 0 12px rgba(99,102,241,0.3))"}}>
                     {segments.map(function(p, i) {
                       var isPicked = wheelPicked.indexOf(p.n) !== -1;
                       var col = isPicked ? "#1e293b" : wheelColors[i % wheelColors.length];
@@ -523,14 +523,14 @@ export default function App() {
                           <path d={pathD} fill={col} stroke="#0f172a" strokeWidth="1.5" opacity={isPicked?0.35:1}/>
                           <text
                             x="0" y="0"
-                            textAnchor="middle"
+                            textAnchor="start"
                             dominantBaseline="middle"
                             fill="white"
-                            fontSize={segAngle > 20 ? "11" : "9"}
-                            fontWeight="900"
+                            fontSize="9"
+                            fontWeight="800"
                             fontFamily="Arial, sans-serif"
                             opacity={isPicked?0.4:1}
-                            transform={"translate(" + tx + "," + ty + ") rotate(" + ((i + 0.5) * segAngle) + ")"}
+                            transform={"translate(" + (cx + 28 * Math.cos(midAngle)) + "," + (cy + 28 * Math.sin(midAngle)) + ") rotate(" + ((i + 0.5) * segAngle) + ")"}
                           >{firstName}</text>
                         </g>
                       );
