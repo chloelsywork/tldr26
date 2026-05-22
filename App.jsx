@@ -98,7 +98,7 @@ const SCENARIOS = [
     story:"Time to review your insurance situation.",
     type:"insurance_s7", 
     choices_existing:[
-      { label:"Continue Paying Premiums", sub:"Stay protected  (-$20,000)", cost:-20000, value:"cont_insurance" },
+      { label:"Continue Paying Premiums", sub:"Stay protected  (-$10,000)", cost:-10000, value:"cont_insurance" },
       { label:"Cancel Policy",            sub:"Save the money now", cost:0, value:"cancel_insurance" }
     ],
     choices_new:[
@@ -897,7 +897,7 @@ export default function App() {
                 var hadInsurance = myDecisions["S1"] === "insured";
                 var choices = hadInsurance ? currentS.choices_existing : currentS.choices_new;
                 var storyOverride = hadInsurance
-                  ? "You bought insurance in Scenario 1. Pay $20,000 to keep your coverage active — or cancel and lose protection."
+                  ? "You bought insurance in Scenario 1. Pay $10,000 to keep your coverage active — or cancel and lose protection."
                   : "You skipped insurance in Scenario 1. You can buy it now for $25,000, or continue without coverage.";
                 return (
                   <div>
