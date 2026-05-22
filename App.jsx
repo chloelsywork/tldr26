@@ -186,7 +186,7 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
     var canvas = canvasRef.current;
     if (!canvas) return;
     var ctx = canvas.getContext("2d");
-    var W = 340; var cx = W/2; var cy = W/2; var r = 155;
+    var W = 480; var cx = W/2; var cy = W/2; var r = 220;
     ctx.clearRect(0, 0, W, W);
     var segA = (2 * Math.PI) / total;
 
@@ -195,7 +195,6 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       var end = start + segA;
       var isPicked = wheelPicked.indexOf(i+1) !== -1;
 
-      // Draw slice
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, r, start, end);
@@ -208,7 +207,6 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Draw text radiating outward from center
       var midA = start + segA / 2;
       var tx = cx + r * 0.65 * Math.cos(midA);
       var ty = cy + r * 0.65 * Math.sin(midA);
@@ -217,7 +215,7 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       ctx.rotate(midA - Math.PI / 2);
       ctx.fillStyle = "white";
       ctx.globalAlpha = isPicked ? 0.3 : 1;
-      ctx.font = "bold 9px Arial";
+      ctx.font = "bold 7px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(names[i], 0, 0);
@@ -225,9 +223,8 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       ctx.restore();
     }
 
-    // Center circle
     ctx.beginPath();
-    ctx.arc(cx, cy, 26, 0, 2*Math.PI);
+    ctx.arc(cx, cy, 30, 0, 2*Math.PI);
     ctx.fillStyle = "#080e1e";
     ctx.fill();
     ctx.strokeStyle = "rgba(255,255,255,0.2)";
@@ -236,12 +233,13 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
   }, [wheelAngle, wheelPicked]);
 
   return (
-    <div style={{position:"relative", width:"340px", height:"340px", margin:"0 auto 12px"}}>
+    <div style={{position:"relative", width:"480px", height:"480px", margin:"0 auto 12px"}}>
       <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10, lineHeight:"1"}}>▼</div>
-      <canvas ref={canvasRef} width="340" height="340" style={{borderRadius:"50%"}} />
+      <canvas ref={canvasRef} width="480" height="480" style={{borderRadius:"50%", width:"480px", height:"480px"}} />
     </div>
   );
 }
+
 function computeNW(decisions, completed) {
   var nw = BASE_NW;
   for (var idx = 0; idx < SCENARIOS.length; idx++) {
