@@ -208,14 +208,13 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Draw text - upright, at 68% radius
+      // Draw text radiating outward from center
       var midA = start + segA / 2;
-      var tx = cx + r * 0.68 * Math.cos(midA);
-      var ty = cy + r * 0.68 * Math.sin(midA);
+      var tx = cx + r * 0.65 * Math.cos(midA);
+      var ty = cy + r * 0.65 * Math.sin(midA);
       ctx.save();
       ctx.translate(tx, ty);
-      // Rotate so text reads from center outward (perpendicular to radius, upright from outside)
-      ctx.rotate(midA + Math.PI / 2);
+      ctx.rotate(midA - Math.PI / 2);
       ctx.fillStyle = "white";
       ctx.globalAlpha = isPicked ? 0.3 : 1;
       ctx.font = "bold 9px Arial";
