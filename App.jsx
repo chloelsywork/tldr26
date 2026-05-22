@@ -179,7 +179,7 @@ const FACIL_PASS = "tldr2026";
 
 function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
   var canvasRef = useRef(null);
-  var names = PLAYER_NAMES.map(function(n){ return n.split(" ")[0]; });
+  var names = PLAYER_NAMES.map(function(n){ var first = n.split(" ")[0]; return first.length > 5 ? first.slice(0,5) : first; });
   var total = names.length;
 
   useEffect(function() {
@@ -217,7 +217,7 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
       ctx.rotate(midA - Math.PI / 2);
       ctx.fillStyle = "white";
       ctx.globalAlpha = isPicked ? 0.3 : 1;
-      ctx.font = "bold 9px Arial";
+      ctx.font = "bold 8px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(names[i], 0, 0);
