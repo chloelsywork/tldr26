@@ -57,7 +57,7 @@ const SCENARIOS = [
     type:"choice",
     choices:[
       { label:"Buy Insurance", sub:"HSGM + PA + CI  (-$10,000)", cost:-10000, value:"insured" },
-      { label:"Skip It",       sub:"Im young, Ill be fine", cost:0, value:"uninsured" }
+      { label:"Skip It",       sub:"I'll save money on insurance", cost:0, value:"uninsured" }
     ]},
   { id:"S2", day:1, age:"Age 24", tag:"Scenario 2", title:"Buy Your First Home",
     story:"The BTO ballot comes through! Your choice determines how much you gain when you sell later.",
