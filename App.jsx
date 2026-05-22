@@ -728,7 +728,7 @@ export default function App() {
         <div style={{fontSize:"38px", margin:"10px 0 4px"}}>👤</div>
         <h2 style={{fontSize:"24px", fontWeight:"900", color:"#f8fafc", margin:"0 0 4px"}}>Join the Game</h2>
         <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 18px"}}>Tap your player number</p>
-        <div style={{display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:"6px", marginBottom:"16px"}}>
+        <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:"6px", marginBottom:"16px"}}>
           {Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;}).map(function(n) {
             return (
               <button key={n} style={{padding:"10px 0", fontSize:"14px", fontWeight:"700", borderRadius:"8px", cursor:"pointer",
