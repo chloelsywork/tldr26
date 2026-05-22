@@ -523,14 +523,14 @@ export default function App() {
                           <path d={pathD} fill={col} stroke="#0f172a" strokeWidth="1.5" opacity={isPicked?0.35:1}/>
                           <text
                             x="0" y="0"
-                            textAnchor="start"
+                            textAnchor="middle"
                             dominantBaseline="middle"
                             fill="white"
-                            fontSize="9"
+                            fontSize="8"
                             fontWeight="800"
                             fontFamily="Arial, sans-serif"
                             opacity={isPicked?0.4:1}
-                            transform={"translate(" + (cx + 28 * Math.cos(midAngle)) + "," + (cy + 28 * Math.sin(midAngle)) + ") rotate(" + ((i + 0.5) * segAngle) + ")"}
+                            transform={"translate(" + (cx + 80 * Math.cos(midAngle)) + "," + (cy + 80 * Math.sin(midAngle)) + ") rotate(" + ((i + 0.5) * segAngle) + ")"}
                           >{firstName}</text>
                         </g>
                       );
