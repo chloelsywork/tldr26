@@ -61,28 +61,28 @@ const SCENARIOS = [
     ]},
   { id:"S2", day:1, age:"Age 24", tag:"Scenario 2", title:"Buy Your First Home",
     story:"The BTO ballot comes through! Your choice determines how much you gain when you sell later.",
-    type:"choice", payoffNote:"Property profits revealed in Scenario 18!",
+    type:"choice",
     choices:[
       { label:"Buy HDB BTO", sub:"Affordable and stable  (-$40,000)", cost:-40000, value:"hdb" },
       { label:"Buy a Condo", sub:"Higher cost, higher upside  (-$80,000)", cost:-80000, value:"condo" }
     ]},
   { id:"S3", day:1, age:"Age 25", tag:"Scenario 3", title:"Small Cap Tech Equity",
     story:"A hot small cap tech stock — high risk, high reward, or total loss. $10,000 on the line.",
-    type:"choice", payoffNote:"Find out what happens in Scenario 14...",
+    type:"choice", 
     choices:[
       { label:"Buy Small Cap Tech Equity", sub:"Swing for the fences  (-$10,000)", cost:-10000, value:"smallcap" },
       { label:"Keep Cash Safe",            sub:"Too risky for me", cost:0, value:"no_smallcap" }
     ]},
   { id:"S4", day:1, age:"Age 25", tag:"Scenario 4", title:"T-Bills Investment",
     story:"The market is volatile. T-Bills at 3% offer safe, guaranteed returns. Do you take the safe bet?",
-    type:"choice", payoffNote:"T-Bills mature and pay out in Scenario 15!",
+    type:"choice", 
     choices:[
       { label:"Buy T-Bills @ 3%", sub:"Safe and steady  (-$10,000)", cost:-10000, value:"tbills" },
       { label:"Do Nothing",       sub:"Ride the volatility", cost:0, value:"no_tbills" }
     ]},
   { id:"S5", day:1, age:"Age 26", tag:"Scenario 5", title:"Tech ETF Opportunity",
     story:"Your friend made 30% on a Tech ETF. Diversified, lower risk — want in for $10,000?",
-    type:"choice", payoffNote:"ETF surge profits revealed in Scenario 17!",
+    type:"choice", 
     choices:[
       { label:"Buy Tech ETF", sub:"Diversified growth  (-$10,000)", cost:-10000, value:"etf" },
       { label:"Not Ready",    sub:"Maybe next time", cost:0, value:"no_etf" }
@@ -96,7 +96,7 @@ const SCENARIOS = [
     ]},
   { id:"S7", day:2, age:"Age 29", tag:"Scenario 7", title:"Insurance Check-In",
     story:"Time to review your insurance situation.",
-    type:"insurance_s7", payoffNote:"Critical if CI strikes in Scenario 12!",
+    type:"insurance_s7", 
     choices_existing:[
       { label:"Continue Paying Premiums", sub:"Stay protected  (-$20,000)", cost:-20000, value:"cont_insurance" },
       { label:"Cancel Policy",            sub:"Save the money now", cost:0, value:"cancel_insurance" }
@@ -114,7 +114,7 @@ const SCENARIOS = [
     ]},
   { id:"S9", day:2, age:"Age 31", tag:"Scenario 9", title:"New Car Purchase",
     story:"COE is available! A car means convenience — but it is a depreciating asset at $90,000 all in.",
-    type:"choice", payoffNote:"Car resale in Scenario 16!",
+    type:"choice", 
     choices:[
       { label:"Buy a Car",        sub:"Convenience and status  (-$90,000)", cost:-90000, value:"car" },
       { label:"Public Transport", sub:"Save the money", cost:0, value:"no_car" }
@@ -125,7 +125,7 @@ const SCENARIOS = [
     note:"Everyone pays $20,000 ($10,000 per parent). This is the sandwich generation reality." },
   { id:"S11", day:2, age:"Age 34", tag:"Scenario 11", title:"Draft Your Parents Will",
     story:"Your parents ask you to help draft their Will to protect the family estate. It costs $1,000 but ensures smooth inheritance later.",
-    type:"choice", payoffNote:"No Will means Grant of Probate fees in Scenario 13!",
+    type:"choice", 
     choices:[
       { label:"Draft the Will", sub:"Protect the family estate  (-$1,000)", cost:-1000, value:"will" },
       { label:"Skip for Now",   sub:"Too busy right now", cost:0, value:"no_will" }
@@ -138,7 +138,7 @@ const SCENARIOS = [
       { label:"No — I was not selected", value:"ci_no" }
     ]},
   { id:"S13", day:3, age:"Age 36", tag:"Scenario 13", title:"Inheritance — Grant of Probate",
-    story:"Your grandparents have passed. Those who drafted a Will in Scenario 11 transfer the estate smoothly. Those without a Will must go through Grant of Probate — costly and slow.",
+    story:"Your parents have passed. Those who drafted a Will in Scenario 11 transfer the estate smoothly. Those without a Will must go through Grant of Probate — costly and slow.",
     type:"reveal", compute: computeS13 },
   { id:"S14", day:3, age:"Age 37", tag:"Scenario 14", title:"Small Cap Tech Equity Delisted!",
     story:"BREAKING: The small cap tech company has been delisted. All shareholders lose everything.",
