@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const FB_URL = "https://tldr2026-10dae-default-rtdb.asia-southeast1.firebasedatabase.app";
 
@@ -175,6 +175,74 @@ const TOTAL_PLAYERS = 29;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
+
+
+function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
+  var canvasRef = useRef(null);
+  var names = PLAYER_NAMES.map(function(n){ return n.split(" ")[0]; });
+  var total = names.length;
+
+  useEffect(function() {
+    var canvas = canvasRef.current;
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var W = 340; var cx = W/2; var cy = W/2; var r = 155;
+    ctx.clearRect(0, 0, W, W);
+    var segA = (2 * Math.PI) / total;
+
+    for (var i = 0; i < total; i++) {
+      var start = wheelAngle + i * segA - Math.PI/2;
+      var end = start + segA;
+      var isPicked = wheelPicked.indexOf(i+1) !== -1;
+
+      // Draw slice
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+      ctx.fillStyle = isPicked ? "#1e293b" : wheelColors[i % wheelColors.length];
+      ctx.globalAlpha = isPicked ? 0.35 : 1;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "#080e1e";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Draw text - upright, at 68% radius
+      var midA = start + segA / 2;
+      var tx = cx + r * 0.68 * Math.cos(midA);
+      var ty = cy + r * 0.68 * Math.sin(midA);
+      ctx.save();
+      ctx.translate(tx, ty);
+      // Rotate so text reads from center outward (perpendicular to radius, upright from outside)
+      ctx.rotate(midA + Math.PI / 2);
+      ctx.fillStyle = "white";
+      ctx.globalAlpha = isPicked ? 0.3 : 1;
+      ctx.font = "bold 9px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(names[i], 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(cx, cy, 26, 0, 2*Math.PI);
+    ctx.fillStyle = "#080e1e";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }, [wheelAngle, wheelPicked]);
+
+  return (
+    <div style={{position:"relative", width:"340px", height:"340px", margin:"0 auto 12px"}}>
+      <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10, lineHeight:"1"}}>▼</div>
+      <canvas ref={canvasRef} width="340" height="340" style={{borderRadius:"50%"}} />
+    </div>
+  );
+}
 
 function computeNW(decisions, completed) {
   var nw = BASE_NW;
@@ -450,15 +518,40 @@ export default function App() {
       if (wheelPool.length === 0) { initWheel(); return; }
       var nextPick = wheelPool.find(function(n){ return wheelPicked.indexOf(n) === -1; });
       if (!nextPick) return;
-      var targetIdx = segments.findIndex(function(p){ return p.n === nextPick; });
-      if (targetIdx === -1) targetIdx = 0;
-      var spins = 5 + Math.floor(Math.random()*3);
-      var targetAngle = wheelAngle + spins*360 + (360 - targetIdx*segAngle - segAngle/2);
-      setWheelSpinning(true); setWheelResult(null); setWheelAngle(targetAngle);
-      setTimeout(function() {
-        setWheelSpinning(false); setWheelResult(nextPick);
-        setWheelPicked(function(prev) { var next = prev.concat([nextPick]); setCiAffected(next); return next; });
-      }, 3500);
+      var total = PLAYER_NAMES.length;
+      var segA = (2 * Math.PI) / total;
+      var targetIdx = nextPick - 1;
+      var spins = (5 + Math.floor(Math.random()*3)) * 2 * Math.PI;
+      var cur = ((wheelAngle % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+      var targetSegMid = targetIdx * segA + segA/2;
+      var pointerTarget = (2*Math.PI - targetSegMid) % (2*Math.PI);
+      var delta = ((pointerTarget - cur) + 2*Math.PI) % (2*Math.PI);
+      var targetAngle = wheelAngle + spins + delta;
+      var startAngle = wheelAngle;
+      var duration = 3500;
+      var startTime = null;
+      setWheelSpinning(true); setWheelResult(null);
+      function animate(now) {
+        if (!startTime) startTime = now;
+        var elapsed = now - startTime;
+        var progress = Math.min(elapsed / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = startAngle + (targetAngle - startAngle) * eased;
+        setWheelAngle(current);
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setWheelAngle(targetAngle);
+          setWheelSpinning(false);
+          setWheelResult(nextPick);
+          setWheelPicked(function(prev) {
+            var next = prev.concat([nextPick]);
+            setCiAffected(next);
+            return next;
+          });
+        }
+      }
+      requestAnimationFrame(animate);
     }
 
     return (
@@ -499,45 +592,7 @@ export default function App() {
                   <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
                   <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
                 </div>
-                <div style={{position:"relative", width:"320px", height:"320px", margin:"0 auto 12px"}}>
-                  <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"24px", zIndex:10, lineHeight:"1"}}>▼</div>
-                  <svg width="320" height="320" viewBox="0 0 280 280" style={{transform:"rotate(" + wheelAngle + "deg)", transition:wheelSpinning?"transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)":"none", borderRadius:"50%", filter:"drop-shadow(0 0 12px rgba(99,102,241,0.3))"}}>
-                    {segments.map(function(p, i) {
-                      var isPicked = wheelPicked.indexOf(p.n) !== -1;
-                      var col = isPicked ? "#1e293b" : wheelColors[i % wheelColors.length];
-                      var startAngle = (i * segAngle - 90) * Math.PI / 180;
-                      var endAngle = ((i + 1) * segAngle - 90) * Math.PI / 180;
-                      var r = 130; var cx = 140; var cy = 140;
-                      var x1 = cx + r * Math.cos(startAngle); var y1 = cy + r * Math.sin(startAngle);
-                      var x2 = cx + r * Math.cos(endAngle); var y2 = cy + r * Math.sin(endAngle);
-                      var largeArc = segAngle > 180 ? 1 : 0;
-                      var pathD = "M " + cx + " " + cy + " L " + x1 + " " + y1 + " A " + r + " " + r + " 0 " + largeArc + " 1 " + x2 + " " + y2 + " Z";
-                      var midAngle = ((i + 0.5) * segAngle - 90) * Math.PI / 180;
-                      var textR = r * 0.65;
-                      var tx = cx + textR * Math.cos(midAngle);
-                      var ty = cy + textR * Math.sin(midAngle);
-                      var textRotation = (i + 0.5) * segAngle;
-                      var firstName = p.name.split(" ")[0];
-                      return (
-                        <g key={p.n}>
-                          <path d={pathD} fill={col} stroke="#0f172a" strokeWidth="1.5" opacity={isPicked?0.35:1}/>
-                          <text
-                            x="0" y="0"
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                            fill="white"
-                            fontSize="8"
-                            fontWeight="800"
-                            fontFamily="Arial, sans-serif"
-                            opacity={isPicked?0.4:1}
-                            transform={"translate(" + (cx + 80 * Math.cos(midAngle)) + "," + (cy + 80 * Math.sin(midAngle)) + ") rotate(" + ((i + 0.5) * segAngle) + ")"}
-                          >{firstName}</text>
-                        </g>
-                      );
-                    })}
-                    <circle cx="140" cy="140" r="22" fill="#0f172a" stroke="rgba(255,255,255,0.2)" strokeWidth="2"/>
-                  </svg>
-                </div>
+                <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
                 {wheelResult && !wheelSpinning && (
                   <div style={{textAlign:"center", background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"12px", padding:"10px", marginBottom:"10px"}}>
                     <div style={{color:"#fca5a5", fontSize:"11px", marginBottom:"2px"}}>CI goes to...</div>
