@@ -57,7 +57,7 @@ const SCENARIOS = [
     type:"choice",
     choices:[
       { label:"Buy Insurance", sub:"HSGM + PA + CI  (-$10,000)", cost:-10000, value:"insured" },
-      { label:"Skip It",       sub:"I'll save money on insurance", cost:0, value:"uninsured" }
+      { label:"Skip It",       sub:"Im young, Ill be fine", cost:0, value:"uninsured" }
     ]},
   { id:"S2", day:1, age:"Age 24", tag:"Scenario 2", title:"Buy Your First Home",
     story:"The BTO ballot comes through! Your choice determines how much you gain when you sell later.",
@@ -68,21 +68,21 @@ const SCENARIOS = [
     ]},
   { id:"S3", day:1, age:"Age 25", tag:"Scenario 3", title:"Small Cap Tech Equity",
     story:"A hot small cap tech stock — high risk, high reward, or total loss. $10,000 on the line.",
-    type:"choice", 
+    type:"choice",
     choices:[
       { label:"Buy Small Cap Tech Equity", sub:"Swing for the fences  (-$10,000)", cost:-10000, value:"smallcap" },
       { label:"Keep Cash Safe",            sub:"Too risky for me", cost:0, value:"no_smallcap" }
     ]},
   { id:"S4", day:1, age:"Age 25", tag:"Scenario 4", title:"T-Bills Investment",
     story:"The market is volatile. T-Bills at 3% offer safe, guaranteed returns. Do you take the safe bet?",
-    type:"choice", 
+    type:"choice",
     choices:[
       { label:"Buy T-Bills @ 3%", sub:"Safe and steady  (-$10,000)", cost:-10000, value:"tbills" },
       { label:"Do Nothing",       sub:"Ride the volatility", cost:0, value:"no_tbills" }
     ]},
   { id:"S5", day:1, age:"Age 26", tag:"Scenario 5", title:"Tech ETF Opportunity",
     story:"Your friend made 30% on a Tech ETF. Diversified, lower risk — want in for $10,000?",
-    type:"choice", 
+    type:"choice",
     choices:[
       { label:"Buy Tech ETF", sub:"Diversified growth  (-$10,000)", cost:-10000, value:"etf" },
       { label:"Not Ready",    sub:"Maybe next time", cost:0, value:"no_etf" }
@@ -96,9 +96,9 @@ const SCENARIOS = [
     ]},
   { id:"S7", day:2, age:"Age 29", tag:"Scenario 7", title:"Insurance Check-In",
     story:"Time to review your insurance situation.",
-    type:"insurance_s7", 
+    type:"insurance_s7",
     choices_existing:[
-      { label:"Continue Paying Premiums", sub:"Stay protected  (-$10,000)", cost:-10000, value:"cont_insurance" },
+      { label:"Continue Paying Premiums", sub:"Stay protected  (-$20,000)", cost:-20000, value:"cont_insurance" },
       { label:"Cancel Policy",            sub:"Save the money now", cost:0, value:"cancel_insurance" }
     ],
     choices_new:[
@@ -114,7 +114,7 @@ const SCENARIOS = [
     ]},
   { id:"S9", day:2, age:"Age 31", tag:"Scenario 9", title:"New Car Purchase",
     story:"COE is available! A car means convenience — but it is a depreciating asset at $90,000 all in.",
-    type:"choice", 
+    type:"choice",
     choices:[
       { label:"Buy a Car",        sub:"Convenience and status  (-$90,000)", cost:-90000, value:"car" },
       { label:"Public Transport", sub:"Save the money", cost:0, value:"no_car" }
@@ -125,7 +125,7 @@ const SCENARIOS = [
     note:"Everyone pays $20,000 ($10,000 per parent). This is the sandwich generation reality." },
   { id:"S11", day:2, age:"Age 34", tag:"Scenario 11", title:"Draft Your Parents Will",
     story:"Your parents ask you to help draft their Will to protect the family estate. It costs $1,000 but ensures smooth inheritance later.",
-    type:"choice", 
+    type:"choice",
     choices:[
       { label:"Draft the Will", sub:"Protect the family estate  (-$1,000)", cost:-1000, value:"will" },
       { label:"Skip for Now",   sub:"Too busy right now", cost:0, value:"no_will" }
@@ -138,7 +138,7 @@ const SCENARIOS = [
       { label:"No — I was not selected", value:"ci_no" }
     ]},
   { id:"S13", day:3, age:"Age 36", tag:"Scenario 13", title:"Inheritance — Grant of Probate",
-    story:"Your parents have passed. Those who drafted a Will in Scenario 11 transfer the estate smoothly. Those without a Will must go through Grant of Probate — costly and slow.",
+    story:"Your grandparents have passed. Those who drafted a Will in Scenario 11 transfer the estate smoothly. Those without a Will must go through Grant of Probate — costly and slow.",
     type:"reveal", compute: computeS13 },
   { id:"S14", day:3, age:"Age 37", tag:"Scenario 14", title:"Small Cap Tech Equity Delisted!",
     story:"BREAKING: The small cap tech company has been delisted. All shareholders lose everything.",
@@ -293,6 +293,8 @@ function clr(n) { return n >= 0 ? "#4ade80" : "#f87171"; }
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  var [dashTimer, setDashTimer] = useState(60);
+  var [dashTimerActive, setDashTimerActive] = useState(false);
   var [mode, setMode] = useState(null);
   var [booting, setBooting] = useState(true);
   var [facilAuthed, setFacilAuthed] = useState(false);
@@ -329,7 +331,7 @@ export default function App() {
   }, []);
 
   useEffect(function() {
-    if (mode !== "facilitator") return;
+    if (mode !== "facilitator" && mode !== "dashboard") return;
     function load() {
       var promises = Array.from({length:TOTAL_PLAYERS}, function(_,i) { return sGet("player_" + (i+1)); });
       Promise.all(promises).then(function(results) {
@@ -368,6 +370,13 @@ export default function App() {
     var iv = setInterval(function() { poll(); fetchAll(); }, 3000);
     return function() { clearInterval(iv); };
   }, [mode, playerNum]);
+
+  useEffect(function() {
+    if (!dashTimerActive) return;
+    if (dashTimer <= 0) { setDashTimerActive(false); return; }
+    var t = setTimeout(function(){setDashTimer(function(p){return p-1;});}, 1000);
+    return function(){clearTimeout(t);};
+  }, [dashTimerActive, dashTimer]);
 
   function facilAdvance() {
     var next = Math.min(globalIdx + 1, SCENARIOS.length - 1);
@@ -475,10 +484,172 @@ export default function App() {
         <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
           <button style={s.btnP} onClick={function(){setMode("player");}}>I am a Player — Join Game</button>
           <button style={Object.assign({}, s.btnP, {background:"rgba(99,102,241,0.12)", color:"#a5b4fc"})} onClick={function(){setMode("facilitator");}}>Facilitator Panel</button>
+          <button style={Object.assign({}, s.btnP, {background:"rgba(250,204,21,0.15)", color:"#facc15", border:"1px solid rgba(250,204,21,0.3)"})} onClick={function(){setMode("dashboard");}}>📺 Dashboard — Big Screen</button>
         </div>
       </div>
     </div>
   );
+
+  // ── DASHBOARD ─────────────────────────────────────────────────────────────
+  if (mode === "dashboard") {
+    var ds = SCENARIOS[globalIdx];
+    var hasChoices = ds && (ds.choices || ds.choices_existing);
+    var allChoices = hasChoices ? ((ds.choices || []).concat(ds.choices_existing || [])) : [];
+    var choiceA = allChoices[0] || null;
+    var choiceB = allChoices[1] || null;
+
+    var choseA = [], choseB = [], notYet = [];
+    Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;}).forEach(function(n) {
+      var pd = allPlayerData[n];
+      var dec = pd && pd.decisions && ds ? pd.decisions[ds.id] : null;
+      if (!dec) { notYet.push(n); }
+      else if (choiceA && dec === choiceA.value) { choseA.push(n); }
+      else { choseB.push(n); }
+    });
+
+    var totalVoted = choseA.length + choseB.length;
+    var pctA = totalVoted > 0 ? Math.round((choseA.length/totalVoted)*100) : 0;
+    var pctB = 100 - pctA;
+
+    var allNavsSorted = Array.from({length:TOTAL_PLAYERS}, function(_,i) {
+      var n=i+1; var pd=allPlayerData[n];
+      return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(pd?(pd.decisions||{}):{}, new Set(pd?(pd.completed||[]):[])).nav};
+    }).sort(function(a,b){return b.nav-a.nav;});
+    var top3 = allNavsSorted.slice(0,3);
+    var medals = ["🥇","🥈","🥉"];
+    var podBg = ["linear-gradient(135deg,#854d0e,#713f12)","linear-gradient(135deg,#1e293b,#0f172a)","linear-gradient(135deg,#431407,#1c0a03)"];
+    var podCol = ["#facc15","#94a3b8","#cd7c2f"];
+    var podHt = ["90px","68px","54px"];
+
+    function PCard(n, side) {
+      var nm = PLAYER_NAMES[n-1].split(" ")[0];
+      var pd = allPlayerData[n];
+      var nav = computeNAV(pd?(pd.decisions||{}):{}, new Set(pd?(pd.completed||[]):[]));
+      var bg = side==="A"?"rgba(59,130,246,0.2)":side==="B"?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)";
+      var border = side==="A"?"1px solid rgba(59,130,246,0.6)":side==="B"?"1px solid rgba(239,68,68,0.6)":"1px solid rgba(255,255,255,0.1)";
+      return (
+        <div key={n} style={{background:bg, border:border, borderRadius:"10px", padding:"8px 6px", textAlign:"center", minWidth:"68px", transition:"all 0.4s"}}>
+          <div style={{fontSize:"20px", marginBottom:"2px"}}>👤</div>
+          <div style={{color:"white", fontWeight:"800", fontSize:"11px"}}>{nm}</div>
+          <div style={{color:"#64748b", fontSize:"9px"}}>{"#"+n}</div>
+          <div style={{color:clr(nav.nav-BASE_NW), fontSize:"9px", fontWeight:"700"}}>{fmt(nav.nav)}</div>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", padding:"16px 20px", fontFamily:"Arial,sans-serif"}}>
+
+        {/* Header */}
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"14px"}}>
+          <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+            <div style={{background:"linear-gradient(135deg,#dc2626,#991b1b)", borderRadius:"6px", padding:"3px 10px", fontSize:"11px", fontWeight:"900", color:"white", letterSpacing:"1px"}}>● LIVE</div>
+            <div>
+              <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"2px"}}>{ds?ds.tag:""}</div>
+              <div style={{color:"white", fontWeight:"900", fontSize:"18px", textTransform:"uppercase", letterSpacing:"1px"}}>{ds?ds.title:""}</div>
+            </div>
+          </div>
+          <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+            <div style={{background:dashTimer<=10?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.08)", border:dashTimer<=10?"1px solid #ef4444":"1px solid rgba(255,255,255,0.15)", borderRadius:"10px", padding:"6px 14px", display:"flex", alignItems:"center", gap:"8px"}}>
+              <span style={{fontSize:"14px"}}>⏱</span>
+              <span style={{color:dashTimer<=10?"#ef4444":"white", fontWeight:"900", fontSize:"24px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</span>
+              <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
+                style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"16px",padding:"0 4px"}}>
+                {dashTimerActive?"⏸":"▶"}
+              </button>
+            </div>
+            <button style={s.btnS} onClick={function(){setMode(null);}}>Exit</button>
+          </div>
+        </div>
+
+        {/* Choice panels */}
+        {hasChoices && choiceA && choiceB && (
+          <div style={{display:"grid", gridTemplateColumns:"1fr 48px 1fr", gap:"10px", marginBottom:"14px", alignItems:"stretch"}}>
+            {/* Option A */}
+            <div style={{background:"rgba(59,130,246,0.07)", border:"2px solid rgba(59,130,246,0.35)", borderRadius:"14px", padding:"12px"}}>
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+                <div>
+                  <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"11px", letterSpacing:"1px"}}>OPTION A</div>
+                  <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceA.label}</div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctA}%</div>
+                  <div style={{color:"#64748b", fontSize:"10px"}}>{choseA.length} players</div>
+                </div>
+              </div>
+              <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
+                <div style={{height:"100%", width:pctA+"%", background:"#3b82f6", borderRadius:"3px", transition:"width 0.5s"}}/>
+              </div>
+              <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
+            </div>
+
+            {/* VS */}
+            <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
+              <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"44px", height:"44px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"14px", boxShadow:"0 0 16px rgba(99,102,241,0.5)"}}>VS</div>
+            </div>
+
+            {/* Option B */}
+            <div style={{background:"rgba(239,68,68,0.07)", border:"2px solid rgba(239,68,68,0.35)", borderRadius:"14px", padding:"12px"}}>
+              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+                <div>
+                  <div style={{color:"#f87171", fontWeight:"900", fontSize:"11px", letterSpacing:"1px"}}>OPTION B</div>
+                  <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceB.label}</div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{color:"#f87171", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctB}%</div>
+                  <div style={{color:"#64748b", fontSize:"10px"}}>{choseB.length} players</div>
+                </div>
+              </div>
+              <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
+                <div style={{height:"100%", width:pctB+"%", background:"#ef4444", borderRadius:"3px", transition:"width 0.5s"}}/>
+              </div>
+              <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Undecided */}
+        {notYet.length > 0 && (
+          <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"8px 12px", marginBottom:"14px"}}>
+            <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"6px", letterSpacing:"1px"}}>{"STILL DECIDING... ("+notYet.length+")"}</div>
+            <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
+          </div>
+        )}
+
+        {/* Leaderboard */}
+        <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
+          <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
+          <div style={{display:"flex", gap:"6px", alignItems:"flex-end", justifyContent:"center", marginBottom:"8px"}}>
+            {[top3[1],top3[0],top3[2]].map(function(p,pos){
+              if(!p) return null;
+              var rr=pos===0?1:pos===1?0:2;
+              return (
+                <div key={p.n} style={{flex:"1", maxWidth:"140px", display:"flex", flexDirection:"column", alignItems:"center"}}>
+                  <div style={{fontSize:rr===0?"22px":"17px", marginBottom:"2px"}}>{medals[rr]}</div>
+                  <div style={{color:podCol[rr], fontWeight:"900", fontSize:"12px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                  <div style={{color:"#4ade80", fontWeight:"800", fontSize:"10px", marginBottom:"3px"}}>{fmt(p.nav)}</div>
+                  <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"5px 5px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
+                    <span style={{color:podCol[rr], fontWeight:"900", fontSize:"16px"}}>{"#"+(rr+1)}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"4px"}}>
+            {allNavsSorted.slice(3).map(function(p,i){
+              return (
+                <div key={p.n} style={{display:"flex", alignItems:"center", gap:"5px", padding:"3px 7px", background:"rgba(255,255,255,0.03)", borderRadius:"5px"}}>
+                  <span style={{color:"#475569", fontSize:"10px", fontWeight:"700", width:"18px"}}>{"#"+(i+4)}</span>
+                  <span style={{color:"#94a3b8", fontSize:"10px", flex:"1"}}>{p.name.split(" ")[0]}</span>
+                  <span style={{color:"#4ade80", fontSize:"9px", fontWeight:"700"}}>{fmt(p.nav)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── FACILITATOR AUTH ───────────────────────────────────────────────────────
   if (mode === "facilitator" && !facilAuthed) return (
@@ -897,7 +1068,7 @@ export default function App() {
                 var hadInsurance = myDecisions["S1"] === "insured";
                 var choices = hadInsurance ? currentS.choices_existing : currentS.choices_new;
                 var storyOverride = hadInsurance
-                  ? "You bought insurance in Scenario 1. Pay $10,000 to keep your coverage active — or cancel and lose protection."
+                  ? "You bought insurance in Scenario 1. Pay $20,000 to keep your coverage active — or cancel and lose protection."
                   : "You skipped insurance in Scenario 1. You can buy it now for $25,000, or continue without coverage.";
                 return (
                   <div>
