@@ -758,9 +758,11 @@ export default function App() {
       var border = side==="A"?"2px solid rgba(59,130,246,0.7)":side==="B"?"2px solid rgba(239,68,68,0.7)":"1px solid rgba(255,255,255,0.15)";
       return (
         <div key={n} style={{background:bg, border:border, borderRadius:"14px", padding:"14px 10px", textAlign:"center", alignSelf:"start", transition:"all 0.4s"}}>
-          {selfie
-            ? <img src={selfie} style={{width:"90px", height:"90px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(255,255,255,0.3)", display:"block", marginLeft:"auto", marginRight:"auto", marginBottom:"8px", marginTop:"0"}} />
-            : <div style={{fontSize:"56px", marginBottom:"8px", lineHeight:"1"}}>👤</div>}
+          <div style={{display:"flex", justifyContent:"center", marginBottom:"8px"}}>
+            {selfie
+              ? <img src={selfie} style={{width:"90px", height:"90px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(255,255,255,0.3)"}} />
+              : <div style={{fontSize:"56px", lineHeight:"1"}}>👤</div>}
+          </div>
           <div style={{color:"white", fontWeight:"800", fontSize:"18px", marginBottom:"3px"}}>{nm}</div>
           <div style={{color:"#64748b", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
           <div style={{color:clr(nav.nav-BASE_NW), fontSize:"14px", fontWeight:"800"}}>{fmt(nav.nav)}</div>
