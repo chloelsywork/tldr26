@@ -701,6 +701,21 @@ export default function App() {
     </div>
   );
 
+  // ── DASHBOARD AUTH ────────────────────────────────────────────────────────
+  if (mode === "dashboard" && !facilAuthed) return (
+    <div style={s.page}>
+      <div style={Object.assign({}, s.card, {maxWidth:"360px", textAlign:"center"})}>
+        <div style={{fontSize:"30px", marginBottom:"12px"}}>📺</div>
+        <h2 style={{color:"#f8fafc", fontSize:"20px", margin:"0 0 18px"}}>Dashboard Access</h2>
+        <input style={s.inp} type="password" placeholder="Enter facilitator password"
+          value={facilPass} onChange={function(e){setFacilPass(e.target.value);}}
+          onKeyDown={function(e){if(e.key==="Enter"&&facilPass===FACIL_PASS)setFacilAuthed(true);}} />
+        <button style={Object.assign({}, s.btnP, {marginTop:"10px"})} onClick={function(){if(facilPass===FACIL_PASS)setFacilAuthed(true);}}>Enter</button>
+        <button style={Object.assign({}, s.btnG, {marginTop:"8px"})} onClick={function(){setMode(null);}}>Back</button>
+      </div>
+    </div>
+  );
+
   // ── DASHBOARD ─────────────────────────────────────────────────────────────
   if (mode === "dashboard") {
     var ds = SCENARIOS[globalIdx];
@@ -925,7 +940,7 @@ export default function App() {
                     </div>
                     <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceA.label}</div>
                   </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,110px))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
                     {choseA.map(function(n){return PCard(n,"A");})}
                   </div>
                   <div style={{borderTop:"1px solid rgba(59,130,246,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
@@ -961,7 +976,7 @@ export default function App() {
                     </div>
                     <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceB.label}</div>
                   </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,110px))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
                     {choseB.map(function(n){return PCard(n,"B");})}
                   </div>
                   <div style={{borderTop:"1px solid rgba(239,68,68,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
