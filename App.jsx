@@ -429,6 +429,7 @@ export default function App() {
   var [dashShowResults, setDashShowResults] = useState(false);
   var [dashPrevResults, setDashPrevResults] = useState(null);
   var [dashPrevScenario, setDashPrevScenario] = useState(null);
+  var [dashPage, setDashPage] = useState("gif");
   var [mode, setMode] = useState(null);
   var [booting, setBooting] = useState(true);
   var [facilAuthed, setFacilAuthed] = useState(false);
@@ -556,6 +557,7 @@ export default function App() {
       setTimeout(function(){ setDashShowResults(false); }, 8000);
     }
     setGlobalIdx(next); sSet("global_idx", next);
+    setDashPage("gif"); // Switch dashboard back to GIF page on new scenario
   }
   function facilBack() {
     var prev = Math.max(globalIdx - 1, 0);
@@ -752,204 +754,204 @@ export default function App() {
     }
 
     return (
-      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", padding:"16px 20px", fontFamily:"Arial,sans-serif", position:"relative"}}>
+      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", fontFamily:"Arial,sans-serif", padding:"12px 16px"}}>
 
         {/* Results Overlay */}
         {dashShowResults && dashPrevResults && dashPrevScenario && (
-          <div style={{position:"fixed", inset:0, zIndex:100, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column"}}>
-            <div style={{background:"linear-gradient(135deg,#0f172a,#1e1b4b)", border:"1px solid rgba(99,102,241,0.4)", borderRadius:"24px", padding:"40px 48px", textAlign:"center", maxWidth:"700px", width:"90%", boxShadow:"0 0 80px rgba(99,102,241,0.2)"}}>
-              <div style={{color:"#64748b", fontSize:"12px", fontWeight:"700", letterSpacing:"2px", marginBottom:"8px"}}>RESULTS</div>
-              <h2 style={{color:"white", fontSize:"26px", fontWeight:"900", margin:"0 0 32px"}}>{dashPrevScenario.title}</h2>
-              <div style={{display:"flex", gap:"16px", justifyContent:"center", marginBottom:"32px"}}>
+          <div style={{position:"fixed", inset:0, zIndex:100, background:"rgba(0,0,0,0.88)", display:"flex", alignItems:"center", justifyContent:"center"}}>
+            <div style={{background:"linear-gradient(135deg,#0f172a,#1e1b4b)", border:"1px solid rgba(99,102,241,0.4)", borderRadius:"24px", padding:"36px 48px", textAlign:"center", maxWidth:"660px", width:"90%"}}>
+              <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"2px", marginBottom:"8px"}}>RESULTS</div>
+              <h2 style={{color:"white", fontSize:"24px", fontWeight:"900", margin:"0 0 28px"}}>{dashPrevScenario.title}</h2>
+              <div style={{display:"flex", gap:"16px", justifyContent:"center", marginBottom:"24px"}}>
                 {dashPrevResults.map(function(r, i) {
                   var isWinner = r.pct === Math.max.apply(null, dashPrevResults.map(function(x){return x.pct;}));
                   var col = i===0?"#60a5fa":"#f87171";
                   return (
-                    <div key={r.value} style={{flex:"1", background:isWinner?"rgba(250,204,21,0.08)":"rgba(255,255,255,0.04)", border:isWinner?"2px solid rgba(250,204,21,0.4)":"1px solid rgba(255,255,255,0.1)", borderRadius:"16px", padding:"24px 16px"}}>
-                      <div style={{color:col, fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"8px"}}>{"OPTION "+(i===0?"A":"B")}</div>
-                      <div style={{color:"white", fontWeight:"800", fontSize:"14px", marginBottom:"16px"}}>{r.label}</div>
-                      <div style={{fontSize:"64px", fontWeight:"900", color:isWinner?"#facc15":col, lineHeight:"1", marginBottom:"8px"}}>{r.pct}%</div>
-                      <div style={{color:"#64748b", fontSize:"13px"}}>{r.count} players</div>
-                      {isWinner && <div style={{marginTop:"8px", fontSize:"20px"}}>🏆</div>}
+                    <div key={r.value} style={{flex:"1", background:isWinner?"rgba(250,204,21,0.08)":"rgba(255,255,255,0.04)", border:isWinner?"2px solid rgba(250,204,21,0.4)":"1px solid rgba(255,255,255,0.1)", borderRadius:"14px", padding:"20px 16px"}}>
+                      <div style={{color:col, fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"6px"}}>{"OPTION "+(i===0?"A":"B")}</div>
+                      <div style={{color:"white", fontWeight:"800", fontSize:"13px", marginBottom:"12px"}}>{r.label}</div>
+                      <div style={{fontSize:"56px", fontWeight:"900", color:isWinner?"#facc15":col, lineHeight:"1", marginBottom:"6px"}}>{r.pct}%</div>
+                      <div style={{color:"#64748b", fontSize:"12px"}}>{r.count} players</div>
+                      {isWinner && <div style={{marginTop:"8px", fontSize:"18px"}}>🏆</div>}
                     </div>
                   );
                 })}
               </div>
-              <div style={{height:"6px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", overflow:"hidden"}}>
-                <div style={{height:"100%", width:(dashPrevResults[0]?dashPrevResults[0].pct:0)+"%", background:"linear-gradient(90deg,#3b82f6,#60a5fa)", borderRadius:"3px", transition:"width 1s"}}/>
-              </div>
-              <div style={{color:"#475569", fontSize:"12px", marginTop:"12px"}}>Auto-closing in a few seconds...</div>
+              <div style={{color:"#475569", fontSize:"11px", marginTop:"10px"}}>Auto-closing in a few seconds...</div>
             </div>
           </div>
         )}
 
-        {/* Header */}
-        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"14px"}}>
+        {/* ── SHARED HEADER ── */}
+        <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px"}}>
           <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
-            <div style={{background:"linear-gradient(135deg,#dc2626,#991b1b)", borderRadius:"6px", padding:"3px 10px", fontSize:"11px", fontWeight:"900", color:"white", letterSpacing:"1px"}}>● LIVE</div>
+            <div style={{background:"linear-gradient(135deg,#dc2626,#991b1b)", borderRadius:"6px", padding:"3px 9px", fontSize:"10px", fontWeight:"900", color:"white", letterSpacing:"1px"}}>● LIVE</div>
             <div>
-              <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"2px"}}>{ds?ds.tag:""}</div>
-              <div style={{color:"white", fontWeight:"900", fontSize:"18px", textTransform:"uppercase", letterSpacing:"1px"}}>{ds?ds.title:""}</div>
+              <div style={{color:"#64748b", fontSize:"9px", fontWeight:"700", letterSpacing:"2px", textTransform:"uppercase"}}>{ds?ds.tag:""}</div>
+              <div style={{color:"white", fontWeight:"900", fontSize:"16px"}}>{ds?ds.title:""}</div>
             </div>
           </div>
           <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
-            <div style={{background:dashTimer<=10?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.08)", border:dashTimer<=10?"1px solid #ef4444":"1px solid rgba(255,255,255,0.15)", borderRadius:"10px", padding:"6px 14px", display:"flex", alignItems:"center", gap:"8px"}}>
-              <span style={{fontSize:"14px"}}>⏱</span>
-              <span style={{color:dashTimer<=10?"#ef4444":"white", fontWeight:"900", fontSize:"24px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</span>
+            <div style={{display:"flex", alignItems:"center", gap:"6px", background:dashTimer<=10?"rgba(239,68,68,0.15)":"rgba(255,255,255,0.07)", border:dashTimer<=10?"1px solid #ef4444":"1px solid rgba(255,255,255,0.1)", borderRadius:"8px", padding:"5px 12px"}}>
+              <span style={{fontSize:"13px"}}>⏱</span>
+              <span style={{color:dashTimer<=10?"#ef4444":"white", fontWeight:"900", fontSize:"20px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</span>
               <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
-                style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"16px",padding:"0 4px"}}>
-                {dashTimerActive?"⏸":"▶"}
+                style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"14px",padding:"0 2px"}}>{dashTimerActive?"⏸":"▶"}</button>
+            </div>
+            <div style={{textAlign:"center", background:"rgba(255,255,255,0.05)", borderRadius:"8px", padding:"5px 12px"}}>
+              <div style={{color:"#facc15", fontWeight:"900", fontSize:"14px"}}>{Object.keys(allPlayerData).length}/{TOTAL_PLAYERS}</div>
+              <div style={{color:"#64748b", fontSize:"9px"}}>joined</div>
+            </div>
+            {/* Page toggle */}
+            {dashPage === "gif" ? (
+              <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"linear-gradient(135deg,#f59e0b,#ea580c)"})}
+                onClick={function(){setDashPage("votes");}}>
+                Reveal Choices →
               </button>
-            </div>
-            <button style={s.btnS} onClick={function(){setMode(null);}}>Exit</button>
+            ) : (
+              <button style={Object.assign({},s.btnS,{padding:"8px 14px"})}
+                onClick={function(){setDashPage("gif");}}>
+                ← Back to GIF
+              </button>
+            )}
+            <button style={Object.assign({},s.btnS,{padding:"6px 12px"})} onClick={function(){setMode(null);}}>Exit</button>
           </div>
         </div>
 
-        {/* Scenario GIF */}
-        {(function() {
-          var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
-          return gifUrl ? (
-            <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", background:"#000"}}>
-              <img src={gifUrl} style={{width:"100%", height:"auto", display:"block"}} />
-            </div>
-          ) : null;
-        })()}
-
-        {/* Spin wheel on dashboard for S12 */}
-        {ds && ds.id === "S12" && (
-          <div style={{background:"rgba(248,113,113,0.06)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"12px", padding:"14px", marginBottom:"12px"}}>
-            <div style={{textAlign:"center", marginBottom:"8px"}}>
-              <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"14px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
-              <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
-            </div>
-            <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"12px"}}>
-              <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
-              {wheelResult && !wheelSpinning && (
-                <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"12px 24px", textAlign:"center"}}>
-                  <div style={{color:"#fca5a5", fontSize:"12px", marginBottom:"2px"}}>CI goes to...</div>
-                  <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"24px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
-                </div>
-              )}
-              <div style={{display:"flex", gap:"8px"}}>
-                {wheelPool.length === 0 ? (
-                  <button style={Object.assign({}, s.btnP, {fontSize:"14px", padding:"12px 32px", background:"linear-gradient(135deg,#dc2626,#991b1b)", width:"auto"})} onClick={initWheel}>Start Wheel</button>
-                ) : (
-                  <button style={Object.assign({}, s.btnP, {fontSize:"14px", padding:"12px 32px", opacity:wheelSpinning||wheelPicked.length>=7?0.4:1, background:"linear-gradient(135deg,#dc2626,#991b1b)", width:"auto"})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>
-                    {wheelSpinning?"Spinning...":wheelPicked.length>=7?"All 7 Picked!":"Spin! ("+(7-wheelPicked.length)+" left)"}
-                  </button>
-                )}
-                <button style={Object.assign({}, s.btnS, {padding:"12px 20px"})} onClick={initWheel}>Reset</button>
-              </div>
-              {wheelPicked.length > 0 && (
-                <div style={{display:"flex", flexWrap:"wrap", gap:"6px", justifyContent:"center"}}>
-                  {wheelPicked.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"4px 10px", fontSize:"12px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* QR Code strip */}
-        <div style={{display:"flex", alignItems:"center", gap:"12px", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"10px", padding:"8px 14px", marginBottom:"12px"}}>
-          <img src={"https://api.qrserver.com/v1/create-qr-code/?size=72x72&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png"} style={{width:"72px", height:"72px", borderRadius:"6px"}} />
+        {/* ══════════════════════════════════════════ */}
+        {/* PAGE 1: GIF + QR + Leaderboard            */}
+        {/* ══════════════════════════════════════════ */}
+        {dashPage === "gif" && (
           <div>
-            <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>Scan to join the game!</div>
-            <div style={{color:"#64748b", fontSize:"11px"}}>tldr26.vercel.app</div>
-          </div>
-          <div style={{flex:"1"}}/>
-          <div style={{color:"#64748b", fontSize:"11px", textAlign:"right"}}>
-            <div style={{color:clr(Object.keys(allPlayerData).length - TOTAL_PLAYERS), fontWeight:"700", fontSize:"16px", color:"#facc15"}}>{Object.keys(allPlayerData).length}/{TOTAL_PLAYERS}</div>
-            <div>players joined</div>
-          </div>
-        </div>
-
-        {/* Choice panels */}
-        {hasChoices && choiceA && choiceB && (
-          <div style={{display:"grid", gridTemplateColumns:"1fr 48px 1fr", gap:"10px", marginBottom:"14px", alignItems:"stretch"}}>
-            {/* Option A */}
-            <div style={{background:"rgba(59,130,246,0.07)", border:"2px solid rgba(59,130,246,0.35)", borderRadius:"14px", padding:"12px"}}>
-              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
-                <div>
-                  <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"11px", letterSpacing:"1px"}}>OPTION A</div>
-                  <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceA.label}</div>
+            {/* GIF full width */}
+            {(function() {
+              var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
+              return gifUrl ? (
+                <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", background:"#000"}}>
+                  <img src={gifUrl} style={{width:"100%", maxHeight:"320px", objectFit:"cover", display:"block"}} />
                 </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctA}%</div>
-                  <div style={{color:"#64748b", fontSize:"10px"}}>{choseA.length} players</div>
-                </div>
-              </div>
-              <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
-                <div style={{height:"100%", width:pctA+"%", background:"#3b82f6", borderRadius:"3px", transition:"width 0.5s"}}/>
-              </div>
-              <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
-            </div>
+              ) : null;
+            })()}
 
-            {/* VS */}
-            <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
-              <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"44px", height:"44px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"14px", boxShadow:"0 0 16px rgba(99,102,241,0.5)"}}>VS</div>
-            </div>
-
-            {/* Option B */}
-            <div style={{background:"rgba(239,68,68,0.07)", border:"2px solid rgba(239,68,68,0.35)", borderRadius:"14px", padding:"12px"}}>
-              <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
-                <div>
-                  <div style={{color:"#f87171", fontWeight:"900", fontSize:"11px", letterSpacing:"1px"}}>OPTION B</div>
-                  <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceB.label}</div>
-                </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{color:"#f87171", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctB}%</div>
-                  <div style={{color:"#64748b", fontSize:"10px"}}>{choseB.length} players</div>
-                </div>
-              </div>
-              <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
-                <div style={{height:"100%", width:pctB+"%", background:"#ef4444", borderRadius:"3px", transition:"width 0.5s"}}/>
-              </div>
-              <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Undecided */}
-        {notYet.length > 0 && (
-          <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"8px 12px", marginBottom:"14px"}}>
-            <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"6px", letterSpacing:"1px"}}>{"STILL DECIDING... ("+notYet.length+")"}</div>
-            <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
-          </div>
-        )}
-
-        {/* Leaderboard */}
-        <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
-          <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
-          <div style={{display:"flex", gap:"6px", alignItems:"flex-end", justifyContent:"center", marginBottom:"8px"}}>
-            {[top3[1],top3[0],top3[2]].map(function(p,pos){
-              if(!p) return null;
-              var rr=pos===0?1:pos===1?0:2;
-              return (
-                <div key={p.n} style={{flex:"1", maxWidth:"140px", display:"flex", flexDirection:"column", alignItems:"center"}}>
-                  <div style={{fontSize:rr===0?"22px":"17px", marginBottom:"2px"}}>{medals[rr]}</div>
-                  <div style={{color:podCol[rr], fontWeight:"900", fontSize:"12px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
-                  <div style={{color:"#4ade80", fontWeight:"800", fontSize:"10px", marginBottom:"3px"}}>{fmt(p.nav)}</div>
-                  <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"5px 5px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
-                    <span style={{color:podCol[rr], fontWeight:"900", fontSize:"16px"}}>{"#"+(rr+1)}</span>
+            {/* CI Spin Wheel */}
+            {ds && ds.id === "S12" && (
+              <div style={{background:"rgba(248,113,113,0.06)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"12px", padding:"14px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", gap:"10px"}}>
+                <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px"}}>SPIN THE WHEEL — 7 Players Get CI <span style={{color:"#64748b", fontWeight:"400", fontSize:"11px"}}>({wheelPicked.length}/7 selected)</span></div>
+                <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
+                {wheelResult && !wheelSpinning && (
+                  <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"10px 24px", textAlign:"center"}}>
+                    <div style={{color:"#fca5a5", fontSize:"11px"}}>CI goes to...</div>
+                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
                   </div>
+                )}
+                <div style={{display:"flex", gap:"8px"}}>
+                  {wheelPool.length === 0
+                    ? <button style={Object.assign({},s.btnP,{width:"auto",padding:"10px 28px",background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={initWheel}>Start Wheel</button>
+                    : <button style={Object.assign({},s.btnP,{width:"auto",padding:"10px 28px",background:"linear-gradient(135deg,#dc2626,#991b1b)",opacity:wheelSpinning||wheelPicked.length>=7?0.4:1})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>{wheelSpinning?"Spinning...":wheelPicked.length>=7?"All 7 Picked!":"Spin! ("+(7-wheelPicked.length)+" left)"}</button>
+                  }
+                  <button style={Object.assign({},s.btnS,{padding:"10px 16px"})} onClick={initWheel}>Reset</button>
                 </div>
-              );
-            })}
-          </div>
-          <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"4px"}}>
-            {allNavsSorted.slice(3).map(function(p,i){
-              return (
-                <div key={p.n} style={{display:"flex", alignItems:"center", gap:"5px", padding:"3px 7px", background:"rgba(255,255,255,0.03)", borderRadius:"5px"}}>
-                  <span style={{color:"#475569", fontSize:"10px", fontWeight:"700", width:"18px"}}>{"#"+(i+4)}</span>
-                  <span style={{color:"#94a3b8", fontSize:"10px", flex:"1"}}>{p.name.split(" ")[0]}</span>
-                  <span style={{color:"#4ade80", fontSize:"9px", fontWeight:"700"}}>{fmt(p.nav)}</span>
+                {wheelPicked.length > 0 && <div style={{display:"flex", flexWrap:"wrap", gap:"5px", justifyContent:"center"}}>{wheelPicked.map(function(n){return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 9px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>;})}</div>}
+              </div>
+            )}
+
+            {/* QR + Leaderboard */}
+            <div style={{display:"grid", gridTemplateColumns:"160px 1fr", gap:"10px"}}>
+              <div style={{background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"10px", padding:"10px", display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", justifyContent:"center"}}>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png" style={{width:"110px", height:"110px", borderRadius:"6px"}} />
+                <div style={{color:"white", fontWeight:"700", fontSize:"11px", textAlign:"center"}}>Scan to join!</div>
+                <div style={{color:"#64748b", fontSize:"9px"}}>tldr26.vercel.app</div>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
+                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
+                <div style={{display:"flex", gap:"6px", alignItems:"flex-end", justifyContent:"center", marginBottom:"8px"}}>
+                  {[top3[1],top3[0],top3[2]].map(function(p,pos){
+                    if(!p) return null;
+                    var rr=pos===0?1:pos===1?0:2;
+                    return (
+                      <div key={p.n} style={{flex:"1", maxWidth:"140px", display:"flex", flexDirection:"column", alignItems:"center"}}>
+                        <div style={{fontSize:rr===0?"20px":"16px", marginBottom:"2px"}}>{medals[rr]}</div>
+                        <div style={{color:podCol[rr], fontWeight:"900", fontSize:"11px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                        <div style={{color:"#4ade80", fontWeight:"800", fontSize:"10px", marginBottom:"3px"}}>{fmt(p.nav)}</div>
+                        <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"5px 5px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
+                          <span style={{color:podCol[rr], fontWeight:"900", fontSize:"14px"}}>{"#"+(rr+1)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+                <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"3px"}}>
+                  {allNavsSorted.slice(3).map(function(p,i){
+                    return (
+                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"4px", padding:"2px 6px", background:"rgba(255,255,255,0.03)", borderRadius:"4px"}}>
+                        <span style={{color:"#475569", fontSize:"9px", fontWeight:"700", width:"16px"}}>{"#"+(i+4)}</span>
+                        <span style={{color:"#94a3b8", fontSize:"9px", flex:"1"}}>{p.name.split(" ")[0]}</span>
+                        <span style={{color:"#4ade80", fontSize:"8px", fontWeight:"700"}}>{fmt(p.nav)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* ══════════════════════════════════════════ */}
+        {/* PAGE 2: Votes + Still Deciding             */}
+        {/* ══════════════════════════════════════════ */}
+        {dashPage === "votes" && (
+          <div>
+            {/* Choice panels */}
+            {hasChoices && choiceA && choiceB && (
+              <div style={{display:"grid", gridTemplateColumns:"1fr 44px 1fr", gap:"10px", marginBottom:"10px", alignItems:"stretch"}}>
+                <div style={{background:"rgba(59,130,246,0.07)", border:"2px solid rgba(59,130,246,0.35)", borderRadius:"12px", padding:"12px"}}>
+                  <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+                    <div>
+                      <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"10px", letterSpacing:"1px"}}>OPTION A</div>
+                      <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceA.label}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctA}%</div>
+                      <div style={{color:"#64748b", fontSize:"10px"}}>{choseA.length} players</div>
+                    </div>
+                  </div>
+                  <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
+                    <div style={{height:"100%", width:pctA+"%", background:"#3b82f6", borderRadius:"3px", transition:"width 0.5s"}}/>
+                  </div>
+                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
+                </div>
+                <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
+                  <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"40px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"13px"}}>VS</div>
+                </div>
+                <div style={{background:"rgba(239,68,68,0.07)", border:"2px solid rgba(239,68,68,0.35)", borderRadius:"12px", padding:"12px"}}>
+                  <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+                    <div>
+                      <div style={{color:"#f87171", fontWeight:"900", fontSize:"10px", letterSpacing:"1px"}}>OPTION B</div>
+                      <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceB.label}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{color:"#f87171", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctB}%</div>
+                      <div style={{color:"#64748b", fontSize:"10px"}}>{choseB.length} players</div>
+                    </div>
+                  </div>
+                  <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
+                    <div style={{height:"100%", width:pctB+"%", background:"#ef4444", borderRadius:"3px", transition:"width 0.5s"}}/>
+                  </div>
+                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
+                </div>
+              </div>
+            )}
+            {/* Still deciding */}
+            {notYet.length > 0 && (
+              <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"8px 12px"}}>
+                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"6px", letterSpacing:"1px"}}>{"STILL DECIDING... ("+notYet.length+")"}</div>
+                <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    );
+    )
   }
 
   // ── FACILITATOR AUTH ───────────────────────────────────────────────────────
