@@ -809,8 +809,8 @@ export default function App() {
         {(function() {
           var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
           return gifUrl ? (
-            <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", position:"relative", maxHeight:"220px", display:"flex", justifyContent:"center", background:"#000"}}>
-              <img src={gifUrl} style={{width:"100%", maxHeight:"220px", objectFit:"contain"}} />
+            <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", background:"#000"}}>
+              <img src={gifUrl} style={{width:"100%", height:"auto", display:"block"}} />
             </div>
           ) : null;
         })()}
@@ -822,34 +822,29 @@ export default function App() {
               <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"14px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
               <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
             </div>
-            <div style={{display:"flex", gap:"12px", alignItems:"flex-start"}}>
-              <div style={{position:"relative", width:"280px", height:"280px", flexShrink:0}}>
-                <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"20px", zIndex:10}}>▼</div>
-                <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
-              </div>
-              <div style={{flex:1}}>
-                {wheelResult && !wheelSpinning && (
-                  <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"10px", marginBottom:"10px", textAlign:"center"}}>
-                    <div style={{color:"#fca5a5", fontSize:"11px", marginBottom:"2px"}}>CI goes to...</div>
-                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"18px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
-                  </div>
-                )}
-                <div style={{display:"flex", gap:"8px", marginBottom:"8px"}}>
-                  {wheelPool.length === 0 ? (
-                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px", background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={initWheel}>Start Wheel</button>
-                  ) : (
-                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px", opacity:wheelSpinning||wheelPicked.length>=7?0.4:1, background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>
-                      {wheelSpinning?"Spinning...":wheelPicked.length>=7?"All 7 Picked!":"Spin! ("+(7-wheelPicked.length)+" left)"}
-                    </button>
-                  )}
-                  <button style={Object.assign({}, s.btnS, {padding:"10px 14px"})} onClick={initWheel}>Reset</button>
+            <div style={{display:"flex", flexDirection:"column", alignItems:"center", gap:"12px"}}>
+              <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
+              {wheelResult && !wheelSpinning && (
+                <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"12px 24px", textAlign:"center"}}>
+                  <div style={{color:"#fca5a5", fontSize:"12px", marginBottom:"2px"}}>CI goes to...</div>
+                  <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"24px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
                 </div>
-                {wheelPicked.length > 0 && (
-                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
-                    {wheelPicked.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
-                  </div>
+              )}
+              <div style={{display:"flex", gap:"8px"}}>
+                {wheelPool.length === 0 ? (
+                  <button style={Object.assign({}, s.btnP, {fontSize:"14px", padding:"12px 32px", background:"linear-gradient(135deg,#dc2626,#991b1b)", width:"auto"})} onClick={initWheel}>Start Wheel</button>
+                ) : (
+                  <button style={Object.assign({}, s.btnP, {fontSize:"14px", padding:"12px 32px", opacity:wheelSpinning||wheelPicked.length>=7?0.4:1, background:"linear-gradient(135deg,#dc2626,#991b1b)", width:"auto"})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>
+                    {wheelSpinning?"Spinning...":wheelPicked.length>=7?"All 7 Picked!":"Spin! ("+(7-wheelPicked.length)+" left)"}
+                  </button>
                 )}
+                <button style={Object.assign({}, s.btnS, {padding:"12px 20px"})} onClick={initWheel}>Reset</button>
               </div>
+              {wheelPicked.length > 0 && (
+                <div style={{display:"flex", flexWrap:"wrap", gap:"6px", justifyContent:"center"}}>
+                  {wheelPicked.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"4px 10px", fontSize:"12px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
+                </div>
+              )}
             </div>
           </div>
         )}
