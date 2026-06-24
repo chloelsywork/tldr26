@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 const SUPA_URL = "https://ocqwwngewdhqzcfiisng.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcXd3bmdld2RocXpjZmlpc25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNDMyNDMsImV4cCI6MjA5NzgxOTI0M30.2s7I2zWzOrHBBF6irf0UDDWMGFiY_gk6fV3fBPeydwU";
-const SUPA_HEADERS = { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+const SUPA_HEADERS = { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Content-Type": "application/json" };
 
 // ── SUPABASE HELPERS ─────────────────────────────────────────────────────────
 async function sGet(key) {
@@ -12,7 +12,6 @@ async function sGet(key) {
       const d = await r.json();
       return d && d[0] ? d[0].global_idx : 0;
     }
-    // player_N
     const num = parseInt(key.replace("player_", ""));
     const r = await fetch(SUPA_URL + "/rest/v1/players?player_num=eq." + num, { headers: SUPA_HEADERS });
     const d = await r.json();
@@ -24,20 +23,35 @@ async function sGet(key) {
 async function sSet(key, val) {
   try {
     if (key === "global_idx") {
-      await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
-        method: "PATCH", headers: SUPA_HEADERS,
+      const r = await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
+        method: "PATCH",
+        headers: SUPA_HEADERS,
         body: JSON.stringify({ global_idx: val })
       });
+      const txt = await r.text();
+      console.log("sSet global_idx", r.status, txt);
       return;
     }
     const num = parseInt(key.replace("player_", ""));
     const body = { player_num: num, password: val.password || "", decisions: val.decisions || {}, completed: val.completed || [], selfie_url: val.selfie_url || null, updated_at: new Date().toISOString() };
-    await fetch(SUPA_URL + "/rest/v1/players", {
-      method: "POST",
-      headers: { ...SUPA_HEADERS, "Prefer": "resolution=merge-duplicates,return=representation" },
+    // Try PATCH first (update existing), fall back to POST (insert new)
+    const patchR = await fetch(SUPA_URL + "/rest/v1/players?player_num=eq." + num, {
+      method: "PATCH",
+      headers: SUPA_HEADERS,
       body: JSON.stringify(body)
     });
-  } catch(e) {}
+    const patchTxt = await patchR.text();
+    console.log("sSet player_" + num + " PATCH", patchR.status, patchTxt);
+    if (patchR.status === 404 || patchTxt === "[]" || patchTxt === "") {
+      // Row doesn't exist, insert it
+      const postR = await fetch(SUPA_URL + "/rest/v1/players", {
+        method: "POST",
+        headers: { ...SUPA_HEADERS, "Prefer": "resolution=merge-duplicates" },
+        body: JSON.stringify(body)
+      });
+      console.log("sSet player_" + num + " POST", postR.status, await postR.text());
+    }
+  } catch(e) { console.error("sSet error", e); }
 }
 
 async function uploadSelfie(playerNum, blob) {
