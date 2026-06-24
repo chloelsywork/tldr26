@@ -925,7 +925,7 @@ export default function App() {
                     </div>
                     <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceA.label}</div>
                   </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
                     {choseA.map(function(n){return PCard(n,"A");})}
                   </div>
                   <div style={{borderTop:"1px solid rgba(59,130,246,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
@@ -961,7 +961,7 @@ export default function App() {
                     </div>
                     <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceB.label}</div>
                   </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"7px", marginBottom:"12px", alignContent:"start"}}>
                     {choseB.map(function(n){return PCard(n,"B");})}
                   </div>
                   <div style={{borderTop:"1px solid rgba(239,68,68,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
