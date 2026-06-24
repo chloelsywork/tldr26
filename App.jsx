@@ -827,8 +827,8 @@ export default function App() {
             {(function() {
               var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
               return gifUrl ? (
-                <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", background:"#000"}}>
-                  <img src={gifUrl} style={{width:"100%", maxHeight:"320px", objectFit:"cover", display:"block"}} />
+                <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden"}}>
+                  <img src={gifUrl} style={{width:"100%", maxHeight:"45vh", objectFit:"contain", display:"block", background:"#000"}} />
                 </div>
               ) : null;
             })()}
@@ -856,11 +856,11 @@ export default function App() {
             )}
 
             {/* QR + Leaderboard */}
-            <div style={{display:"grid", gridTemplateColumns:"160px 1fr", gap:"10px"}}>
+            <div style={{display:"grid", gridTemplateColumns:"200px 1fr", gap:"12px"}}>
               <div style={{background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"10px", padding:"10px", display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", justifyContent:"center"}}>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png" style={{width:"110px", height:"110px", borderRadius:"6px"}} />
-                <div style={{color:"white", fontWeight:"700", fontSize:"11px", textAlign:"center"}}>Scan to join!</div>
-                <div style={{color:"#64748b", fontSize:"9px"}}>tldr26.vercel.app</div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png" style={{width:"160px", height:"160px", borderRadius:"6px"}} />
+                <div style={{color:"white", fontWeight:"800", fontSize:"15px", textAlign:"center"}}>Scan to join!</div>
+                <div style={{color:"#64748b", fontSize:"12px"}}>tldr26.vercel.app</div>
               </div>
               <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
                 <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
@@ -869,12 +869,12 @@ export default function App() {
                     if(!p) return null;
                     var rr=pos===0?1:pos===1?0:2;
                     return (
-                      <div key={p.n} style={{flex:"1", maxWidth:"140px", display:"flex", flexDirection:"column", alignItems:"center"}}>
-                        <div style={{fontSize:rr===0?"20px":"16px", marginBottom:"2px"}}>{medals[rr]}</div>
-                        <div style={{color:podCol[rr], fontWeight:"900", fontSize:"11px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
-                        <div style={{color:"#4ade80", fontWeight:"800", fontSize:"10px", marginBottom:"3px"}}>{fmt(p.nav)}</div>
-                        <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"5px 5px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
-                          <span style={{color:podCol[rr], fontWeight:"900", fontSize:"14px"}}>{"#"+(rr+1)}</span>
+                      <div key={p.n} style={{flex:"1", maxWidth:"200px", display:"flex", flexDirection:"column", alignItems:"center"}}>
+                        <div style={{fontSize:rr===0?"28px":"22px", marginBottom:"4px"}}>{medals[rr]}</div>
+                        <div style={{color:podCol[rr], fontWeight:"900", fontSize:"15px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                        <div style={{color:"#4ade80", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
+                        <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
+                          <span style={{color:podCol[rr], fontWeight:"900", fontSize:"20px"}}>{"#"+(rr+1)}</span>
                         </div>
                       </div>
                     );
@@ -883,10 +883,10 @@ export default function App() {
                 <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"3px"}}>
                   {allNavsSorted.slice(3).map(function(p,i){
                     return (
-                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"4px", padding:"2px 6px", background:"rgba(255,255,255,0.03)", borderRadius:"4px"}}>
-                        <span style={{color:"#475569", fontSize:"9px", fontWeight:"700", width:"16px"}}>{"#"+(i+4)}</span>
-                        <span style={{color:"#94a3b8", fontSize:"9px", flex:"1"}}>{p.name.split(" ")[0]}</span>
-                        <span style={{color:"#4ade80", fontSize:"8px", fontWeight:"700"}}>{fmt(p.nav)}</span>
+                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"6px", padding:"4px 8px", background:"rgba(255,255,255,0.03)", borderRadius:"5px"}}>
+                        <span style={{color:"#475569", fontSize:"12px", fontWeight:"700", width:"20px"}}>{"#"+(i+4)}</span>
+                        <span style={{color:"#94a3b8", fontSize:"12px", flex:"1"}}>{p.name.split(" ")[0]}</span>
+                        <span style={{color:"#4ade80", fontSize:"11px", fontWeight:"700"}}>{fmt(p.nav)}</span>
                       </div>
                     );
                   })}
@@ -918,7 +918,7 @@ export default function App() {
                   <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
                     <div style={{height:"100%", width:pctA+"%", background:"#3b82f6", borderRadius:"3px", transition:"width 0.5s"}}/>
                   </div>
-                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
                 </div>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
                   <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"40px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"13px"}}>VS</div>
@@ -937,7 +937,7 @@ export default function App() {
                   <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
                     <div style={{height:"100%", width:pctB+"%", background:"#ef4444", borderRadius:"3px", transition:"width 0.5s"}}/>
                   </div>
-                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
                 </div>
               </div>
             )}
@@ -945,7 +945,7 @@ export default function App() {
             {notYet.length > 0 && (
               <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"8px 12px"}}>
                 <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"6px", letterSpacing:"1px"}}>{"STILL DECIDING... ("+notYet.length+")"}</div>
-                <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
+                <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
               </div>
             )}
           </div>
