@@ -759,7 +759,7 @@ export default function App() {
       return (
         <div key={n} style={{background:bg, border:border, borderRadius:"14px", padding:"14px 10px", textAlign:"center", alignSelf:"start", transition:"all 0.4s"}}>
           {selfie
-            ? <img src={selfie} style={{width:"90px", height:"90px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(255,255,255,0.3)", display:"block", margin:"0 auto", marginBottom:"8px"}} />
+            ? <img src={selfie} style={{width:"90px", height:"90px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(255,255,255,0.3)", display:"block", marginLeft:"auto", marginRight:"auto", marginBottom:"8px", marginTop:"0"}} />
             : <div style={{fontSize:"56px", marginBottom:"8px", lineHeight:"1"}}>👤</div>}
           <div style={{color:"white", fontWeight:"800", fontSize:"18px", marginBottom:"3px"}}>{nm}</div>
           <div style={{color:"#64748b", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
