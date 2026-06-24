@@ -755,15 +755,15 @@ export default function App() {
       var nav = computeNAV(pd?parseDec(pd.decisions):{}, new Set(pd?(pd.completed||[]):[]));
       var selfie = pd ? pd.selfie_url : null;
       var bg = side==="A"?"rgba(59,130,246,0.2)":side==="B"?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)";
-      var border = side==="A"?"1px solid rgba(59,130,246,0.6)":side==="B"?"1px solid rgba(239,68,68,0.6)":"1px solid rgba(255,255,255,0.1)";
+      var border = side==="A"?"2px solid rgba(59,130,246,0.7)":side==="B"?"2px solid rgba(239,68,68,0.7)":"1px solid rgba(255,255,255,0.15)";
       return (
-        <div key={n} style={{background:bg, border:border, borderRadius:"10px", padding:"8px 6px", textAlign:"center", minWidth:"68px", transition:"all 0.4s"}}>
+        <div key={n} style={{background:bg, border:border, borderRadius:"14px", padding:"14px 10px", textAlign:"center", alignSelf:"start", transition:"all 0.4s"}}>
           {selfie
-            ? <img src={selfie} style={{width:"36px", height:"36px", borderRadius:"50%", objectFit:"cover", marginBottom:"2px", border:"2px solid rgba(255,255,255,0.2)"}} />
-            : <div style={{fontSize:"20px", marginBottom:"2px"}}>👤</div>}
-          <div style={{color:"white", fontWeight:"800", fontSize:"11px"}}>{nm}</div>
-          <div style={{color:"#64748b", fontSize:"9px"}}>{"#"+n}</div>
-          <div style={{color:clr(nav.nav-BASE_NW), fontSize:"9px", fontWeight:"700"}}>{fmt(nav.nav)}</div>
+            ? <img src={selfie} style={{width:"90px", height:"90px", borderRadius:"50%", objectFit:"cover", marginBottom:"8px", border:"3px solid rgba(255,255,255,0.3)", display:"block", margin:"0 auto 8px"}} />
+            : <div style={{fontSize:"56px", marginBottom:"8px", lineHeight:"1"}}>👤</div>}
+          <div style={{color:"white", fontWeight:"800", fontSize:"18px", marginBottom:"3px"}}>{nm}</div>
+          <div style={{color:"#64748b", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
+          <div style={{color:clr(nav.nav-BASE_NW), fontSize:"14px", fontWeight:"800"}}>{fmt(nav.nav)}</div>
         </div>
       );
     }
