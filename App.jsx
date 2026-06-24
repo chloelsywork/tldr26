@@ -350,6 +350,30 @@ function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
   );
 }
 
+
+// ── GIF MAP PER SCENARIO ─────────────────────────────────────────────────────
+const SUPA_STORAGE = "https://ocqwwngewdhqzcfiisng.supabase.co/storage/v1/object/public/gifs";
+const SCENARIO_GIFS = {
+  "intro": SUPA_STORAGE + "/intro.gif",
+  "S1":  SUPA_STORAGE + "/s1.gif",
+  "S2":  SUPA_STORAGE + "/s2.gif",
+  "S3":  SUPA_STORAGE + "/s3.gif",
+  "S4":  SUPA_STORAGE + "/s3.gif",
+  "S5":  SUPA_STORAGE + "/s3.gif",
+  "S6":  SUPA_STORAGE + "/s6.gif",
+  "S7":  SUPA_STORAGE + "/s7.gif",
+  "S8":  SUPA_STORAGE + "/s8.gif",
+  "S9":  SUPA_STORAGE + "/s9.gif",
+  "S10": SUPA_STORAGE + "/s10.gif",
+  "S11": SUPA_STORAGE + "/s11.gif",
+  "S12": SUPA_STORAGE + "/s12.gif",
+  "S13": SUPA_STORAGE + "/s13.gif",
+};
+
+var wheelColors = ["#f87171","#fb923c","#facc15","#4ade80","#60a5fa","#a78bfa","#f472b6","#34d399","#f97316","#818cf8","#22d3ee","#e879f9","#a3e635","#fb7185","#fbbf24","#6ee7b7","#93c5fd","#c4b5fd","#fda4af","#86efac","#67e8f9","#d8b4fe","#fca5a5","#fed7aa","#d9f99d","#a7f3d0","#bae6fd","#e9d5ff","#fecdd3"];
+
+function parseDec(d) { try { return d ? (typeof d === "string" ? JSON.parse(d) : d) : {}; } catch(e) { return {}; } }
+
 function computeNW(decisions, completed) {
   var nw = BASE_NW;
   for (var idx = 0; idx < SCENARIOS.length; idx++) {
@@ -459,7 +483,12 @@ export default function App() {
         var all = {};
         if (Array.isArray(rows)) {
           rows.forEach(function(pd) {
-            all[pd.player_num] = { password: pd.password, decisions: pd.decisions || {}, completed: pd.completed || [], selfie_url: pd.selfie_url };
+            all[pd.player_num] = {
+              password: pd.password,
+              decisions: parseDec(pd.decisions),
+              completed: pd.completed || [],
+              selfie_url: pd.selfie_url
+            };
           });
         }
         if (gd && gd[0] !== undefined) setGlobalIdx(gd[0].global_idx);
@@ -693,7 +722,9 @@ export default function App() {
 
     var allNavsSorted = Array.from({length:TOTAL_PLAYERS}, function(_,i) {
       var n=i+1; var pd=allPlayerData[n];
-      return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(pd?(pd.decisions||{}):{}, new Set(pd?(pd.completed||[]):[])).nav};
+      var dec = pd ? parseDec(pd.decisions) : {};
+      var comp = new Set(pd ? (pd.completed||[]) : []);
+      return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec, comp).nav};
     }).sort(function(a,b){return b.nav-a.nav;});
     var top3 = allNavsSorted.slice(0,3);
     var medals = ["🥇","🥈","🥉"];
@@ -704,7 +735,7 @@ export default function App() {
     function PCard(n, side) {
       var nm = PLAYER_NAMES[n-1].split(" ")[0];
       var pd = allPlayerData[n];
-      var nav = computeNAV(pd?(pd.decisions||{}):{}, new Set(pd?(pd.completed||[]):[]));
+      var nav = computeNAV(pd?parseDec(pd.decisions):{}, new Set(pd?(pd.completed||[]):[]));
       var selfie = pd ? pd.selfie_url : null;
       var bg = side==="A"?"rgba(59,130,246,0.2)":side==="B"?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)";
       var border = side==="A"?"1px solid rgba(59,130,246,0.6)":side==="B"?"1px solid rgba(239,68,68,0.6)":"1px solid rgba(255,255,255,0.1)";
@@ -771,6 +802,69 @@ export default function App() {
               </button>
             </div>
             <button style={s.btnS} onClick={function(){setMode(null);}}>Exit</button>
+          </div>
+        </div>
+
+        {/* Scenario GIF */}
+        {(function() {
+          var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
+          return gifUrl ? (
+            <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden", position:"relative", maxHeight:"220px", display:"flex", justifyContent:"center", background:"#000"}}>
+              <img src={gifUrl} style={{width:"100%", maxHeight:"220px", objectFit:"contain"}} />
+            </div>
+          ) : null;
+        })()}
+
+        {/* Spin wheel on dashboard for S12 */}
+        {ds && ds.id === "S12" && (
+          <div style={{background:"rgba(248,113,113,0.06)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"12px", padding:"14px", marginBottom:"12px"}}>
+            <div style={{textAlign:"center", marginBottom:"8px"}}>
+              <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"14px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
+              <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
+            </div>
+            <div style={{display:"flex", gap:"12px", alignItems:"flex-start"}}>
+              <div style={{position:"relative", width:"280px", height:"280px", flexShrink:0}}>
+                <div style={{position:"absolute", top:"-2px", left:"50%", transform:"translateX(-50%)", fontSize:"20px", zIndex:10}}>▼</div>
+                <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
+              </div>
+              <div style={{flex:1}}>
+                {wheelResult && !wheelSpinning && (
+                  <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"10px", marginBottom:"10px", textAlign:"center"}}>
+                    <div style={{color:"#fca5a5", fontSize:"11px", marginBottom:"2px"}}>CI goes to...</div>
+                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"18px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
+                  </div>
+                )}
+                <div style={{display:"flex", gap:"8px", marginBottom:"8px"}}>
+                  {wheelPool.length === 0 ? (
+                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px", background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={initWheel}>Start Wheel</button>
+                  ) : (
+                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px", opacity:wheelSpinning||wheelPicked.length>=7?0.4:1, background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>
+                      {wheelSpinning?"Spinning...":wheelPicked.length>=7?"All 7 Picked!":"Spin! ("+(7-wheelPicked.length)+" left)"}
+                    </button>
+                  )}
+                  <button style={Object.assign({}, s.btnS, {padding:"10px 14px"})} onClick={initWheel}>Reset</button>
+                </div>
+                {wheelPicked.length > 0 && (
+                  <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
+                    {wheelPicked.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* QR Code strip */}
+        <div style={{display:"flex", alignItems:"center", gap:"12px", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"10px", padding:"8px 14px", marginBottom:"12px"}}>
+          <img src={"https://api.qrserver.com/v1/create-qr-code/?size=72x72&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png"} style={{width:"72px", height:"72px", borderRadius:"6px"}} />
+          <div>
+            <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>Scan to join the game!</div>
+            <div style={{color:"#64748b", fontSize:"11px"}}>tldr26.vercel.app</div>
+          </div>
+          <div style={{flex:"1"}}/>
+          <div style={{color:"#64748b", fontSize:"11px", textAlign:"right"}}>
+            <div style={{color:clr(Object.keys(allPlayerData).length - TOTAL_PLAYERS), fontWeight:"700", fontSize:"16px", color:"#facc15"}}>{Object.keys(allPlayerData).length}/{TOTAL_PLAYERS}</div>
+            <div>players joined</div>
           </div>
         </div>
 
@@ -879,23 +973,14 @@ export default function App() {
   );
 
   // ── FACILITATOR PANEL ──────────────────────────────────────────────────────
-  if (mode === "facilitator" && facilAuthed) {
-    var fs = SCENARIOS[globalIdx];
-    var fdi = DAY_INFO[fs ? fs.day : 1] || DAY_INFO[1];
-    var doneCount = Object.values(allPlayerData).filter(function(p) { return p.completed && p.completed.indexOf(fs ? fs.id : "") !== -1; }).length;
-    var wheelColors = ["#f87171","#fb923c","#facc15","#4ade80","#60a5fa","#a78bfa","#f472b6","#34d399","#f97316","#818cf8","#22d3ee","#e879f9","#a3e635","#fb7185","#fbbf24","#6ee7b7","#93c5fd","#c4b5fd","#fda4af","#86efac","#67e8f9","#d8b4fe","#fca5a5","#fed7aa","#d9f99d","#a7f3d0","#bae6fd","#e9d5ff","#fecdd3"];
-    var allNames = PLAYER_NAMES.map(function(name, i) { return {n:i+1, name:name.split(" ")[0]}; });
-    var segments = allNames.filter(function(p) { return wheelPicked.indexOf(p.n) === -1; });
-    if (segments.length === 0) segments = allNames;
-    var segAngle = 360 / segments.length;
-
-    function initWheel() {
+  // Wheel functions
+  function initWheel() {
       var nums = Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;});
       var shuffled = nums.slice().sort(function(){return Math.random()-0.5;});
       var ci7 = shuffled.slice(0,7);
       setWheelPool(ci7); setWheelPicked([]); setCiAffected([]); setWheelResult(null); setWheelAngle(0);
     }
-    function spinWheel() {
+  function spinWheel() {
       if (wheelSpinning || wheelPicked.length >= 7) return;
       if (wheelPool.length === 0) { initWheel(); return; }
       var nextPick = wheelPool.find(function(n){ return wheelPicked.indexOf(n) === -1; });
@@ -913,7 +998,7 @@ export default function App() {
       var duration = 3500;
       var startTime = null;
       setWheelSpinning(true); setWheelResult(null);
-      function animate(now) {
+    function animate(now) {
         if (!startTime) startTime = now;
         var elapsed = now - startTime;
         var progress = Math.min(elapsed / duration, 1);
@@ -936,6 +1021,19 @@ export default function App() {
       requestAnimationFrame(animate);
     }
 
+
+
+  if (mode === "facilitator" && facilAuthed) {
+    var fs = SCENARIOS[globalIdx];
+    var fdi = DAY_INFO[fs ? fs.day : 1] || DAY_INFO[1];
+    var doneCount = Object.values(allPlayerData).filter(function(p) { return p.completed && p.completed.indexOf(fs ? fs.id : "") !== -1; }).length;
+
+    var allNames = PLAYER_NAMES.map(function(name, i) { return {n:i+1, name:name.split(" ")[0]}; });
+    var segments = allNames.filter(function(p) { return wheelPicked.indexOf(p.n) === -1; });
+    if (segments.length === 0) segments = allNames;
+    var segAngle = 360 / segments.length;
+
+    // wheel functions defined above
     return (
       <div style={Object.assign({}, s.page, {alignItems:"flex-start", overflowY:"auto", paddingTop:"16px"})}>
         <div style={{maxWidth:"720px", width:"100%", display:"flex", flexDirection:"column", gap:"10px"}}>
@@ -967,38 +1065,13 @@ export default function App() {
             <p style={{color:"#64748b", fontSize:"13px", lineHeight:"1.6", margin:"0 0 12px"}}>{fs ? fs.story : ""}</p>
             {fs && fs.type === "automatic" && <div style={{background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"8px", padding:"10px 12px", fontSize:"12px", color:"#a5b4fc", marginBottom:"12px"}}>{fs.note}</div>}
 
-            {/* CI Spin Wheel */}
-            {fs && fs.id === "S12" && (
-              <div style={{marginBottom:"12px"}}>
-                <div style={{textAlign:"center", marginBottom:"10px"}}>
-                  <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>SPIN THE WHEEL — 7 Players Get CI</div>
-                  <div style={{color:"#64748b", fontSize:"11px"}}>{wheelPicked.length}/7 selected</div>
+            {/* CI - show picked list if available */}
+            {fs && fs.id === "S12" && ciAffected.length > 0 && (
+              <div style={{background:"rgba(248,113,113,0.08)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"8px", padding:"10px 12px", marginBottom:"12px"}}>
+                <div style={{color:"#fca5a5", fontWeight:"700", fontSize:"11px", marginBottom:"6px"}}>CI Affected ({ciAffected.length}/7) — use Dashboard to spin wheel:</div>
+                <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
+                  {ciAffected.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
                 </div>
-                <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
-                {wheelResult && !wheelSpinning && (
-                  <div style={{textAlign:"center", background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"12px", padding:"10px", marginBottom:"10px"}}>
-                    <div style={{color:"#fca5a5", fontSize:"11px", marginBottom:"2px"}}>CI goes to...</div>
-                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>{"#" + wheelResult + " " + PLAYER_NAMES[wheelResult-1].split(" ")[0] + "!"}</div>
-                  </div>
-                )}
-                <div style={{display:"flex", gap:"8px", marginBottom:"8px"}}>
-                  {wheelPool.length === 0 ? (
-                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px"})} onClick={initWheel}>Start Wheel</button>
-                  ) : (
-                    <button style={Object.assign({}, s.btnP, {fontSize:"13px", padding:"10px", opacity:wheelSpinning||wheelPicked.length>=7?0.4:1, background:"linear-gradient(135deg,#dc2626,#991b1b)"})} onClick={spinWheel} disabled={wheelSpinning||wheelPicked.length>=7}>
-                      {wheelSpinning ? "Spinning..." : wheelPicked.length >= 7 ? "All 7 Picked!" : "Spin! (" + (7-wheelPicked.length) + " left)"}
-                    </button>
-                  )}
-                  <button style={Object.assign({}, s.btnS, {padding:"10px 14px"})} onClick={initWheel}>Reset</button>
-                </div>
-                {wheelPicked.length > 0 && (
-                  <div style={{background:"rgba(248,113,113,0.08)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"8px", padding:"10px 12px"}}>
-                    <div style={{color:"#fca5a5", fontWeight:"700", fontSize:"11px", marginBottom:"6px"}}>CI Affected ({wheelPicked.length}/7):</div>
-                    <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
-                      {wheelPicked.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#" + n + " " + PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
@@ -1064,7 +1137,7 @@ export default function App() {
           {(function() {
             var allNavs = Array.from({length:TOTAL_PLAYERS}, function(_,i) {
               var n=i+1; var pd=allPlayerData[n];
-              var dec=pd?(pd.decisions||{}):{};
+              var dec=pd?parseDec(pd.decisions):{};
               var comp=new Set(pd?(pd.completed||[]):[]);
               return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec,comp).nav};
             }).sort(function(a,b){return b.nav-a.nav;});
