@@ -880,13 +880,13 @@ export default function App() {
                     );
                   })}
                 </div>
-                <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))", gap:"3px"}}>
+                <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:"6px"}}>
                   {allNavsSorted.slice(3).map(function(p,i){
                     return (
-                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"6px", padding:"4px 8px", background:"rgba(255,255,255,0.03)", borderRadius:"5px"}}>
-                        <span style={{color:"#475569", fontSize:"12px", fontWeight:"700", width:"20px"}}>{"#"+(i+4)}</span>
-                        <span style={{color:"#94a3b8", fontSize:"12px", flex:"1"}}>{p.name.split(" ")[0]}</span>
-                        <span style={{color:"#4ade80", fontSize:"11px", fontWeight:"700"}}>{fmt(p.nav)}</span>
+                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"8px", padding:"7px 10px", background:"rgba(255,255,255,0.04)", borderRadius:"7px"}}>
+                        <span style={{color:"#475569", fontSize:"14px", fontWeight:"700", width:"24px"}}>{"#"+(i+4)}</span>
+                        <span style={{color:"#e2e8f0", fontSize:"14px", flex:"1", fontWeight:"600"}}>{p.name.split(" ")[0]}</span>
+                        <span style={{color:"#4ade80", fontSize:"13px", fontWeight:"800"}}>{fmt(p.nav)}</span>
                       </div>
                     );
                   })}
@@ -897,57 +897,109 @@ export default function App() {
         )}
 
         {/* ══════════════════════════════════════════ */}
-        {/* PAGE 2: Votes + Still Deciding             */}
+        {/* PAGE 2: Votes — Gaming Style               */}
         {/* ══════════════════════════════════════════ */}
         {dashPage === "votes" && (
-          <div>
-            {/* Choice panels */}
+          <div style={{minHeight:"calc(100vh - 60px)", display:"flex", flexDirection:"column", background:"linear-gradient(135deg,#020817 0%,#0d1526 45%,#150822 100%)"}}>
+
+            {/* Big title */}
+            <div style={{textAlign:"center", padding:"10px 0 6px", position:"relative"}}>
+              <div style={{display:"inline-flex", alignItems:"center", gap:"16px"}}>
+                <span style={{color:"#3b82f6", fontSize:"22px", letterSpacing:"-2px"}}>«««</span>
+                <div>
+                  <div style={{color:"white", fontSize:"28px", fontWeight:"900", letterSpacing:"3px", textTransform:"uppercase", textShadow:"0 0 30px rgba(99,102,241,0.8)"}}>CHOOSE AN OPTION</div>
+                </div>
+                <span style={{color:"#ef4444", fontSize:"22px", letterSpacing:"-2px"}}>»»»</span>
+              </div>
+            </div>
+
+            {/* Main panels */}
             {hasChoices && choiceA && choiceB && (
-              <div style={{display:"grid", gridTemplateColumns:"1fr 44px 1fr", gap:"10px", marginBottom:"10px", alignItems:"stretch"}}>
-                <div style={{background:"rgba(59,130,246,0.07)", border:"2px solid rgba(59,130,246,0.35)", borderRadius:"12px", padding:"12px"}}>
-                  <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+              <div style={{display:"grid", gridTemplateColumns:"1fr 80px 1fr", gap:"12px", padding:"0 12px", flex:"1"}}>
+
+                {/* Option A Panel */}
+                <div style={{background:"linear-gradient(135deg,rgba(30,64,175,0.3),rgba(30,58,138,0.15))", border:"2px solid #3b82f6", borderRadius:"16px", padding:"14px", display:"flex", flexDirection:"column", boxShadow:"0 0 30px rgba(59,130,246,0.2), inset 0 0 30px rgba(59,130,246,0.05)"}}>
+                  <div style={{display:"flex", alignItems:"center", gap:"10px", marginBottom:"10px"}}>
+                    <div style={{background:"#3b82f6", borderRadius:"8px", padding:"4px 10px"}}>
+                      <span style={{color:"white", fontWeight:"900", fontSize:"12px", letterSpacing:"1px"}}>★ OPTION A</span>
+                    </div>
+                    <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceA.label}</div>
+                  </div>
+                  <div style={{flex:"1", display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))", gap:"7px", marginBottom:"12px"}}>
+                    {choseA.map(function(n){return PCard(n,"A");})}
+                  </div>
+                  <div style={{borderTop:"1px solid rgba(59,130,246,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
+                    <div style={{background:"rgba(59,130,246,0.2)", borderRadius:"50%", width:"36px", height:"36px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px"}}>👥</div>
                     <div>
-                      <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"10px", letterSpacing:"1px"}}>OPTION A</div>
-                      <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceA.label}</div>
+                      <span style={{color:"white", fontWeight:"900", fontSize:"20px"}}>{choseA.length}</span>
+                      <span style={{color:"#60a5fa", fontSize:"12px", fontWeight:"700", marginLeft:"4px"}}>PLAYERS</span>
+                      <div style={{color:"#60a5fa", fontSize:"10px"}}>CHOOSE OPTION A</div>
                     </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctA}%</div>
-                      <div style={{color:"#64748b", fontSize:"10px"}}>{choseA.length} players</div>
+                    <div style={{flex:"1", height:"8px", background:"rgba(255,255,255,0.1)", borderRadius:"4px", overflow:"hidden"}}>
+                      <div style={{height:"100%", width:pctA+"%", background:"linear-gradient(90deg,#3b82f6,#60a5fa)", borderRadius:"4px", transition:"width 0.6s"}}/>
                     </div>
+                    <div style={{color:"#60a5fa", fontWeight:"900", fontSize:"24px", minWidth:"52px", textAlign:"right"}}>{pctA}%</div>
                   </div>
-                  <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
-                    <div style={{height:"100%", width:pctA+"%", background:"#3b82f6", borderRadius:"3px", transition:"width 0.5s"}}/>
+                </div>
+
+                {/* VS */}
+                <div style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"12px"}}>
+                  <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"64px", height:"64px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"18px", boxShadow:"0 0 24px rgba(99,102,241,0.6)"}}>VS</div>
+                  {notYet.length > 0 && (
+                    <div style={{textAlign:"center"}}>
+                      <div style={{color:"#facc15", fontWeight:"800", fontSize:"13px"}}>{notYet.length}</div>
+                      <div style={{color:"#64748b", fontSize:"9px"}}>deciding</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Option B Panel */}
+                <div style={{background:"linear-gradient(135deg,rgba(153,27,27,0.3),rgba(127,29,29,0.15))", border:"2px solid #ef4444", borderRadius:"16px", padding:"14px", display:"flex", flexDirection:"column", boxShadow:"0 0 30px rgba(239,68,68,0.2), inset 0 0 30px rgba(239,68,68,0.05)"}}>
+                  <div style={{display:"flex", alignItems:"center", gap:"10px", marginBottom:"10px"}}>
+                    <div style={{background:"#ef4444", borderRadius:"8px", padding:"4px 10px"}}>
+                      <span style={{color:"white", fontWeight:"900", fontSize:"12px", letterSpacing:"1px"}}>♥ OPTION B</span>
+                    </div>
+                    <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>{choiceB.label}</div>
                   </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{choseA.map(function(n){return PCard(n,"A");})}</div>
-                </div>
-                <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
-                  <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"40px", height:"40px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"13px"}}>VS</div>
-                </div>
-                <div style={{background:"rgba(239,68,68,0.07)", border:"2px solid rgba(239,68,68,0.35)", borderRadius:"12px", padding:"12px"}}>
-                  <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"8px"}}>
+                  <div style={{flex:"1", display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))", gap:"7px", marginBottom:"12px"}}>
+                    {choseB.map(function(n){return PCard(n,"B");})}
+                  </div>
+                  <div style={{borderTop:"1px solid rgba(239,68,68,0.3)", paddingTop:"10px", display:"flex", alignItems:"center", gap:"12px"}}>
+                    <div style={{background:"rgba(239,68,68,0.2)", borderRadius:"50%", width:"36px", height:"36px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px"}}>👥</div>
                     <div>
-                      <div style={{color:"#f87171", fontWeight:"900", fontSize:"10px", letterSpacing:"1px"}}>OPTION B</div>
-                      <div style={{color:"white", fontWeight:"800", fontSize:"13px"}}>{choiceB.label}</div>
+                      <span style={{color:"white", fontWeight:"900", fontSize:"20px"}}>{choseB.length}</span>
+                      <span style={{color:"#f87171", fontSize:"12px", fontWeight:"700", marginLeft:"4px"}}>PLAYERS</span>
+                      <div style={{color:"#f87171", fontSize:"10px"}}>CHOOSE OPTION B</div>
                     </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{color:"#f87171", fontWeight:"900", fontSize:"28px", lineHeight:"1"}}>{pctB}%</div>
-                      <div style={{color:"#64748b", fontSize:"10px"}}>{choseB.length} players</div>
+                    <div style={{flex:"1", height:"8px", background:"rgba(255,255,255,0.1)", borderRadius:"4px", overflow:"hidden"}}>
+                      <div style={{height:"100%", width:pctB+"%", background:"linear-gradient(90deg,#ef4444,#f87171)", borderRadius:"4px", transition:"width 0.6s"}}/>
                     </div>
+                    <div style={{color:"#f87171", fontWeight:"900", fontSize:"24px", minWidth:"52px", textAlign:"right"}}>{pctB}%</div>
                   </div>
-                  <div style={{height:"5px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", marginBottom:"10px"}}>
-                    <div style={{height:"100%", width:pctB+"%", background:"#ef4444", borderRadius:"3px", transition:"width 0.5s"}}/>
-                  </div>
-                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{choseB.map(function(n){return PCard(n,"B");})}</div>
                 </div>
               </div>
             )}
-            {/* Still deciding */}
-            {notYet.length > 0 && (
-              <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"8px 12px"}}>
-                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"6px", letterSpacing:"1px"}}>{"STILL DECIDING... ("+notYet.length+")"}</div>
-                <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(80px,1fr))", gap:"6px"}}>{notYet.map(function(n){return PCard(n,null);})}</div>
+
+            {/* Bottom bar */}
+            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"10px", padding:"10px 12px 8px", marginTop:"8px"}}>
+              <div style={{background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", gap:"10px"}}>
+                <span style={{fontSize:"18px"}}>⏱</span>
+                <div>
+                  <div style={{color:"#64748b", fontSize:"9px", letterSpacing:"1px"}}>TIME REMAINING</div>
+                  <div style={{color:dashTimer<=10?"#ef4444":"#60a5fa", fontWeight:"900", fontSize:"20px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</div>
+                </div>
+                <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
+                  style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"18px",padding:"0 4px",marginLeft:"auto"}}>{dashTimerActive?"⏸":"▶"}</button>
               </div>
-            )}
+              <div style={{background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px"}}>
+                <span style={{color:"white", fontWeight:"900", fontSize:"13px", letterSpacing:"2px"}}>YOUR CHOICE.</span>
+                <span style={{color:"#64748b", fontSize:"13px", letterSpacing:"2px"}}>YOUR IMPACT.</span>
+              </div>
+              <div style={{background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px"}}>
+                <span style={{fontSize:"18px"}}>📊</span>
+                <div style={{color:"#f87171", fontWeight:"900", fontSize:"13px", letterSpacing:"1px"}}>EVERY VOTE COUNTS!</div>
+              </div>
+            </div>
           </div>
         )}
       </div>
