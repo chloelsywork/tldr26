@@ -1,19 +1,68 @@
 import { useState, useEffect, useRef } from "react";
 
-const FB_URL = "https://tldr2026-10dae-default-rtdb.asia-southeast1.firebasedatabase.app";
+const SUPA_URL = "https://ocqwwngewdhqzcfiisng.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcXd3bmdld2RocXpjZmlpc25nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNDMyNDMsImV4cCI6MjA5NzgxOTI0M30.2s7I2zWzOrHBBF6irf0UDDWMGFiY_gk6fV3fBPeydwU";
+const SUPA_HEADERS = { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
 
+// ── SUPABASE HELPERS ─────────────────────────────────────────────────────────
 async function sGet(key) {
   try {
-    const res = await fetch(FB_URL + "/" + key + ".json");
-    if (!res.ok) return null;
-    return await res.json();
+    if (key === "global_idx") {
+      const r = await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1&select=global_idx", { headers: SUPA_HEADERS });
+      const d = await r.json();
+      return d && d[0] ? d[0].global_idx : 0;
+    }
+    // player_N
+    const num = parseInt(key.replace("player_", ""));
+    const r = await fetch(SUPA_URL + "/rest/v1/players?player_num=eq." + num, { headers: SUPA_HEADERS });
+    const d = await r.json();
+    if (!d || !d[0]) return null;
+    return { password: d[0].password, decisions: d[0].decisions || {}, completed: d[0].completed || [], selfie_url: d[0].selfie_url };
   } catch(e) { return null; }
 }
+
 async function sSet(key, val) {
   try {
-    await fetch(FB_URL + "/" + key + ".json", {
-      method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(val)
+    if (key === "global_idx") {
+      await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
+        method: "PATCH", headers: SUPA_HEADERS,
+        body: JSON.stringify({ global_idx: val })
+      });
+      return;
+    }
+    const num = parseInt(key.replace("player_", ""));
+    const body = { player_num: num, password: val.password || "", decisions: val.decisions || {}, completed: val.completed || [], selfie_url: val.selfie_url || null, updated_at: new Date().toISOString() };
+    await fetch(SUPA_URL + "/rest/v1/players", {
+      method: "POST",
+      headers: { ...SUPA_HEADERS, "Prefer": "resolution=merge-duplicates,return=representation" },
+      body: JSON.stringify(body)
+    });
+  } catch(e) {}
+}
+
+async function uploadSelfie(playerNum, blob) {
+  try {
+    const path = "player_" + playerNum + ".jpg";
+    const r = await fetch(SUPA_URL + "/storage/v1/object/selfies/" + path, {
+      method: "POST",
+      headers: { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Content-Type": "image/jpeg", "x-upsert": "true" },
+      body: blob
+    });
+    if (!r.ok) return null;
+    return SUPA_URL + "/storage/v1/object/public/selfies/" + path;
+  } catch(e) { return null; }
+}
+
+async function resetAllPlayers() {
+  try {
+    // Delete all players
+    await fetch(SUPA_URL + "/rest/v1/players?player_num=gte.1", {
+      method: "DELETE", headers: SUPA_HEADERS
+    });
+    // Reset game state
+    await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
+      method: "PATCH", headers: SUPA_HEADERS,
+      body: JSON.stringify({ global_idx: 0 })
     });
   } catch(e) {}
 }
@@ -164,18 +213,62 @@ const DAY_INFO = {
 };
 
 const PLAYER_NAMES = [
-  "Damian Cheah","Klavier","Fong Ching Rong","Li Jiaxin","Quan Rui",
-  "Titus Wee Jian Kai","Lakhotiya Sonakshi","Dave Santos","Mervell Tan","Zong Xian",
-  "Jordan Lim","Kaize Aden Tee","Aloysius Ang Chang Yi","Lucas Koh","Brian Cheah",
-  "Winnie Chua Xing Hui","Matthew Aundre Nonis","Ethan New","Chee Mun Hua Chervelle","Ravichandran Yugavaani",
-  "Tay Kai Rong Marcus","Izac Tan Yi Jin","Teo Yu Kang Elton","Lee Zi Yen Arianna","Geremia Tan Mun Jun",
-  "Ong Shao Kai","Samuel Kwok","Brendon Kwok","Hana Yang"
+  "Player 1","Player 2","Player 3","Player 4","Player 5",
+  "Player 6","Player 7","Player 8","Player 9","Player 10",
+  "Player 11","Player 12","Player 13","Player 14","Player 15",
+  "Player 16","Player 17","Player 18","Player 19","Player 20",
+  "Player 21","Player 22","Player 23","Player 24","Player 25",
+  "Player 26","Player 27","Player 28","Player 29"
 ];
 const TOTAL_PLAYERS = 29;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
 
+
+
+function SelfieCamera({ onCapture, onSkip, onStart, stream, captured, uploading, btnP, btnG }) {
+  var videoRef = useRef(null);
+
+  useEffect(function() {
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
+  if (uploading) return (
+    <div style={{padding:"20px", textAlign:"center"}}>
+      <div style={{fontSize:"24px", marginBottom:"8px"}}>⬆️</div>
+      <div style={{color:"#a5b4fc"}}>Uploading your selfie...</div>
+    </div>
+  );
+
+  if (captured) return (
+    <div style={{textAlign:"center"}}>
+      <img src={captured} style={{width:"200px", height:"200px", borderRadius:"50%", objectFit:"cover", marginBottom:"12px", border:"3px solid #6366f1"}} />
+      <div style={{color:"#4ade80", marginBottom:"12px"}}>Looking good! 🎉</div>
+    </div>
+  );
+
+  if (!stream) return (
+    <div>
+      <div style={{width:"200px", height:"200px", borderRadius:"50%", background:"rgba(99,102,241,0.1)", border:"2px dashed rgba(99,102,241,0.3)", margin:"0 auto 16px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"48px"}}>👤</div>
+      <button style={Object.assign({}, btnP, {marginBottom:"8px"})} onClick={onStart}>📷 Open Camera</button>
+      <button style={btnG} onClick={onSkip}>Skip for now</button>
+    </div>
+  );
+
+  return (
+    <div style={{textAlign:"center"}}>
+      <div style={{position:"relative", display:"inline-block", marginBottom:"12px"}}>
+        <video ref={videoRef} autoPlay playsInline muted style={{width:"200px", height:"200px", borderRadius:"50%", objectFit:"cover", border:"3px solid #6366f1", transform:"scaleX(-1)"}} />
+      </div>
+      <br/>
+      <button style={Object.assign({}, btnP, {marginBottom:"8px"})} onClick={function(){onCapture(videoRef.current);}}>📸 Take Selfie</button>
+      <button style={btnG} onClick={onSkip}>Skip for now</button>
+    </div>
+  );
+}
 
 function WheelCanvas({ wheelAngle, wheelPicked, wheelColors }) {
   var canvasRef = useRef(null);
@@ -295,6 +388,9 @@ function clr(n) { return n >= 0 ? "#4ade80" : "#f87171"; }
 export default function App() {
   var [dashTimer, setDashTimer] = useState(60);
   var [dashTimerActive, setDashTimerActive] = useState(false);
+  var [dashShowResults, setDashShowResults] = useState(false);
+  var [dashPrevResults, setDashPrevResults] = useState(null);
+  var [dashPrevScenario, setDashPrevScenario] = useState(null);
   var [mode, setMode] = useState(null);
   var [booting, setBooting] = useState(true);
   var [facilAuthed, setFacilAuthed] = useState(false);
@@ -311,6 +407,11 @@ export default function App() {
   var [numInput, setNumInput] = useState("");
   var [myDecisions, setMyDecisions] = useState({});
   var [myCompleted, setMyCompleted] = useState(new Set());
+  var [mySelfieUrl, setMySelfieUrl] = useState(null);
+  var [showSelfieCamera, setShowSelfieCamera] = useState(false);
+  var [selfieStream, setSelfieStream] = useState(null);
+  var [selfieCaptured, setSelfieCaptured] = useState(null);
+  var [selfieUploading, setSelfieUploading] = useState(false);
   var [liveGlobalIdx, setLiveGlobalIdx] = useState(0);
   var [pendingCi, setPendingCi] = useState(null);
   var [revealResult, setRevealResult] = useState(null);
@@ -332,16 +433,27 @@ export default function App() {
 
   useEffect(function() {
     if (mode !== "facilitator" && mode !== "dashboard") return;
-    function load() {
-      var promises = Array.from({length:TOTAL_PLAYERS}, function(_,i) { return sGet("player_" + (i+1)); });
-      Promise.all(promises).then(function(results) {
+    async function load() {
+      try {
+        // Fetch all players + global state in parallel
+        const [pr, gr] = await Promise.all([
+          fetch(SUPA_URL + "/rest/v1/players?select=*&order=player_num.asc", { headers: SUPA_HEADERS }),
+          fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1&select=global_idx", { headers: SUPA_HEADERS })
+        ]);
+        const rows = await pr.json();
+        const gd = await gr.json();
         var all = {};
-        results.forEach(function(pd, i) { if (pd) all[i+1] = pd; });
+        if (Array.isArray(rows)) {
+          rows.forEach(function(pd) {
+            all[pd.player_num] = { password: pd.password, decisions: pd.decisions || {}, completed: pd.completed || [], selfie_url: pd.selfie_url };
+          });
+        }
+        if (gd && gd[0] !== undefined) setGlobalIdx(gd[0].global_idx);
         setAllPlayerData(all);
-      });
+      } catch(e) {}
     }
     load();
-    var iv = setInterval(load, 3500);
+    var iv = setInterval(load, 2000); // Poll every 2s for snappier updates
     return function() { clearInterval(iv); };
   }, [mode]);
 
@@ -380,6 +492,26 @@ export default function App() {
 
   function facilAdvance() {
     var next = Math.min(globalIdx + 1, SCENARIOS.length - 1);
+    // Capture current scenario results before advancing
+    var curr = SCENARIOS[globalIdx];
+    if (curr && (curr.choices || curr.choices_existing)) {
+      var allC = (curr.choices || curr.choices_existing || []);
+      var counts = {};
+      allC.forEach(function(c){ counts[c.value] = 0; });
+      Object.values(allPlayerData).forEach(function(pd) {
+        var dec = pd && pd.decisions ? pd.decisions[curr.id] : null;
+        if (dec && counts[dec] !== undefined) counts[dec]++;
+      });
+      var total = Object.values(counts).reduce(function(a,b){return a+b;}, 0);
+      var results = allC.map(function(c) {
+        return { label: c.label, count: counts[c.value]||0, pct: total>0?Math.round(((counts[c.value]||0)/total)*100):0, value: c.value };
+      });
+      setDashPrevResults(results);
+      setDashPrevScenario(curr);
+      setDashShowResults(true);
+      // Auto-hide results after 8 seconds
+      setTimeout(function(){ setDashShowResults(false); }, 8000);
+    }
     setGlobalIdx(next); sSet("global_idx", next);
   }
   function facilBack() {
@@ -390,8 +522,7 @@ export default function App() {
     if (!window.confirm("Reset ALL player data and restart?")) return;
     setGlobalIdx(0); setAllPlayerData({}); setCiAffected([]);
     setWheelPool([]); setWheelPicked([]); setWheelResult(null); setWheelAngle(0);
-    sSet("global_idx", 0);
-    for (var i = 1; i <= TOTAL_PLAYERS; i++) sSet("player_" + i, { decisions:{}, completed:[] });
+    resetAllPlayers();
   }
 
   async function joinGame() {
@@ -409,17 +540,52 @@ export default function App() {
     var n = pendingPlayerNum;
     setMyDecisions({}); setMyCompleted(new Set()); setRevealResult(null); setPendingCi(null);
     if (settingPassword) {
-      await sSet("player_" + n, { password: passwordInput, decisions:{}, completed:[] });
+      await sSet("player_" + n, { password: passwordInput, decisions:{}, completed:[], selfie_url: null });
       setPlayerNum(n);
+      setShowSelfieCamera(true); // Show camera for new players
     } else {
       var pd = await sGet("player_" + n);
       if (!pd || pd.password !== passwordInput) { setPasswordError("Wrong password. Try again!"); return; }
-      setMyDecisions(pd.decisions || {}); setMyCompleted(new Set(pd.completed || [])); setPlayerNum(n);
+      setMyDecisions(pd.decisions || {}); setMyCompleted(new Set(pd.completed || []));
+      setMySelfieUrl(pd.selfie_url || null);
+      setPlayerNum(n);
     }
     var gi = await sGet("global_idx");
     if (gi !== null) setLiveGlobalIdx(gi);
     setSettingPassword(false); setAwaitingPassword(false); setPendingPlayerNum(null);
     setPasswordInput(""); setConfirmPasswordInput(""); setPasswordError(""); setShowPassword(false);
+  }
+
+  async function startCamera() {
+    try {
+      var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+      setSelfieStream(stream);
+    } catch(e) { console.error("Camera error", e); }
+  }
+
+  function stopCamera() {
+    if (selfieStream) { selfieStream.getTracks().forEach(function(t){t.stop();}); setSelfieStream(null); }
+  }
+
+  async function captureSelfie(videoEl) {
+    var canvas = document.createElement("canvas");
+    canvas.width = videoEl.videoWidth; canvas.height = videoEl.videoHeight;
+    canvas.getContext("2d").drawImage(videoEl, 0, 0);
+    canvas.toBlob(async function(blob) {
+      setSelfieCaptured(URL.createObjectURL(blob));
+      stopCamera();
+      setSelfieUploading(true);
+      var url = await uploadSelfie(playerNum, blob);
+      if (url) {
+        setMySelfieUrl(url);
+        var savedPd = await sGet("player_" + playerNum);
+        var pw = savedPd ? (savedPd.password || "") : "";
+        await sSet("player_" + playerNum, { password: pw, decisions: myDecisions, completed: Array.from(myCompleted), selfie_url: url });
+      }
+      setSelfieUploading(false);
+      setShowSelfieCamera(false);
+      setSelfieCaptured(null);
+    }, "image/jpeg", 0.8);
   }
 
   async function submitDecision(scenarioId, choiceValue) {
@@ -441,7 +607,7 @@ export default function App() {
     else setRevealResult(null);
     var savedPd = await sGet("player_" + playerNum);
     var savedPw = savedPd ? (savedPd.password || "") : "";
-    await sSet("player_" + playerNum, { password: savedPw, decisions: nd, completed: Array.from(nc) });
+    await sSet("player_" + playerNum, { password: savedPw, decisions: nd, completed: Array.from(nc), selfie_url: mySelfieUrl });
   }
 
   async function ackAutomatic(scenarioId) {
@@ -449,7 +615,7 @@ export default function App() {
     var nc = new Set(arr); setMyCompleted(nc); setRevealResult(null);
     var savedPd = await sGet("player_" + playerNum);
     var savedPw = savedPd ? (savedPd.password || "") : "";
-    await sSet("player_" + playerNum, { password: savedPw, decisions: myDecisions, completed: Array.from(nc) });
+    await sSet("player_" + playerNum, { password: savedPw, decisions: myDecisions, completed: Array.from(nc), selfie_url: mySelfieUrl });
   }
 
   var currentS = SCENARIOS[liveGlobalIdx];
@@ -525,11 +691,14 @@ export default function App() {
       var nm = PLAYER_NAMES[n-1].split(" ")[0];
       var pd = allPlayerData[n];
       var nav = computeNAV(pd?(pd.decisions||{}):{}, new Set(pd?(pd.completed||[]):[]));
+      var selfie = pd ? pd.selfie_url : null;
       var bg = side==="A"?"rgba(59,130,246,0.2)":side==="B"?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)";
       var border = side==="A"?"1px solid rgba(59,130,246,0.6)":side==="B"?"1px solid rgba(239,68,68,0.6)":"1px solid rgba(255,255,255,0.1)";
       return (
         <div key={n} style={{background:bg, border:border, borderRadius:"10px", padding:"8px 6px", textAlign:"center", minWidth:"68px", transition:"all 0.4s"}}>
-          <div style={{fontSize:"20px", marginBottom:"2px"}}>👤</div>
+          {selfie
+            ? <img src={selfie} style={{width:"36px", height:"36px", borderRadius:"50%", objectFit:"cover", marginBottom:"2px", border:"2px solid rgba(255,255,255,0.2)"}} />
+            : <div style={{fontSize:"20px", marginBottom:"2px"}}>👤</div>}
           <div style={{color:"white", fontWeight:"800", fontSize:"11px"}}>{nm}</div>
           <div style={{color:"#64748b", fontSize:"9px"}}>{"#"+n}</div>
           <div style={{color:clr(nav.nav-BASE_NW), fontSize:"9px", fontWeight:"700"}}>{fmt(nav.nav)}</div>
@@ -538,7 +707,36 @@ export default function App() {
     }
 
     return (
-      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", padding:"16px 20px", fontFamily:"Arial,sans-serif"}}>
+      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", padding:"16px 20px", fontFamily:"Arial,sans-serif", position:"relative"}}>
+
+        {/* Results Overlay */}
+        {dashShowResults && dashPrevResults && dashPrevScenario && (
+          <div style={{position:"fixed", inset:0, zIndex:100, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column"}}>
+            <div style={{background:"linear-gradient(135deg,#0f172a,#1e1b4b)", border:"1px solid rgba(99,102,241,0.4)", borderRadius:"24px", padding:"40px 48px", textAlign:"center", maxWidth:"700px", width:"90%", boxShadow:"0 0 80px rgba(99,102,241,0.2)"}}>
+              <div style={{color:"#64748b", fontSize:"12px", fontWeight:"700", letterSpacing:"2px", marginBottom:"8px"}}>RESULTS</div>
+              <h2 style={{color:"white", fontSize:"26px", fontWeight:"900", margin:"0 0 32px"}}>{dashPrevScenario.title}</h2>
+              <div style={{display:"flex", gap:"16px", justifyContent:"center", marginBottom:"32px"}}>
+                {dashPrevResults.map(function(r, i) {
+                  var isWinner = r.pct === Math.max.apply(null, dashPrevResults.map(function(x){return x.pct;}));
+                  var col = i===0?"#60a5fa":"#f87171";
+                  return (
+                    <div key={r.value} style={{flex:"1", background:isWinner?"rgba(250,204,21,0.08)":"rgba(255,255,255,0.04)", border:isWinner?"2px solid rgba(250,204,21,0.4)":"1px solid rgba(255,255,255,0.1)", borderRadius:"16px", padding:"24px 16px"}}>
+                      <div style={{color:col, fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"8px"}}>{"OPTION "+(i===0?"A":"B")}</div>
+                      <div style={{color:"white", fontWeight:"800", fontSize:"14px", marginBottom:"16px"}}>{r.label}</div>
+                      <div style={{fontSize:"64px", fontWeight:"900", color:isWinner?"#facc15":col, lineHeight:"1", marginBottom:"8px"}}>{r.pct}%</div>
+                      <div style={{color:"#64748b", fontSize:"13px"}}>{r.count} players</div>
+                      {isWinner && <div style={{marginTop:"8px", fontSize:"20px"}}>🏆</div>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{height:"6px", background:"rgba(255,255,255,0.08)", borderRadius:"3px", overflow:"hidden"}}>
+                <div style={{height:"100%", width:(dashPrevResults[0]?dashPrevResults[0].pct:0)+"%", background:"linear-gradient(90deg,#3b82f6,#60a5fa)", borderRadius:"3px", transition:"width 1s"}}/>
+              </div>
+              <div style={{color:"#475569", fontSize:"12px", marginTop:"12px"}}>Auto-closing in a few seconds...</div>
+            </div>
+          </div>
+        )}
 
         {/* Header */}
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"14px"}}>
@@ -944,6 +1142,29 @@ export default function App() {
       </div>
     </div>
   );
+
+  // ── SELFIE CAMERA ─────────────────────────────────────────────────────────
+  if (mode === "player" && playerNum !== null && showSelfieCamera) {
+    return (
+      <div style={s.page}>
+        <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
+          <div style={{fontSize:"32px", marginBottom:"8px"}}>📸</div>
+          <h2 style={{color:"#f8fafc", fontSize:"20px", fontWeight:"900", margin:"0 0 6px"}}>Take a Selfie!</h2>
+          <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 16px"}}>Your photo will show on the big screen dashboard</p>
+          <SelfieCamera
+            onCapture={captureSelfie}
+            onSkip={function(){stopCamera();setShowSelfieCamera(false);}}
+            onStart={startCamera}
+            stream={selfieStream}
+            captured={selfieCaptured}
+            uploading={selfieUploading}
+            btnP={s.btnP}
+            btnG={s.btnG}
+          />
+        </div>
+      </div>
+    );
+  }
 
   // ── PLAYER NUMBER SELECT ───────────────────────────────────────────────────
   if (mode === "player" && playerNum === null) return (
