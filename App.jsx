@@ -162,11 +162,11 @@ const SCENARIOS = [
     type:"insurance_s7",
     choices_existing:[
       { label:"Continue Paying Premiums", sub:"Stay protected  (-$20,000)", cost:-20000, value:"cont_insurance" },
-      { label:"Cancel Policy",            sub:"Save the money now", cost:0, value:"cancel_insurance" }
+      { label:"Continue to be Uninsured", sub:"Save the money now", cost:0, value:"cancel_insurance" }
     ],
     choices_new:[
       { label:"Buy Insurance Now", sub:"Better late than never  (-$25,000)", cost:-25000, value:"new_insurance" },
-      { label:"Skip Again",        sub:"Still not insured", cost:0, value:"cancel_insurance" }
+      { label:"Continue to be Uninsured", sub:"Still not insured", cost:0, value:"cancel_insurance" }
     ]},
   { id:"S8", day:2, age:"Age 30", tag:"Scenario 8", title:"Your Dream Wedding",
     story:"Getting married! Angpaos from guests will NOT fully cover the cost. How much do you spend?",
@@ -1501,7 +1501,7 @@ export default function App() {
                 var hadInsurance = myDecisions["S1"] === "insured";
                 var choices = hadInsurance ? currentS.choices_existing : currentS.choices_new;
                 var storyOverride = hadInsurance
-                  ? "You bought insurance in Scenario 1. Pay $20,000 to keep your coverage active — or cancel and lose protection."
+                  ? "You bought insurance in Scenario 1. Renew your premium for $10,000 to keep your coverage active — or remain uninsured."
                   : "You skipped insurance in Scenario 1. You can buy it now for $25,000, or continue without coverage.";
                 return (
                   <div>
