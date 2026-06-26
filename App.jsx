@@ -148,7 +148,7 @@ const SCENARIOS = [
     type:"choice",
     choices:[
       { label:"Buy Tech ETF", sub:"Diversified growth  (-$10,000)", cost:-10000, value:"etf" },
-      { label:"Not Ready",    sub:"Maybe next time", cost:0, value:"no_etf" }
+      { label:"Not Buying",   sub:"Maybe next time", cost:0, value:"no_etf" }
     ]},
   { id:"S6", day:2, age:"Age 28", tag:"Scenario 6", title:"Career Check-In — Vision Board",
     story:"Promoted! Income from the last 3 years is added. Those who submitted a Vision Board set clearer goals and earned more.",
@@ -429,7 +429,7 @@ export default function App() {
   var [dashShowResults, setDashShowResults] = useState(false);
   var [dashPrevResults, setDashPrevResults] = useState(null);
   var [dashPrevScenario, setDashPrevScenario] = useState(null);
-  var [dashPage, setDashPage] = useState("gif");
+  var [dashPage, setDashPage] = useState("lobby");
   var [mode, setMode] = useState(null);
   var [booting, setBooting] = useState(true);
   var [facilAuthed, setFacilAuthed] = useState(false);
@@ -557,7 +557,7 @@ export default function App() {
       setTimeout(function(){ setDashShowResults(false); }, 8000);
     }
     setGlobalIdx(next); sSet("global_idx", next);
-    setDashPage("gif"); // Switch dashboard back to GIF page on new scenario
+    setDashPage("gif");
   }
   function facilBack() {
     var prev = Math.max(globalIdx - 1, 0);
@@ -741,7 +741,8 @@ export default function App() {
       var n=i+1; var pd=allPlayerData[n];
       var dec = pd ? parseDec(pd.decisions) : {};
       var comp = new Set(pd ? (pd.completed||[]) : []);
-      return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec, comp).nav};
+      var navObj = computeNAV(dec, comp);
+      return {n:n, name:PLAYER_NAMES[i], nav:navObj.nav, cash:navObj.cash};
     }).sort(function(a,b){return b.nav-a.nav;});
     var top3 = allNavsSorted.slice(0,3);
     var medals = ["🥇","🥈","🥉"];
@@ -752,7 +753,9 @@ export default function App() {
     function PCard(n, side) {
       var nm = PLAYER_NAMES[n-1].split(" ")[0];
       var pd = allPlayerData[n];
-      var nav = computeNAV(pd?parseDec(pd.decisions):{}, new Set(pd?(pd.completed||[]):[]));
+      var dec = pd ? parseDec(pd.decisions) : {};
+      var comp = new Set(pd ? (pd.completed||[]) : []);
+      var cash = computeNW(dec, comp);
       var selfie = pd ? pd.selfie_url : null;
       var bg = side==="A"?"rgba(59,130,246,0.2)":side==="B"?"rgba(239,68,68,0.2)":"rgba(255,255,255,0.05)";
       var border = side==="A"?"2px solid rgba(59,130,246,0.7)":side==="B"?"2px solid rgba(239,68,68,0.7)":"1px solid rgba(255,255,255,0.15)";
@@ -765,7 +768,7 @@ export default function App() {
           </div>
           <div style={{color:"white", fontWeight:"800", fontSize:"18px", marginBottom:"3px"}}>{nm}</div>
           <div style={{color:"#64748b", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
-          <div style={{color:clr(nav.nav-BASE_NW), fontSize:"14px", fontWeight:"800"}}>{fmt(nav.nav)}</div>
+          <div style={{color:clr(cash-BASE_NW), fontSize:"14px", fontWeight:"800"}}>{fmt(cash)}</div>
         </div>
       );
     }
@@ -820,12 +823,19 @@ export default function App() {
               <div style={{color:"#64748b", fontSize:"9px"}}>joined</div>
             </div>
             {/* Page toggle */}
-            {dashPage === "gif" ? (
+            {dashPage === "lobby" && (
+              <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"linear-gradient(135deg,#16a34a,#15803d)"})}
+                onClick={function(){setDashPage("gif");}}>
+                🚀 Start Game
+              </button>
+            )}
+            {dashPage === "gif" && (
               <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"linear-gradient(135deg,#f59e0b,#ea580c)"})}
                 onClick={function(){setDashPage("votes");}}>
                 Reveal Choices →
               </button>
-            ) : (
+            )}
+            {dashPage === "votes" && (
               <button style={Object.assign({},s.btnS,{padding:"8px 14px"})}
                 onClick={function(){setDashPage("gif");}}>
                 ← Back to GIF
@@ -834,6 +844,55 @@ export default function App() {
             <button style={Object.assign({},s.btnS,{padding:"6px 12px"})} onClick={function(){setMode(null);}}>Exit</button>
           </div>
         </div>
+
+        {/* ══════════════════════════════════════════ */}
+        {/* PAGE 0: LOBBY — Player cards as they join  */}
+        {/* ══════════════════════════════════════════ */}
+        {dashPage === "lobby" && (
+          <div>
+            {/* Intro GIF */}
+            <div style={{width:"100%", marginBottom:"14px", borderRadius:"12px", overflow:"hidden"}}>
+              <img src={SCENARIO_GIFS["intro"]} style={{width:"100%", maxHeight:"40vh", objectFit:"contain", display:"block", background:"#000"}} />
+            </div>
+            {/* Title */}
+            <div style={{textAlign:"center", marginBottom:"16px"}}>
+              <div style={{color:"#facc15", fontSize:"13px", fontWeight:"700", letterSpacing:"3px", textTransform:"uppercase", marginBottom:"4px"}}>Welcome to</div>
+              <div style={{color:"white", fontSize:"32px", fontWeight:"900", letterSpacing:"-1px", textShadow:"0 0 30px rgba(99,102,241,0.6)"}}>Life in 3 Days</div>
+              <div style={{color:"#64748b", fontSize:"14px", marginTop:"4px"}}>A Financial Life Simulation — Starting with $100,000</div>
+            </div>
+            {/* Player cards grid */}
+            <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"12px", padding:"16px"}}>
+              <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"12px", textAlign:"center"}}>
+                {"PLAYERS JOINED — " + Object.keys(allPlayerData).length + " / " + TOTAL_PLAYERS}
+              </div>
+              <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,110px))", gap:"10px", justifyContent:"center"}}>
+                {Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;}).map(function(n) {
+                  var pd = allPlayerData[n];
+                  var joined = !!pd;
+                  var selfie = pd ? pd.selfie_url : null;
+                  return (
+                    <div key={n} style={{
+                      background: joined ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.03)",
+                      border: joined ? "2px solid rgba(99,102,241,0.5)" : "1px solid rgba(255,255,255,0.08)",
+                      borderRadius:"14px", padding:"14px 10px", textAlign:"center",
+                      transition:"all 0.4s", opacity: joined ? 1 : 0.4
+                    }}>
+                      <div style={{display:"flex", justifyContent:"center", marginBottom:"8px"}}>
+                        {selfie
+                          ? <img src={selfie} style={{width:"70px", height:"70px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(99,102,241,0.6)"}} />
+                          : <div style={{width:"70px", height:"70px", borderRadius:"50%", background:"rgba(255,255,255,0.05)", border:"2px dashed rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"28px"}}>👤</div>
+                        }
+                      </div>
+                      <div style={{color: joined ? "white" : "#475569", fontWeight:"700", fontSize:"13px"}}>{PLAYER_NAMES[n-1].split(" ")[0]}</div>
+                      <div style={{color:"#64748b", fontSize:"11px"}}>{"#"+n}</div>
+                      {joined && <div style={{color:"#4ade80", fontSize:"10px", fontWeight:"700", marginTop:"2px"}}>✓ Joined</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ══════════════════════════════════════════ */}
         {/* PAGE 1: GIF + QR + Leaderboard            */}
@@ -1203,7 +1262,7 @@ export default function App() {
           {(function() {
             var allNavs = Array.from({length:TOTAL_PLAYERS}, function(_,i) {
               var n=i+1; var pd=allPlayerData[n];
-              var dec=pd?parseDec(pd.decisions):{};
+              var dec=pd?parseDec(pd.decisions):{}; // Using NAV for leaderboard
               var comp=new Set(pd?(pd.completed||[]):[]);
               return {n:n, name:PLAYER_NAMES[i], nav:computeNAV(dec,comp).nav};
             }).sort(function(a,b){return b.nav-a.nav;});
