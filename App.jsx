@@ -8,9 +8,10 @@ const SUPA_HEADERS = { "apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY
 async function sGet(key) {
   try {
     if (key === "global_idx") {
-      const r = await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1&select=global_idx", { headers: SUPA_HEADERS });
+      const r = await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1&select=global_idx,game_started", { headers: SUPA_HEADERS });
       const d = await r.json();
-      return d && d[0] ? d[0].global_idx : 0;
+      if (d && d[0]) return { global_idx: d[0].global_idx, game_started: d[0].game_started };
+      return { global_idx: 0, game_started: false };
     }
     const num = parseInt(key.replace("player_", ""));
     const r = await fetch(SUPA_URL + "/rest/v1/players?player_num=eq." + num, { headers: SUPA_HEADERS });
@@ -23,13 +24,17 @@ async function sGet(key) {
 async function sSet(key, val) {
   try {
     if (key === "global_idx") {
-      const r = await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
-        method: "PATCH",
-        headers: SUPA_HEADERS,
+      await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
+        method: "PATCH", headers: SUPA_HEADERS,
         body: JSON.stringify({ global_idx: val })
       });
-      const txt = await r.text();
-      console.log("sSet global_idx", r.status, txt);
+      return;
+    }
+    if (key === "game_started") {
+      await fetch(SUPA_URL + "/rest/v1/game_state?id=eq.1", {
+        method: "PATCH", headers: SUPA_HEADERS,
+        body: JSON.stringify({ game_started: val })
+      });
       return;
     }
     const num = parseInt(key.replace("player_", ""));
@@ -101,8 +106,8 @@ function computeS16(d) {
   return { gain: 0, msg: "No car — you saved smartly! No changes to your savings.", color: "#4ade80" };
 }
 function computeS17(d) {
-  if (d.S5 === "etf") return { gain: 100000, msg: "ETF boom! You bought in early — profits locked in: +$100,000!", color: "#4ade80" };
-  return { gain: 0, msg: "You did not invest in the ETF — no profits added.", color: "#94a3b8" };
+  if (d.S5 === "etf") return { gain: 30000, msg: "Managed Fund returns locked in: +$30,000!", color: "#4ade80" };
+  return { gain: 0, msg: "You did not invest in a Managed Fund — no profits added.", color: "#94a3b8" };
 }
 function computeS18(d) {
   if (d.S2 === "hdb")   return { gain: 240000, msg: "BTO sold! You get back $240,000 (capital + $200,000 profit)!", color: "#4ade80" };
@@ -143,11 +148,11 @@ const SCENARIOS = [
       { label:"Buy T-Bills @ 3%", sub:"Safe and steady  (-$10,000)", cost:-10000, value:"tbills" },
       { label:"Do Nothing",       sub:"Ride the volatility", cost:0, value:"no_tbills" }
     ]},
-  { id:"S5", day:1, age:"Age 26", tag:"Scenario 5", title:"Tech ETF Opportunity",
-    story:"Your friend made 30% on a Tech ETF. Diversified, lower risk — want in for $10,000?",
+  { id:"S5", day:1, age:"Age 26", tag:"Scenario 5", title:"Managed Fund Opportunity",
+    story:"A professionally managed fund offers diversified returns. Want in for $10,000?",
     type:"choice",
     choices:[
-      { label:"Buy Tech ETF", sub:"Diversified growth  (-$10,000)", cost:-10000, value:"etf" },
+      { label:"Buy Managed Fund", sub:"Professionally managed  (-$10,000)", cost:-10000, value:"etf" },
       { label:"Not Buying",   sub:"Maybe next time", cost:0, value:"no_etf" }
     ]},
   { id:"S6", day:2, age:"Age 28", tag:"Scenario 6", title:"Career Check-In — Vision Board",
@@ -212,8 +217,8 @@ const SCENARIOS = [
   { id:"S16", day:3, age:"Age 39", tag:"Scenario 16", title:"Car Resold",
     story:"Time to let go of the car. Only those who bought a car in Scenario 9 can sell it.",
     type:"reveal", compute: computeS16 },
-  { id:"S17", day:3, age:"Age 40", tag:"Scenario 17", title:"Tech ETF Surge!",
-    story:"The tech ETF has absolutely skyrocketed. Those who invested in Scenario 5 lock in massive profits.",
+  { id:"S17", day:3, age:"Age 40", tag:"Scenario 17", title:"Managed Fund Returns!",
+    story:"Your Managed Fund has delivered solid returns. Those who invested in Scenario 5 receive their profits.",
     type:"reveal", compute: computeS17 },
   { id:"S18", day:3, age:"Age 41", tag:"Scenario 18", title:"Sale of BTO / Condo",
     story:"Property market has grown. Time to cash out — BTO gets back $240,000, Condo gets back $280,000.",
@@ -227,14 +232,32 @@ const DAY_INFO = {
 };
 
 const PLAYER_NAMES = [
-  "Player 1","Player 2","Player 3","Player 4","Player 5",
-  "Player 6","Player 7","Player 8","Player 9","Player 10",
-  "Player 11","Player 12","Player 13","Player 14","Player 15",
-  "Player 16","Player 17","Player 18","Player 19","Player 20",
-  "Player 21","Player 22","Player 23","Player 24","Player 25",
-  "Player 26","Player 27","Player 28","Player 29"
+  "Goh Xue Jun Anabelle",
+  "Torance Sim",
+  "Chang Jing Wen",
+  "Lam Yuning Nin",
+  "Lam Zhi He",
+  "Bryan Luke Lam",
+  "Wong Lup Hang",
+  "Izy Sim",
+  "Goh Zheng Le Sherlyn",
+  "Kevin Wong Hong Ming",
+  "Tan Yong Meng",
+  "Benjamin Chng",
+  "Dean Akid Bin Nasrie",
+  "Carmen Loo",
+  "Calla Loo",
+  "Chia Wan Yin Wennie",
+  "Edeline Lim",
+  "Elgin Tan",
+  "Dylan Tan Xin Yu",
+  "Yuki Justin Goh",
+  "Meng-Joon Koh",
+  "Charlene Chew",
+  "Ng Jia Xuan",
+  "Olivia Mun"
 ];
-const TOTAL_PLAYERS = 29;
+const TOTAL_PLAYERS = 24;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
@@ -424,6 +447,7 @@ function clr(n) { return n >= 0 ? "#4ade80" : "#f87171"; }
 
 // ── APP ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  var [gameStarted, setGameStarted] = useState(false);
   var [dashTimer, setDashTimer] = useState(60);
   var [dashTimerActive, setDashTimerActive] = useState(false);
   var [dashShowResults, setDashShowResults] = useState(false);
@@ -466,7 +490,12 @@ export default function App() {
 
   useEffect(function() {
     sGet("global_idx").then(function(gi) {
-      if (gi !== null) { setGlobalIdx(gi); setLiveGlobalIdx(gi); }
+      if (gi !== null) {
+        var idx = typeof gi === "object" ? gi.global_idx : gi;
+        var started = typeof gi === "object" ? gi.game_started : true;
+        setGlobalIdx(idx); setLiveGlobalIdx(idx);
+        setGameStarted(!!started);
+      }
       setBooting(false);
     });
   }, []);
@@ -493,7 +522,10 @@ export default function App() {
             };
           });
         }
-        if (gd && gd[0] !== undefined) setGlobalIdx(gd[0].global_idx);
+        if (gd && gd[0] !== undefined) {
+          setGlobalIdx(gd[0].global_idx);
+          setGameStarted(!!gd[0].game_started);
+        }
         setAllPlayerData(all);
       } catch(e) {}
     }
@@ -507,8 +539,13 @@ export default function App() {
     var lastGi = -1;
     function poll() {
       sGet("global_idx").then(function(gi) {
-        if (gi !== null && gi !== lastGi) {
-          lastGi = gi; setRevealResult(null); setPendingCi(null); setLiveGlobalIdx(gi);
+        if (gi !== null) {
+          var idx = typeof gi === "object" ? gi.global_idx : gi;
+          var started = typeof gi === "object" ? gi.game_started : true;
+          setGameStarted(!!started);
+          if (idx !== lastGi) {
+            lastGi = idx; setRevealResult(null); setPendingCi(null); setLiveGlobalIdx(idx);
+          }
         }
       });
       sGet("player_" + playerNum).then(function(pd) {
@@ -568,7 +605,9 @@ export default function App() {
     if (!window.confirm("Reset ALL player data and restart?")) return;
     setGlobalIdx(0); setAllPlayerData({}); setCiAffected([]);
     setWheelPool([]); setWheelPicked([]); setWheelResult(null); setWheelAngle(0);
+    setGameStarted(false); setDashPage("lobby");
     resetAllPlayers();
+    sSet("game_started", false);
   }
 
   async function joinGame() {
@@ -824,7 +863,7 @@ export default function App() {
             {/* Page toggle */}
             {dashPage === "lobby" && (
               <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"linear-gradient(135deg,#16a34a,#15803d)"})}
-                onClick={function(){setDashPage("gif");}}>
+                onClick={function(){sSet("game_started", true); setGameStarted(true); setDashPage("gif");}}>
                 🚀 Start Game
               </button>
             )}
@@ -1216,7 +1255,7 @@ export default function App() {
             <table style={{width:"100%", borderCollapse:"collapse", fontSize:"11px"}}>
               <thead>
                 <tr style={{borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
-                  {["Player","Cash","Property","ETF","T-Bills","Car","Insured","NAV"].map(function(h) {
+                  {["Player","Cash","Property","Managed Fund","T-Bills","Car","Insured","NAV"].map(function(h) {
                     return <th key={h} style={{padding:"6px 8px", color:"#64748b", fontWeight:"700", textAlign:"right", whiteSpace:"nowrap"}}>{h}</th>;
                   })}
                 </tr>
@@ -1405,6 +1444,30 @@ export default function App() {
           disabled={!numInput||parseInt(numInput)<1||parseInt(numInput)>TOTAL_PLAYERS}
           onClick={joinGame}>Enter the Game</button>
         <button style={Object.assign({}, s.btnG, {marginTop:"8px"})} onClick={function(){setMode(null);}}>Back</button>
+      </div>
+    </div>
+  );
+
+  // ── WAITING SCREEN ────────────────────────────────────────────────────────
+  if (mode === "player" && playerNum !== null && !showSelfieCamera && !gameStarted) return (
+    <div style={s.page}>
+      <div style={Object.assign({}, s.card, {maxWidth:"380px", textAlign:"center", padding:"40px 30px"})}>
+        <div style={{fontSize:"48px", marginBottom:"16px"}}>⏳</div>
+        <h2 style={{color:"#f8fafc", fontSize:"22px", fontWeight:"900", margin:"0 0 10px"}}>
+          {"Welcome, " + PLAYER_NAMES[playerNum-1].split(" ")[0] + "!"}
+        </h2>
+        <p style={{color:"#64748b", fontSize:"14px", margin:"0 0 24px", lineHeight:"1.6"}}>
+          Please wait for the game to start. The facilitator will kick things off shortly!
+        </p>
+        <div style={{display:"flex", justifyContent:"center", gap:"6px", marginBottom:"20px"}}>
+          {[0,1,2].map(function(i){
+            return <div key={i} style={{width:"8px", height:"8px", borderRadius:"50%", background:"#6366f1", animation:"pulse 1.2s ease-in-out "+i*0.4+"s infinite", opacity:0.6}} />;
+          })}
+        </div>
+        <div style={{background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.2)", borderRadius:"10px", padding:"10px 14px"}}>
+          <div style={{color:"#a5b4fc", fontSize:"12px"}}>Your starting balance</div>
+          <div style={{color:"#4ade80", fontWeight:"900", fontSize:"24px"}}>$100,000</div>
+        </div>
       </div>
     </div>
   );
@@ -1629,7 +1692,7 @@ export default function App() {
                 {[
                   {label:"Cash", value:nav.cash, color:"#94a3b8"},
                   {label:"Property", value:nav.property, color:"#4ade80"},
-                  {label:"ETF", value:nav.etf, color:"#a5b4fc"},
+                  {label:"Managed Fund", value:nav.etf, color:"#a5b4fc"},
                   {label:"T-Bills", value:nav.tbills, color:"#4ade80"},
                   {label:"Car", value:nav.car, color:"#facc15"},
                 ].filter(function(r){return r.value>0;}).map(function(r) {
