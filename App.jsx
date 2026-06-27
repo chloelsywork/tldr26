@@ -955,8 +955,8 @@ export default function App() {
             {(function() {
               var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
               return gifUrl ? (
-                <div style={{width:"100%", marginBottom:"12px", borderRadius:"12px", overflow:"hidden"}}>
-                  <img src={gifUrl} style={{width:"100%", maxHeight:"45vh", objectFit:"contain", display:"block", background:"#000"}} />
+                <div style={{width:"100vw", position:"relative", left:"50%", transform:"translateX(-50%)", marginBottom:"12px", overflow:"hidden"}}>
+                  <img src={gifUrl} style={{width:"100%", height:"auto", display:"block"}} />
                 </div>
               ) : null;
             })()}
