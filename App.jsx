@@ -161,7 +161,7 @@ const SCENARIOS = [
     story:"Time to review your insurance situation.",
     type:"insurance_s7",
     choices_existing:[
-      { label:"Continue Paying Premiums", sub:"Stay protected  (-$20,000)", cost:-20000, value:"cont_insurance" },
+      { label:"Renew Insurance Premium",  sub:"Stay protected  (-$10,000)", cost:-10000, value:"cont_insurance" },
       { label:"Continue to be Uninsured", sub:"Save the money now", cost:0, value:"cancel_insurance" }
     ],
     choices_new:[
@@ -447,6 +447,7 @@ export default function App() {
   var [myDecisions, setMyDecisions] = useState({});
   var [myCompleted, setMyCompleted] = useState(new Set());
   var [mySelfieUrl, setMySelfieUrl] = useState(null);
+  var [myPassword, setMyPassword] = useState("");
   var [showSelfieCamera, setShowSelfieCamera] = useState(false);
   var [selfieStream, setSelfieStream] = useState(null);
   var [selfieCaptured, setSelfieCaptured] = useState(null);
@@ -586,6 +587,7 @@ export default function App() {
     setMyDecisions({}); setMyCompleted(new Set()); setRevealResult(null); setPendingCi(null);
     if (settingPassword) {
       await sSet("player_" + n, { password: passwordInput, decisions:{}, completed:[], selfie_url: null });
+      setMyPassword(passwordInput);
       setPlayerNum(n);
       setShowSelfieCamera(true); // Show camera for new players
     } else {
@@ -593,6 +595,7 @@ export default function App() {
       if (!pd || pd.password !== passwordInput) { setPasswordError("Wrong password. Try again!"); return; }
       setMyDecisions(pd.decisions || {}); setMyCompleted(new Set(pd.completed || []));
       setMySelfieUrl(pd.selfie_url || null);
+      setMyPassword(pd.password || "");
       setPlayerNum(n);
     }
     var gi = await sGet("global_idx");
@@ -650,17 +653,13 @@ export default function App() {
     if (s && s.type === "reveal") setRevealResult(s.compute(nd));
     else if (s && s.type === "ci") setRevealResult(s.compute(nd, choiceValue));
     else setRevealResult(null);
-    var savedPd = await sGet("player_" + playerNum);
-    var savedPw = savedPd ? (savedPd.password || "") : "";
-    await sSet("player_" + playerNum, { password: savedPw, decisions: nd, completed: Array.from(nc), selfie_url: mySelfieUrl });
+    await sSet("player_" + playerNum, { password: myPassword, decisions: nd, completed: Array.from(nc), selfie_url: mySelfieUrl });
   }
 
   async function ackAutomatic(scenarioId) {
     var arr = Array.from(myCompleted); arr.push(scenarioId);
     var nc = new Set(arr); setMyCompleted(nc); setRevealResult(null);
-    var savedPd = await sGet("player_" + playerNum);
-    var savedPw = savedPd ? (savedPd.password || "") : "";
-    await sSet("player_" + playerNum, { password: savedPw, decisions: myDecisions, completed: Array.from(nc), selfie_url: mySelfieUrl });
+    await sSet("player_" + playerNum, { password: myPassword, decisions: myDecisions, completed: Array.from(nc), selfie_url: mySelfieUrl });
   }
 
   var currentS = SCENARIOS[liveGlobalIdx];
