@@ -257,6 +257,13 @@ const PLAYER_NAMES = [
   "Ng Jia Xuan",
   "Olivia Mun"
 ];
+const DISPLAY_NAMES = [
+  "Anabelle","Torance","Jing Wen","Yuning","Zhi He",
+  "Bryan","Lup Hang","Izy","Sherlyn","Kevin",
+  "Yong Meng","Benjamin","Dean","Carmen","Calla",
+  "Wennie","Edeline","Elgin","Dylan","Yuki",
+  "Meng-Joon","Charlene","Jia Xuan","Olivia"
+];
 const TOTAL_PLAYERS = 24;
 
 const BASE_NW = 100000;
@@ -689,8 +696,8 @@ export default function App() {
       }
     }
     setMyDecisions(nd); setMyCompleted(nc); setPendingCi(null);
-    if (s && s.type === "reveal") setRevealResult(s.compute(nd));
-    else if (s && s.type === "ci") setRevealResult(s.compute(nd, choiceValue));
+    if (s && s.type === "reveal") setRevealResult(s.compute(parseDec(nd)));
+    else if (s && s.type === "ci") setRevealResult(s.compute(parseDec(nd), choiceValue));
     else setRevealResult(null);
     await sSet("player_" + playerNum, { password: myPassword, decisions: nd, completed: Array.from(nc), selfie_url: mySelfieUrl });
   }
@@ -789,7 +796,7 @@ export default function App() {
     var podHt = ["90px","68px","54px"];
 
     function PCard(n, side) {
-      var nm = PLAYER_NAMES[n-1].split(" ")[0];
+      var nm = DISPLAY_NAMES[n-1];
       var pd = allPlayerData[n];
       var dec = pd ? parseDec(pd.decisions) : {};
       var comp = new Set(pd ? (pd.completed||[]) : []);
@@ -921,7 +928,7 @@ export default function App() {
                           : <div style={{width:"70px", height:"70px", borderRadius:"50%", background:"rgba(255,255,255,0.05)", border:"2px dashed rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"28px"}}>👤</div>
                         }
                       </div>
-                      <div style={{color: joined ? "white" : "#475569", fontWeight:"700", fontSize:"13px"}}>{PLAYER_NAMES[n-1].split(" ")[0]}</div>
+                      <div style={{color: joined ? "white" : "#475569", fontWeight:"700", fontSize:"13px"}}>{DISPLAY_NAMES[n-1]}</div>
                       <div style={{color:"#64748b", fontSize:"11px"}}>{"#"+n}</div>
                       {joined && <div style={{color:"#4ade80", fontSize:"10px", fontWeight:"700", marginTop:"2px"}}>✓ Joined</div>}
                     </div>
@@ -955,7 +962,7 @@ export default function App() {
                 {wheelResult && !wheelSpinning && (
                   <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"10px 24px", textAlign:"center"}}>
                     <div style={{color:"#fca5a5", fontSize:"11px"}}>CI goes to...</div>
-                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>{"#"+wheelResult+" "+PLAYER_NAMES[wheelResult-1].split(" ")[0]+"!"}</div>
+                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>{"#"+wheelResult+" "+DISPLAY_NAMES[wheelResult-1]+"!"}</div>
                   </div>
                 )}
                 <div style={{display:"flex", gap:"8px"}}>
@@ -965,7 +972,7 @@ export default function App() {
                   }
                   <button style={Object.assign({},s.btnS,{padding:"10px 16px"})} onClick={initWheel}>Reset</button>
                 </div>
-                {wheelPicked.length > 0 && <div style={{display:"flex", flexWrap:"wrap", gap:"5px", justifyContent:"center"}}>{wheelPicked.map(function(n){return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 9px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>;})}</div>}
+                {wheelPicked.length > 0 && <div style={{display:"flex", flexWrap:"wrap", gap:"5px", justifyContent:"center"}}>{wheelPicked.map(function(n){return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 9px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+DISPLAY_NAMES[n-1]}</span>;})}</div>}
               </div>
             )}
 
@@ -985,7 +992,7 @@ export default function App() {
                     return (
                       <div key={p.n} style={{flex:"1", maxWidth:"200px", display:"flex", flexDirection:"column", alignItems:"center"}}>
                         <div style={{fontSize:rr===0?"28px":"22px", marginBottom:"4px"}}>{medals[rr]}</div>
-                        <div style={{color:podCol[rr], fontWeight:"900", fontSize:"15px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                        <div style={{color:podCol[rr], fontWeight:"900", fontSize:"15px", textAlign:"center"}}>{DISPLAY_NAMES[p.n-1]}</div>
                         <div style={{color:"#4ade80", fontWeight:"800", fontSize:"13px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
                         <div style={{width:"100%", height:podHt[rr], background:podBg[rr], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
                           <span style={{color:podCol[rr], fontWeight:"900", fontSize:"20px"}}>{"#"+(rr+1)}</span>
@@ -999,7 +1006,7 @@ export default function App() {
                     return (
                       <div key={p.n} style={{display:"flex", alignItems:"center", gap:"8px", padding:"7px 10px", background:"rgba(255,255,255,0.04)", borderRadius:"7px"}}>
                         <span style={{color:"#475569", fontSize:"14px", fontWeight:"700", width:"24px"}}>{"#"+(i+4)}</span>
-                        <span style={{color:"#e2e8f0", fontSize:"14px", flex:"1", fontWeight:"600"}}>{p.name.split(" ")[0]}</span>
+                        <span style={{color:"#e2e8f0", fontSize:"14px", flex:"1", fontWeight:"600"}}>{DISPLAY_NAMES[p.n-1]}</span>
                         <span style={{color:"#4ade80", fontSize:"13px", fontWeight:"800"}}>{fmt(p.nav)}</span>
                       </div>
                     );
@@ -1233,7 +1240,7 @@ export default function App() {
               <div style={{background:"rgba(248,113,113,0.08)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"8px", padding:"10px 12px", marginBottom:"12px"}}>
                 <div style={{color:"#fca5a5", fontWeight:"700", fontSize:"11px", marginBottom:"6px"}}>CI Affected ({ciAffected.length}/7) — use Dashboard to spin wheel:</div>
                 <div style={{display:"flex", flexWrap:"wrap", gap:"5px"}}>
-                  {ciAffected.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+PLAYER_NAMES[n-1].split(" ")[0]}</span>; })}
+                  {ciAffected.map(function(n) { return <span key={n} style={{background:"rgba(248,113,113,0.2)", borderRadius:"6px", padding:"3px 8px", fontSize:"11px", color:"#fca5a5", fontWeight:"700"}}>{"#"+n+" "+DISPLAY_NAMES[n-1]}</span>; })}
                 </div>
               </div>
             )}
@@ -1275,7 +1282,7 @@ export default function App() {
                   return (
                     <tr key={n} style={{borderBottom:"1px solid rgba(255,255,255,0.04)", background:isTop?"rgba(250,204,21,0.05)":done?"rgba(74,222,128,0.03)":"transparent"}}>
                       <td style={{padding:"7px 8px", whiteSpace:"nowrap"}}>
-                        <span style={{color:isTop?"#facc15":done?"#4ade80":"#94a3b8", fontWeight:"700"}}>{isTop?"👑 ":done?"✓ ":""}{PLAYER_NAMES[n-1].split(" ")[0]}</span>
+                        <span style={{color:isTop?"#facc15":done?"#4ade80":"#94a3b8", fontWeight:"700"}}>{isTop?"👑 ":done?"✓ ":""}{DISPLAY_NAMES[n-1]}</span>
                         {done && fs && (fs.choices||fs.choices_existing) && dec[fs.id] && (function(){
                           var allC=(fs.choices||[]).concat(fs.choices_existing||[]).concat(fs.choices_new||[]);
                           var ch=allC.find(function(c){return c.value===dec[fs.id];});
@@ -1320,7 +1327,7 @@ export default function App() {
                     return (
                       <div key={p.n} style={{flex:"1", display:"flex", flexDirection:"column", alignItems:"center"}}>
                         <div style={{fontSize:realRank===0?"28px":"22px", marginBottom:"4px"}}>{medals[realRank]}</div>
-                        <div style={{color:col, fontWeight:"900", fontSize:"13px", marginBottom:"2px", textAlign:"center"}}>{p.name.split(" ")[0]}</div>
+                        <div style={{color:col, fontWeight:"900", fontSize:"13px", marginBottom:"2px", textAlign:"center"}}>{DISPLAY_NAMES[p.n-1]}</div>
                         <div style={{color:"#4ade80", fontWeight:"800", fontSize:"12px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
                         <div style={{width:"100%", height:ht, background:podiumBg[realRank], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center"}}>
                           <span style={{color:col, fontWeight:"900", fontSize:"20px"}}>{"#"+(realRank+1)}</span>
@@ -1676,7 +1683,7 @@ export default function App() {
                     return (
                       <div key={p.n} style={{flex:"1", display:"flex", flexDirection:"column", alignItems:"center"}}>
                         <div style={{fontSize:realRank===0?"28px":"22px", marginBottom:"4px"}}>{medals[realRank]}</div>
-                        <div style={{color:isMe?"#facc15":col, fontWeight:"900", fontSize:"12px", marginBottom:"2px", textAlign:"center"}}>{p.name.split(" ")[0]}{isMe?" 👈":""}</div>
+                        <div style={{color:isMe?"#facc15":col, fontWeight:"900", fontSize:"12px", marginBottom:"2px", textAlign:"center"}}>{DISPLAY_NAMES[p.n-1]}{isMe?" 👈":""}</div>
                         <div style={{color:"#4ade80", fontWeight:"800", fontSize:"11px", marginBottom:"4px"}}>{fmt(p.nav)}</div>
                         <div style={{width:"100%", height:ht, background:podiumBg[realRank], borderRadius:"6px 6px 0 0", display:"flex", alignItems:"center", justifyContent:"center", border:isMe?"2px solid #facc15":"none"}}>
                           <span style={{color:col, fontWeight:"900", fontSize:"20px"}}>{"#"+(realRank+1)}</span>
