@@ -398,6 +398,13 @@ const SCENARIO_GIFS = {
   "S11": SUPA_STORAGE + "/s11.gif",
   "S12": SUPA_STORAGE + "/s12.gif",
   "S13": SUPA_STORAGE + "/s13.gif",
+  "S14": SUPA_STORAGE + "/s14.gif",
+  "S15": SUPA_STORAGE + "/s15.gif",
+  "S16": SUPA_STORAGE + "/s16.gif",
+  "S17": SUPA_STORAGE + "/s17.gif",
+  "S18": SUPA_STORAGE + "/s18.gif",
+  "SD3": SUPA_STORAGE + "/s6.gif",
+  "SVB": SUPA_STORAGE + "/s6.gif",
 };
 
 var wheelColors = ["#f87171","#fb923c","#facc15","#4ade80","#60a5fa","#a78bfa","#f472b6","#34d399","#f97316","#818cf8","#22d3ee","#e879f9","#a3e635","#fb7185","#fbbf24","#6ee7b7","#93c5fd","#c4b5fd","#fda4af","#86efac","#67e8f9","#d8b4fe","#fca5a5","#fed7aa","#d9f99d","#a7f3d0","#bae6fd","#e9d5ff","#fecdd3"];
