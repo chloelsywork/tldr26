@@ -255,7 +255,8 @@ const PLAYER_NAMES = [
   "Meng-Joon Koh",
   "Charlene Chew",
   "Ng Jia Xuan",
-  "Olivia Mun"
+  "Olivia Mun",
+  "Riley"
 ];
 const DISPLAY_NAMES = [
   "Anabelle","Torance","Jing Wen","Yuning","Zhi He",
@@ -264,7 +265,7 @@ const DISPLAY_NAMES = [
   "Wennie","Edeline","Elgin","Dylan","Yuki",
   "Meng-Joon","Charlene","Jia Xuan","Olivia"
 ];
-const TOTAL_PLAYERS = 24;
+const TOTAL_PLAYERS = 25;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
@@ -903,8 +904,8 @@ export default function App() {
         {dashPage === "lobby" && (
           <div>
             {/* Intro GIF */}
-            <div style={{width:"100%", marginBottom:"14px", borderRadius:"12px", overflow:"hidden", lineHeight:0}}>
-              <img src={SCENARIO_GIFS["intro"]} style={{width:"100%", height:"auto", display:"block", verticalAlign:"bottom"}} />
+            <div style={{width:"100%", marginBottom:"14px", borderRadius:"12px", overflow:"hidden"}}>
+              <img src={SCENARIO_GIFS["intro"]} style={{width:"100%", maxHeight:"40vh", objectFit:"contain", display:"block", background:"#000"}} />
             </div>
             {/* Title */}
             <div style={{textAlign:"center", marginBottom:"16px"}}>
@@ -955,8 +956,8 @@ export default function App() {
             {(function() {
               var gifUrl = SCENARIO_GIFS[ds ? ds.id : "intro"] || SCENARIO_GIFS["intro"];
               return gifUrl ? (
-                <div style={{width:"80vw", position:"relative", left:"50%", transform:"translateX(-50%)", marginBottom:"12px", overflow:"hidden", lineHeight:0}}>
-                  <img src={gifUrl} style={{width:"100%", height:"auto", display:"block", verticalAlign:"bottom"}} />
+                <div style={{width:"100vw", position:"relative", left:"50%", transform:"translateX(-50%)", marginBottom:"12px", overflow:"hidden"}}>
+                  <img src={gifUrl} style={{width:"100%", height:"auto", display:"block"}} />
                 </div>
               ) : null;
             })()}
