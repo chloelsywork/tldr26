@@ -263,7 +263,7 @@ const DISPLAY_NAMES = [
   "Bryan","Lup Hang","Izy","Sherlyn","Kevin",
   "Yong Meng","Benjamin","Dean","Carmen","Calla",
   "Wennie","Edeline","Elgin","Dylan","Yuki",
-  "Meng-Joon","Charlene","Jia Xuan","Olivia"
+  "Meng-Joon","Charlene","Jia Xuan","Olivia","Riley"
 ];
 const TOTAL_PLAYERS = 25;
 
