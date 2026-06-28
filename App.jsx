@@ -741,7 +741,7 @@ export default function App() {
   if (!mode) return (
     <div style={s.page}>
       <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
-        <div style={s.chip}>TLDR 6.0</div>
+        <div style={s.chip}>TLDR 7.0</div>
         <div style={{fontSize:"44px", margin:"10px 0 6px"}}>🎮</div>
         <h1 style={{fontSize:"32px", fontWeight:"900", color:"#f8fafc", margin:"0 0 4px", letterSpacing:"-1px"}}>Life in 3 Days</h1>
         <p style={{color:"#64748b", fontSize:"13px", fontStyle:"italic", margin:"0 0 26px"}}>A Financial Life Simulation</p>
