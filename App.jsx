@@ -88,7 +88,10 @@ async function resetAllPlayers() {
 
 // ── COMPUTE FUNCTIONS ────────────────────────────────────────────────────────
 function computeCI(d, ciChoice) {
-  const insured = d.S1 === "insured" || d.S7 === "cont_insurance" || d.S7 === "new_insurance";
+  const boughtS1 = d.S1 === "insured";
+  const cancelledS7 = d.S7 === "cancel_insurance";
+  const renewedS7 = d.S7 === "cont_insurance" || d.S7 === "new_insurance";
+  const insured = (boughtS1 && !cancelledS7) || renewedS7;
   if (ciChoice === "ci_yes" && !insured) return { gain: -100000, msg: "CI hit and no insurance! -$100,000 lost.", color: "#f87171" };
   if (ciChoice === "ci_yes" && insured)  return { gain: 0, msg: "CI hit but you are insured. Fully covered!", color: "#4ade80" };
   return { gain: 0, msg: "No CI this time. Insurance stays as your safety net.", color: "#4ade80" };
@@ -263,7 +266,7 @@ const DISPLAY_NAMES = [
   "Bryan","Lup Hang","Izy","Sherlyn","Kevin",
   "Yong Meng","Benjamin","Dean","Carmen","Calla",
   "Wennie","Edeline","Elgin","Dylan","Yuki",
-  "Meng-Joon","Charlene","Jia Xuan","Olivia","Riley"
+  "Meng-Joon","Charlene","Jia Xuan","Olivia"
 ];
 const TOTAL_PLAYERS = 25;
 
@@ -451,8 +454,13 @@ function computeNAV(decisions, completed) {
   var car = 0;
   if (c.has("S9") && d.S9 === "car") car = 60000;
   if (c.has("S16")) car = 0;
-  var insured = (c.has("S1") && d.S1 === "insured") ||
-                (c.has("S7") && (d.S7 === "cont_insurance" || d.S7 === "new_insurance"));
+  // Insured if:
+  // - Bought in S1 AND (S7 not done OR S7 renewed/bought new - not cancelled)
+  // - OR skipped S1 but bought new in S7
+  var boughtS1 = c.has("S1") && d.S1 === "insured";
+  var cancelledS7 = c.has("S7") && d.S7 === "cancel_insurance";
+  var renewedS7 = c.has("S7") && (d.S7 === "cont_insurance" || d.S7 === "new_insurance");
+  var insured = (boughtS1 && !cancelledS7) || renewedS7;
   var nav = cash + property + etf + tbills + car;
   return { cash:cash, property:property, etf:etf, tbills:tbills, car:car, insured:insured, nav:nav };
 }
@@ -741,7 +749,7 @@ export default function App() {
   if (!mode) return (
     <div style={s.page}>
       <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
-        <div style={s.chip}>TLDR 7.0</div>
+        <div style={s.chip}>TLDR 6.0</div>
         <div style={{fontSize:"44px", margin:"10px 0 6px"}}>🎮</div>
         <h1 style={{fontSize:"32px", fontWeight:"900", color:"#f8fafc", margin:"0 0 4px", letterSpacing:"-1px"}}>Life in 3 Days</h1>
         <p style={{color:"#64748b", fontSize:"13px", fontStyle:"italic", margin:"0 0 26px"}}>A Financial Life Simulation</p>
