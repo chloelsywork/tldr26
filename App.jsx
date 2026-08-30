@@ -287,7 +287,7 @@ function SelfieCamera({ onCapture, onSkip, onStart, stream, captured, uploading,
   if (uploading) return (
     <div style={{padding:"20px", textAlign:"center"}}>
       <div style={{fontSize:"24px", marginBottom:"8px"}}>⬆️</div>
-      <div style={{color:"#a5b4fc"}}>Uploading your selfie...</div>
+      <div style={{color:"#1565C0"}}>Uploading your selfie...</div>
     </div>
   );
 
@@ -732,18 +732,18 @@ export default function App() {
   var pct = Math.round((liveGlobalIdx / SCENARIOS.length) * 100);
 
   var s = {
-    page: { minHeight:"100vh", background:"#080e1e", display:"flex", alignItems:"center", justifyContent:"center", padding:"16px", fontFamily:"Georgia, serif" },
-    card: { background:"rgba(8,16,32,0.98)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"18px", padding:"26px 22px" },
-    chip: { display:"inline-block", background:"rgba(99,102,241,0.12)", border:"1px solid rgba(99,102,241,0.28)", borderRadius:"20px", padding:"3px 13px", fontSize:"10px", fontFamily:"monospace", color:"#a5b4fc", letterSpacing:"2px", marginBottom:"10px" },
-    btnP: { background:"linear-gradient(135deg, #6366f1, #7c3aed)", color:"white", border:"none", borderRadius:"11px", padding:"13px 22px", fontSize:"15px", fontWeight:"700", cursor:"pointer", width:"100%" },
-    btnG: { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"11px", padding:"10px", fontSize:"13px", color:"#64748b", cursor:"pointer", width:"100%" },
-    btnS: { background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:"8px", padding:"7px 13px", fontSize:"12px", color:"#94a3b8", cursor:"pointer" },
-    inp:  { background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:"10px", padding:"12px 14px", color:"#f8fafc", fontSize:"15px", outline:"none", width:"100%", boxSizing:"border-box" },
-    cBtn: { display:"flex", alignItems:"center", gap:"11px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"12px", padding:"13px 14px", cursor:"pointer", width:"100%", marginBottom:"9px" },
-    badge:{ background:"rgba(99,102,241,0.07)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"8px", padding:"7px 11px", fontSize:"11px", color:"#818cf8", marginBottom:"13px" },
+    page: { minHeight:"100vh", background:"#1565C0", display:"flex", alignItems:"center", justifyContent:"center", padding:"16px", fontFamily:"'Poppins','Arial Rounded MT Bold',Arial,sans-serif" },
+    card: { background:"white", border:"3px solid #1565C0", borderRadius:"20px", padding:"22px 20px", boxShadow:"0 4px 16px rgba(21,101,192,0.2)" },
+    chip: { display:"inline-block", background:"#1565C0", border:"none", borderRadius:"20px", padding:"4px 14px", fontSize:"11px", color:"white", letterSpacing:"1px", marginBottom:"10px", fontWeight:"700" },
+    btnP: { background:"#1565C0", color:"white", border:"3px solid #0d47a1", borderRadius:"50px", padding:"13px 22px", fontSize:"15px", fontWeight:"800", cursor:"pointer", width:"100%" },
+    btnG: { background:"white", border:"3px solid #90caf9", borderRadius:"50px", padding:"10px", fontSize:"13px", color:"#1565C0", cursor:"pointer", width:"100%", fontWeight:"700" },
+    btnS: { background:"white", border:"2px solid #90caf9", borderRadius:"50px", padding:"7px 14px", fontSize:"12px", color:"#1565C0", cursor:"pointer", fontWeight:"700" },
+    inp:  { background:"white", border:"2px solid #90caf9", borderRadius:"12px", padding:"12px 14px", color:"#1a237e", fontSize:"15px", outline:"none", width:"100%", boxSizing:"border-box", fontWeight:"600" },
+    cBtn: { display:"flex", alignItems:"center", gap:"11px", background:"#e3f2fd", border:"2px solid #90caf9", borderRadius:"16px", padding:"14px", cursor:"pointer", width:"100%", marginBottom:"9px" },
+    badge:{ background:"#fff9c4", border:"2px solid #f9a825", borderRadius:"10px", padding:"7px 11px", fontSize:"11px", color:"#e65100", marginBottom:"13px", fontWeight:"700" },
   };
 
-  if (booting) return <div style={s.page}><div style={{color:"#64748b"}}>Loading...</div></div>;
+  if (booting) return <div style={s.page}><div style={{color:"#546e7a"}}>Loading...</div></div>;
 
   // ── MODE SELECT ────────────────────────────────────────────────────────────
   if (!mode) return (
@@ -751,11 +751,11 @@ export default function App() {
       <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
         <div style={s.chip}>TLDR 6.0</div>
         <div style={{fontSize:"44px", margin:"10px 0 6px"}}>🎮</div>
-        <h1 style={{fontSize:"32px", fontWeight:"900", color:"#f8fafc", margin:"0 0 4px", letterSpacing:"-1px"}}>Life in 3 Days</h1>
-        <p style={{color:"#64748b", fontSize:"13px", fontStyle:"italic", margin:"0 0 26px"}}>A Financial Life Simulation</p>
+        <h1 style={{fontSize:"32px", fontWeight:"900", color:"#1a237e", margin:"0 0 4px", letterSpacing:"-1px"}}>Life in 3 Days</h1>
+        <p style={{color:"#546e7a", fontSize:"13px", fontStyle:"italic", margin:"0 0 26px"}}>A Financial Life Simulation</p>
         <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
           <button style={s.btnP} onClick={function(){setMode("player");}}>I am a Player — Join Game</button>
-          <button style={Object.assign({}, s.btnP, {background:"rgba(99,102,241,0.12)", color:"#a5b4fc"})} onClick={function(){setMode("facilitator");}}>Facilitator Panel</button>
+          <button style={Object.assign({}, s.btnP, {background:"#1565C0", color:"#1565C0"})} onClick={function(){setMode("facilitator");}}>Facilitator Panel</button>
           <button style={Object.assign({}, s.btnP, {background:"rgba(250,204,21,0.15)", color:"#facc15", border:"1px solid rgba(250,204,21,0.3)"})} onClick={function(){setMode("dashboard");}}>📺 Dashboard — Big Screen</button>
         </div>
       </div>
@@ -767,7 +767,7 @@ export default function App() {
     <div style={s.page}>
       <div style={Object.assign({}, s.card, {maxWidth:"360px", textAlign:"center"})}>
         <div style={{fontSize:"30px", marginBottom:"12px"}}>📺</div>
-        <h2 style={{color:"#f8fafc", fontSize:"20px", margin:"0 0 18px"}}>Dashboard Access</h2>
+        <h2 style={{color:"#1a237e", fontSize:"20px", margin:"0 0 18px"}}>Dashboard Access</h2>
         <input style={s.inp} type="password" placeholder="Enter facilitator password"
           value={facilPass} onChange={function(e){setFacilPass(e.target.value);}}
           onKeyDown={function(e){if(e.key==="Enter"&&facilPass===FACIL_PASS)setFacilAuthed(true);}} />
@@ -828,20 +828,20 @@ export default function App() {
               : <div style={{fontSize:"56px", lineHeight:"1"}}>👤</div>}
           </div>
           <div style={{color:"white", fontWeight:"800", fontSize:"18px", marginBottom:"3px"}}>{nm}</div>
-          <div style={{color:"#64748b", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
+          <div style={{color:"#546e7a", fontSize:"14px", marginBottom:"3px"}}>{"#"+n}</div>
           <div style={{color:clr(cash-BASE_NW), fontSize:"14px", fontWeight:"800"}}>{fmt(cash)}</div>
         </div>
       );
     }
 
     return (
-      <div style={{minHeight:"100vh", background:"linear-gradient(135deg,#020817,#0a0f1e,#020817)", fontFamily:"Arial,sans-serif", padding:"12px 16px"}}>
+      <div style={{minHeight:"100vh", background:"#1565C0", fontFamily:"Arial,sans-serif", padding:"12px 16px"}}>
 
         {/* Results Overlay */}
         {dashShowResults && dashPrevResults && dashPrevScenario && (
-          <div style={{position:"fixed", inset:0, zIndex:100, background:"rgba(0,0,0,0.88)", display:"flex", alignItems:"center", justifyContent:"center"}}>
+          <div style={{position:"fixed", inset:0, zIndex:100, background:"rgba(21,101,192,0.95)", display:"flex", alignItems:"center", justifyContent:"center"}}>
             <div style={{background:"linear-gradient(135deg,#0f172a,#1e1b4b)", border:"1px solid rgba(99,102,241,0.4)", borderRadius:"24px", padding:"36px 48px", textAlign:"center", maxWidth:"660px", width:"90%"}}>
-              <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"2px", marginBottom:"8px"}}>RESULTS</div>
+              <div style={{color:"#546e7a", fontSize:"11px", fontWeight:"700", letterSpacing:"2px", marginBottom:"8px"}}>RESULTS</div>
               <h2 style={{color:"white", fontSize:"24px", fontWeight:"900", margin:"0 0 28px"}}>{dashPrevScenario.title}</h2>
               <div style={{display:"flex", gap:"16px", justifyContent:"center", marginBottom:"24px"}}>
                 {dashPrevResults.map(function(r, i) {
@@ -852,13 +852,13 @@ export default function App() {
                       <div style={{color:col, fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"6px"}}>{"OPTION "+(i===0?"A":"B")}</div>
                       <div style={{color:"white", fontWeight:"800", fontSize:"13px", marginBottom:"12px"}}>{r.label}</div>
                       <div style={{fontSize:"56px", fontWeight:"900", color:isWinner?"#facc15":col, lineHeight:"1", marginBottom:"6px"}}>{r.pct}%</div>
-                      <div style={{color:"#64748b", fontSize:"12px"}}>{r.count} players</div>
+                      <div style={{color:"#546e7a", fontSize:"12px"}}>{r.count} players</div>
                       {isWinner && <div style={{marginTop:"8px", fontSize:"18px"}}>🏆</div>}
                     </div>
                   );
                 })}
               </div>
-              <div style={{color:"#475569", fontSize:"11px", marginTop:"10px"}}>Auto-closing in a few seconds...</div>
+              <div style={{color:"#546e7a", fontSize:"11px", marginTop:"10px"}}>Auto-closing in a few seconds...</div>
             </div>
           </div>
         )}
@@ -868,7 +868,7 @@ export default function App() {
           <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
             <div style={{background:"linear-gradient(135deg,#dc2626,#991b1b)", borderRadius:"6px", padding:"3px 9px", fontSize:"10px", fontWeight:"900", color:"white", letterSpacing:"1px"}}>● LIVE</div>
             <div>
-              <div style={{color:"#64748b", fontSize:"9px", fontWeight:"700", letterSpacing:"2px", textTransform:"uppercase"}}>{ds?ds.tag:""}</div>
+              <div style={{color:"#546e7a", fontSize:"9px", fontWeight:"700", letterSpacing:"2px", textTransform:"uppercase"}}>{ds?ds.tag:""}</div>
               <div style={{color:"white", fontWeight:"900", fontSize:"16px"}}>{ds?ds.title:""}</div>
             </div>
           </div>
@@ -877,11 +877,11 @@ export default function App() {
               <span style={{fontSize:"13px"}}>⏱</span>
               <span style={{color:dashTimer<=10?"#ef4444":"white", fontWeight:"900", fontSize:"20px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</span>
               <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
-                style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"14px",padding:"0 2px"}}>{dashTimerActive?"⏸":"▶"}</button>
+                style={{background:"none",border:"none",color:"#546e7a",cursor:"pointer",fontSize:"14px",padding:"0 2px"}}>{dashTimerActive?"⏸":"▶"}</button>
             </div>
-            <div style={{textAlign:"center", background:"rgba(255,255,255,0.05)", borderRadius:"8px", padding:"5px 12px"}}>
+            <div style={{textAlign:"center", background:"#e3f2fd", borderRadius:"8px", padding:"5px 12px"}}>
               <div style={{color:"#facc15", fontWeight:"900", fontSize:"14px"}}>{Object.keys(allPlayerData).length}/{TOTAL_PLAYERS}</div>
-              <div style={{color:"#64748b", fontSize:"9px"}}>joined</div>
+              <div style={{color:"#546e7a", fontSize:"9px"}}>joined</div>
             </div>
             {/* Page toggle */}
             {dashPage === "lobby" && (
@@ -891,7 +891,7 @@ export default function App() {
               </button>
             )}
             {dashPage === "gif" && (
-              <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"linear-gradient(135deg,#f59e0b,#ea580c)"})}
+              <button style={Object.assign({},s.btnP,{width:"auto", padding:"8px 18px", fontSize:"13px", background:"#f9a825"})}
                 onClick={function(){setDashPage("votes");}}>
                 Reveal Choices →
               </button>
@@ -919,11 +919,11 @@ export default function App() {
             <div style={{textAlign:"center", marginBottom:"16px"}}>
               <div style={{color:"#facc15", fontSize:"13px", fontWeight:"700", letterSpacing:"3px", textTransform:"uppercase", marginBottom:"4px"}}>Welcome to</div>
               <div style={{color:"white", fontSize:"32px", fontWeight:"900", letterSpacing:"-1px", textShadow:"0 0 30px rgba(99,102,241,0.6)"}}>Life in 3 Days</div>
-              <div style={{color:"#64748b", fontSize:"14px", marginTop:"4px"}}>A Financial Life Simulation — Starting with $100,000</div>
+              <div style={{color:"#546e7a", fontSize:"14px", marginTop:"4px"}}>A Financial Life Simulation — Starting with $100,000</div>
             </div>
             {/* Player cards grid */}
-            <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"12px", padding:"16px"}}>
-              <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"12px", textAlign:"center"}}>
+            <div style={{background:"#e3f2fd", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"12px", padding:"16px"}}>
+              <div style={{color:"#546e7a", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"12px", textAlign:"center"}}>
                 {"PLAYERS JOINED — " + Object.keys(allPlayerData).length + " / " + TOTAL_PLAYERS}
               </div>
               <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,110px))", gap:"10px", justifyContent:"center"}}>
@@ -941,11 +941,11 @@ export default function App() {
                       <div style={{display:"flex", justifyContent:"center", marginBottom:"8px"}}>
                         {selfie
                           ? <img src={selfie} style={{width:"70px", height:"70px", borderRadius:"50%", objectFit:"cover", border:"3px solid rgba(99,102,241,0.6)"}} />
-                          : <div style={{width:"70px", height:"70px", borderRadius:"50%", background:"rgba(255,255,255,0.05)", border:"2px dashed rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"28px"}}>👤</div>
+                          : <div style={{width:"70px", height:"70px", borderRadius:"50%", background:"#e3f2fd", border:"2px dashed rgba(255,255,255,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"28px"}}>👤</div>
                         }
                       </div>
                       <div style={{color: joined ? "white" : "#475569", fontWeight:"700", fontSize:"13px"}}>{DISPLAY_NAMES[n-1]}</div>
-                      <div style={{color:"#64748b", fontSize:"11px"}}>{"#"+n}</div>
+                      <div style={{color:"#546e7a", fontSize:"11px"}}>{"#"+n}</div>
                       {joined && <div style={{color:"#4ade80", fontSize:"10px", fontWeight:"700", marginTop:"2px"}}>✓ Joined</div>}
                     </div>
                   );
@@ -973,12 +973,12 @@ export default function App() {
             {/* CI Spin Wheel */}
             {ds && ds.id === "S12" && (
               <div style={{background:"rgba(248,113,113,0.06)", border:"1px solid rgba(248,113,113,0.2)", borderRadius:"12px", padding:"14px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", gap:"10px"}}>
-                <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px"}}>SPIN THE WHEEL — 7 Players Get CI <span style={{color:"#64748b", fontWeight:"400", fontSize:"11px"}}>({wheelPicked.length}/7 selected)</span></div>
+                <div style={{color:"#fca5a5", fontWeight:"800", fontSize:"13px"}}>SPIN THE WHEEL — 7 Players Get CI <span style={{color:"#546e7a", fontWeight:"400", fontSize:"11px"}}>({wheelPicked.length}/7 selected)</span></div>
                 <WheelCanvas wheelAngle={wheelAngle} wheelPicked={wheelPicked} wheelColors={wheelColors} />
                 {wheelResult && !wheelSpinning && (
                   <div style={{background:"rgba(248,113,113,0.15)", border:"1px solid rgba(248,113,113,0.4)", borderRadius:"10px", padding:"10px 24px", textAlign:"center"}}>
                     <div style={{color:"#fca5a5", fontSize:"11px"}}>CI goes to...</div>
-                    <div style={{color:"#f8fafc", fontWeight:"900", fontSize:"20px"}}>{"#"+wheelResult+" "+DISPLAY_NAMES[wheelResult-1]+"!"}</div>
+                    <div style={{color:"#1a237e", fontWeight:"900", fontSize:"20px"}}>{"#"+wheelResult+" "+DISPLAY_NAMES[wheelResult-1]+"!"}</div>
                   </div>
                 )}
                 <div style={{display:"flex", gap:"8px"}}>
@@ -994,13 +994,13 @@ export default function App() {
 
             {/* QR + Leaderboard */}
             <div style={{display:"grid", gridTemplateColumns:"200px 1fr", gap:"12px"}}>
-              <div style={{background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"10px", padding:"10px", display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", justifyContent:"center"}}>
+              <div style={{background:"#e3f2fd", border:"2px solid #bbdefb", borderRadius:"10px", padding:"10px", display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", justifyContent:"center"}}>
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png" style={{width:"160px", height:"160px", borderRadius:"6px"}} />
                 <div style={{color:"white", fontWeight:"800", fontSize:"15px", textAlign:"center"}}>Scan to join!</div>
-                <div style={{color:"#64748b", fontSize:"12px"}}>tldr26.vercel.app</div>
+                <div style={{color:"#546e7a", fontSize:"12px"}}>tldr26.vercel.app</div>
               </div>
-              <div style={{background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
-                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
+              <div style={{background:"#e3f2fd", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
+                <div style={{color:"#546e7a", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
                 <div style={{display:"flex", gap:"6px", alignItems:"flex-end", justifyContent:"center", marginBottom:"8px"}}>
                   {[top3[1],top3[0],top3[2]].map(function(p,pos){
                     if(!p) return null;
@@ -1020,9 +1020,9 @@ export default function App() {
                 <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:"6px"}}>
                   {allNavsSorted.slice(3).map(function(p,i){
                     return (
-                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"8px", padding:"7px 10px", background:"rgba(255,255,255,0.04)", borderRadius:"7px"}}>
-                        <span style={{color:"#475569", fontSize:"14px", fontWeight:"700", width:"24px"}}>{"#"+(i+4)}</span>
-                        <span style={{color:"#e2e8f0", fontSize:"14px", flex:"1", fontWeight:"600"}}>{DISPLAY_NAMES[p.n-1]}</span>
+                      <div key={p.n} style={{display:"flex", alignItems:"center", gap:"8px", padding:"7px 10px", background:"#e3f2fd", borderRadius:"7px"}}>
+                        <span style={{color:"#546e7a", fontSize:"14px", fontWeight:"700", width:"24px"}}>{"#"+(i+4)}</span>
+                        <span style={{color:"#1a237e", fontSize:"14px", flex:"1", fontWeight:"600"}}>{DISPLAY_NAMES[p.n-1]}</span>
                         <span style={{color:"#4ade80", fontSize:"13px", fontWeight:"800"}}>{fmt(p.nav)}</span>
                       </div>
                     );
@@ -1085,7 +1085,7 @@ export default function App() {
                   {notYet.length > 0 && (
                     <div style={{textAlign:"center"}}>
                       <div style={{color:"#facc15", fontWeight:"800", fontSize:"13px"}}>{notYet.length}</div>
-                      <div style={{color:"#64748b", fontSize:"9px"}}>deciding</div>
+                      <div style={{color:"#546e7a", fontSize:"9px"}}>deciding</div>
                     </div>
                   )}
                 </div>
@@ -1119,18 +1119,18 @@ export default function App() {
 
             {/* Bottom bar */}
             <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"10px", padding:"10px 12px 8px", marginTop:"8px"}}>
-              <div style={{background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", gap:"10px"}}>
+              <div style={{background:"#e3f2fd", border:"2px solid #bbdefb", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", gap:"10px"}}>
                 <span style={{fontSize:"18px"}}>⏱</span>
                 <div>
-                  <div style={{color:"#64748b", fontSize:"9px", letterSpacing:"1px"}}>TIME REMAINING</div>
+                  <div style={{color:"#546e7a", fontSize:"9px", letterSpacing:"1px"}}>TIME REMAINING</div>
                   <div style={{color:dashTimer<=10?"#ef4444":"#60a5fa", fontWeight:"900", fontSize:"20px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</div>
                 </div>
                 <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
-                  style={{background:"none",border:"none",color:"#64748b",cursor:"pointer",fontSize:"18px",padding:"0 4px",marginLeft:"auto"}}>{dashTimerActive?"⏸":"▶"}</button>
+                  style={{background:"none",border:"none",color:"#546e7a",cursor:"pointer",fontSize:"18px",padding:"0 4px",marginLeft:"auto"}}>{dashTimerActive?"⏸":"▶"}</button>
               </div>
-              <div style={{background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px"}}>
+              <div style={{background:"#e3f2fd", border:"2px solid #bbdefb", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px"}}>
                 <span style={{color:"white", fontWeight:"900", fontSize:"13px", letterSpacing:"2px"}}>YOUR CHOICE.</span>
-                <span style={{color:"#64748b", fontSize:"13px", letterSpacing:"2px"}}>YOUR IMPACT.</span>
+                <span style={{color:"#546e7a", fontSize:"13px", letterSpacing:"2px"}}>YOUR IMPACT.</span>
               </div>
               <div style={{background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.3)", borderRadius:"10px", padding:"8px 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px"}}>
                 <span style={{fontSize:"18px"}}>📊</span>
@@ -1148,7 +1148,7 @@ export default function App() {
     <div style={s.page}>
       <div style={Object.assign({}, s.card, {maxWidth:"360px", textAlign:"center"})}>
         <div style={{fontSize:"30px", marginBottom:"12px"}}>🔒</div>
-        <h2 style={{color:"#f8fafc", fontSize:"20px", margin:"0 0 18px"}}>Facilitator Access</h2>
+        <h2 style={{color:"#1a237e", fontSize:"20px", margin:"0 0 18px"}}>Facilitator Access</h2>
         <input style={s.inp} type="password" placeholder="Enter facilitator password"
           value={facilPass} onChange={function(e){setFacilPass(e.target.value);}}
           onKeyDown={function(e){if(e.key==="Enter"&&facilPass===FACIL_PASS)setFacilAuthed(true);}} />
@@ -1221,13 +1221,13 @@ export default function App() {
 
     // wheel functions defined above
     return (
-      <div style={Object.assign({}, s.page, {alignItems:"flex-start", overflowY:"auto", paddingTop:"16px"})}>
+      <div style={{minHeight:"100vh", background:"#1565C0", overflowY:"auto", paddingTop:"16px", padding:"16px", fontFamily:"'Poppins',Arial,sans-serif"}}>
         <div style={{maxWidth:"720px", width:"100%", display:"flex", flexDirection:"column", gap:"10px"}}>
 
           <div style={Object.assign({}, s.card, {padding:"14px 18px"})}>
             <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:"8px"}}>
               <div>
-                <div style={{color:"#a5b4fc", fontWeight:"800", fontSize:"12px"}}>FACILITATOR PANEL</div>
+                <div style={{color:"#1565C0", fontWeight:"800", fontSize:"12px"}}>FACILITATOR PANEL</div>
                 <div style={{color:fdi.color, fontSize:"12px", marginTop:"2px"}}>{fdi.label} — {fs ? fs.age : ""} — {fs ? fs.tag : ""}</div>
               </div>
               <div style={{display:"flex", gap:"8px"}}>
@@ -1241,15 +1241,15 @@ export default function App() {
             <div style={{display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"10px"}}>
               <div>
                 <div style={{fontSize:"10px", color:fdi.color, fontWeight:"800", letterSpacing:"2px", textTransform:"uppercase"}}>{fs ? fs.tag : ""}</div>
-                <h2 style={{fontSize:"18px", fontWeight:"900", color:"#f8fafc", margin:"4px 0 0"}}>{fs ? fs.title : ""}</h2>
+                <h2 style={{fontSize:"18px", fontWeight:"900", color:"#1a237e", margin:"4px 0 0"}}>{fs ? fs.title : ""}</h2>
               </div>
               <div style={{textAlign:"right", flexShrink:"0", marginLeft:"12px"}}>
-                <div style={{fontSize:"10px", color:"#64748b"}}>Players done</div>
+                <div style={{fontSize:"10px", color:"#546e7a"}}>Players done</div>
                 <div style={{fontSize:"28px", fontWeight:"900", color:doneCount>=TOTAL_PLAYERS?"#4ade80":doneCount>0?"#facc15":"#64748b"}}>{doneCount}/{TOTAL_PLAYERS}</div>
               </div>
             </div>
-            <p style={{color:"#64748b", fontSize:"13px", lineHeight:"1.6", margin:"0 0 12px"}}>{fs ? fs.story : ""}</p>
-            {fs && fs.type === "automatic" && <div style={{background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"8px", padding:"10px 12px", fontSize:"12px", color:"#a5b4fc", marginBottom:"12px"}}>{fs.note}</div>}
+            <p style={{color:"#546e7a", fontSize:"13px", lineHeight:"1.6", margin:"0 0 12px"}}>{fs ? fs.story : ""}</p>
+            {fs && fs.type === "automatic" && <div style={{background:"#e3f2fd", border:"2px solid #90caf9", borderRadius:"8px", padding:"10px 12px", fontSize:"12px", color:"#1565C0", marginBottom:"12px"}}>{fs.note}</div>}
 
             {/* CI - show picked list if available */}
             {fs && fs.id === "S12" && ciAffected.length > 0 && (
@@ -1269,17 +1269,17 @@ export default function App() {
                 <div style={Object.assign({}, s.btnP, {flex:"2", padding:"11px", background:"rgba(74,222,128,0.15)", color:"#4ade80", textAlign:"center", cursor:"default"})}>Game Complete!</div>
               )}
             </div>
-            <div style={{textAlign:"center", color:"#334155", fontSize:"11px", marginTop:"6px"}}>{globalIdx + 1} / {SCENARIOS.length}</div>
+            <div style={{textAlign:"center", color:"#78909c", fontSize:"11px", marginTop:"6px"}}>{globalIdx + 1} / {SCENARIOS.length}</div>
           </div>
 
           {/* NAV Table */}
           <div style={Object.assign({}, s.card, {padding:"14px 16px", overflowX:"auto"})}>
-            <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"12px"}}>NET ASSET VALUE — ALL PLAYERS</div>
+            <div style={{color:"#546e7a", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"12px"}}>NET ASSET VALUE — ALL PLAYERS</div>
             <table style={{width:"100%", borderCollapse:"collapse", fontSize:"11px"}}>
               <thead>
                 <tr style={{borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
                   {["Player","Cash","Property","Managed Fund","T-Bills","Car","Insured","NAV"].map(function(h) {
-                    return <th key={h} style={{padding:"6px 8px", color:"#64748b", fontWeight:"700", textAlign:"right", whiteSpace:"nowrap"}}>{h}</th>;
+                    return <th key={h} style={{padding:"6px 8px", color:"#546e7a", fontWeight:"700", textAlign:"right", whiteSpace:"nowrap"}}>{h}</th>;
                   })}
                 </tr>
               </thead>
@@ -1302,10 +1302,10 @@ export default function App() {
                         {done && fs && (fs.choices||fs.choices_existing) && dec[fs.id] && (function(){
                           var allC=(fs.choices||[]).concat(fs.choices_existing||[]).concat(fs.choices_new||[]);
                           var ch=allC.find(function(c){return c.value===dec[fs.id];});
-                          return ch ? <div style={{fontSize:"9px", color:"#64748b", marginTop:"2px"}}>{ch.label}</div> : null;
+                          return ch ? <div style={{fontSize:"9px", color:"#546e7a", marginTop:"2px"}}>{ch.label}</div> : null;
                         })()}
                       </td>
-                      <td style={{padding:"7px 8px", textAlign:"right", color:"#94a3b8"}}>{fmt(nav.cash)}</td>
+                      <td style={{padding:"7px 8px", textAlign:"right", color:"#546e7a"}}>{fmt(nav.cash)}</td>
                       <td style={{padding:"7px 8px", textAlign:"right", color:nav.property>0?"#4ade80":"#334155"}}>{nav.property>0?fmt(nav.property):"—"}</td>
                       <td style={{padding:"7px 8px", textAlign:"right", color:nav.etf>0?"#a5b4fc":"#334155"}}>{nav.etf>0?fmt(nav.etf):"—"}</td>
                       <td style={{padding:"7px 8px", textAlign:"right", color:nav.tbills>0?"#4ade80":"#334155"}}>{nav.tbills>0?fmt(nav.tbills):"—"}</td>
@@ -1334,7 +1334,7 @@ export default function App() {
             var top3=allNavs.slice(0,3);
             return (
               <div style={Object.assign({}, s.card, {padding:"16px"})}>
-                <div style={{color:"#64748b", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"14px", textAlign:"center"}}>LEADERBOARD</div>
+                <div style={{color:"#546e7a", fontSize:"11px", fontWeight:"700", letterSpacing:"1px", marginBottom:"14px", textAlign:"center"}}>LEADERBOARD</div>
                 <div style={{display:"flex", alignItems:"flex-end", justifyContent:"center", gap:"6px", marginBottom:"16px"}}>
                   {[top3[1],top3[0],top3[2]].map(function(p,pos) {
                     if (!p) return null;
@@ -1368,15 +1368,15 @@ export default function App() {
         {settingPassword ? (
           <div>
             <div style={{fontSize:"22px", marginBottom:"6px"}}>👋</div>
-            <h2 style={{fontSize:"22px", fontWeight:"900", color:"#f8fafc", margin:"0 0 6px"}}>{"Welcome, " + PLAYER_NAMES[(pendingPlayerNum||1)-1].split(" ")[0] + "!"}</h2>
-            <p style={{color:"#a5b4fc", fontSize:"14px", fontWeight:"600", margin:"0 0 4px"}}>Please set your password</p>
-            <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 18px"}}>You will need this to log back in.</p>
+            <h2 style={{fontSize:"22px", fontWeight:"900", color:"#1a237e", margin:"0 0 6px"}}>{"Welcome, " + PLAYER_NAMES[(pendingPlayerNum||1)-1].split(" ")[0] + "!"}</h2>
+            <p style={{color:"#1565C0", fontSize:"14px", fontWeight:"600", margin:"0 0 4px"}}>Please set your password</p>
+            <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 18px"}}>You will need this to log back in.</p>
           </div>
         ) : (
           <div>
-            <h2 style={{fontSize:"22px", fontWeight:"900", color:"#f8fafc", margin:"0 0 6px"}}>Welcome Back!</h2>
-            <p style={{color:"#94a3b8", fontSize:"14px", margin:"0 0 4px"}}>{PLAYER_NAMES[(pendingPlayerNum||1)-1]}</p>
-            <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 18px"}}>Enter your password to continue.</p>
+            <h2 style={{fontSize:"22px", fontWeight:"900", color:"#1a237e", margin:"0 0 6px"}}>Welcome Back!</h2>
+            <p style={{color:"#546e7a", fontSize:"14px", margin:"0 0 4px"}}>{PLAYER_NAMES[(pendingPlayerNum||1)-1]}</p>
+            <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 18px"}}>Enter your password to continue.</p>
           </div>
         )}
         <div style={{position:"relative", marginBottom:"10px"}}>
@@ -1387,7 +1387,7 @@ export default function App() {
             onChange={function(e){setPasswordInput(e.target.value); setPasswordError("");}}
             onKeyDown={function(e){if(e.key==="Enter")confirmPassword();}} />
           <button onClick={function(){setShowPassword(!showPassword);}}
-            style={{position:"absolute", right:"12px", top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#64748b", cursor:"pointer", fontSize:"14px"}}>
+            style={{position:"absolute", right:"12px", top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#546e7a", cursor:"pointer", fontSize:"14px"}}>
             {showPassword ? "🙈" : "👁️"}
           </button>
         </div>
@@ -1402,8 +1402,8 @@ export default function App() {
           </div>
         )}
         {settingPassword && passwordInput && (
-          <div style={{background:"rgba(255,255,255,0.05)", borderRadius:"8px", padding:"8px 12px", marginBottom:"10px", fontSize:"12px", color:"#94a3b8", textAlign:"left"}}>
-            Your password: <strong style={{color:"#f8fafc"}}>{showPassword ? passwordInput : "•".repeat(passwordInput.length)}</strong>
+          <div style={{background:"#e3f2fd", borderRadius:"8px", padding:"8px 12px", marginBottom:"10px", fontSize:"12px", color:"#546e7a", textAlign:"left"}}>
+            Your password: <strong style={{color:"#1a237e"}}>{showPassword ? passwordInput : "•".repeat(passwordInput.length)}</strong>
             {confirmPasswordInput && <span style={{marginLeft:"8px", color:passwordInput===confirmPasswordInput?"#4ade80":"#f87171"}}>{passwordInput===confirmPasswordInput?"✓ Match":"✗ No match"}</span>}
           </div>
         )}
@@ -1422,8 +1422,8 @@ export default function App() {
       <div style={s.page}>
         <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
           <div style={{fontSize:"32px", marginBottom:"8px"}}>📸</div>
-          <h2 style={{color:"#f8fafc", fontSize:"20px", fontWeight:"900", margin:"0 0 6px"}}>Take a Selfie!</h2>
-          <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 16px"}}>Your photo will show on the big screen dashboard</p>
+          <h2 style={{color:"#1a237e", fontSize:"20px", fontWeight:"900", margin:"0 0 6px"}}>Take a Selfie!</h2>
+          <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 16px"}}>Your photo will show on the big screen dashboard</p>
           <SelfieCamera
             onCapture={captureSelfie}
             onSkip={function(){stopCamera();setShowSelfieCamera(false);}}
@@ -1445,8 +1445,8 @@ export default function App() {
       <div style={Object.assign({}, s.card, {maxWidth:"420px", textAlign:"center"})}>
         <div style={s.chip}>TLDR 6.0</div>
         <div style={{fontSize:"38px", margin:"10px 0 4px"}}>👤</div>
-        <h2 style={{fontSize:"24px", fontWeight:"900", color:"#f8fafc", margin:"0 0 4px"}}>Join the Game</h2>
-        <p style={{color:"#64748b", fontSize:"13px", margin:"0 0 18px"}}>Tap your player number</p>
+        <h2 style={{fontSize:"24px", fontWeight:"900", color:"#1a237e", margin:"0 0 4px"}}>Join the Game</h2>
+        <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 18px"}}>Tap your player number</p>
         <div style={{display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:"6px", marginBottom:"16px"}}>
           {Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;}).map(function(n) {
             return (
@@ -1476,10 +1476,10 @@ export default function App() {
     <div style={s.page}>
       <div style={Object.assign({}, s.card, {maxWidth:"380px", textAlign:"center", padding:"40px 30px"})}>
         <div style={{fontSize:"48px", marginBottom:"16px"}}>⏳</div>
-        <h2 style={{color:"#f8fafc", fontSize:"22px", fontWeight:"900", margin:"0 0 10px"}}>
+        <h2 style={{color:"#1a237e", fontSize:"22px", fontWeight:"900", margin:"0 0 10px"}}>
           {"Welcome, " + PLAYER_NAMES[playerNum-1].split(" ")[0] + "!"}
         </h2>
-        <p style={{color:"#64748b", fontSize:"14px", margin:"0 0 24px", lineHeight:"1.6"}}>
+        <p style={{color:"#546e7a", fontSize:"14px", margin:"0 0 24px", lineHeight:"1.6"}}>
           Please wait for the game to start. The facilitator will kick things off shortly!
         </p>
         <div style={{display:"flex", justifyContent:"center", gap:"6px", marginBottom:"20px"}}>
@@ -1487,8 +1487,8 @@ export default function App() {
             return <div key={i} style={{width:"8px", height:"8px", borderRadius:"50%", background:"#6366f1", animation:"pulse 1.2s ease-in-out "+i*0.4+"s infinite", opacity:0.6}} />;
           })}
         </div>
-        <div style={{background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.2)", borderRadius:"10px", padding:"10px 14px"}}>
-          <div style={{color:"#a5b4fc", fontSize:"12px"}}>Your starting balance</div>
+        <div style={{background:"#e3f2fd", border:"1px solid rgba(99,102,241,0.2)", borderRadius:"10px", padding:"10px 14px"}}>
+          <div style={{color:"#1565C0", fontSize:"12px"}}>Your starting balance</div>
           <div style={{color:"#4ade80", fontWeight:"900", fontSize:"24px"}}>$100,000</div>
         </div>
       </div>
@@ -1497,23 +1497,23 @@ export default function App() {
 
   // ── PLAYER IN-GAME ─────────────────────────────────────────────────────────
   return (
-    <div style={Object.assign({}, s.page, {alignItems:"flex-start", paddingTop:"14px"})}>
+    <div style={{minHeight:"100vh", background:"#1565C0", alignItems:"flex-start", paddingTop:"14px", display:"flex", justifyContent:"center", padding:"14px 16px", fontFamily:"'Poppins',Arial,sans-serif"}}>
       <div style={{maxWidth:"430px", width:"100%"}}>
         <div style={Object.assign({}, s.card, {padding:"13px 17px", marginBottom:"10px"})}>
           <div style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
             <div>
-              <div style={{fontWeight:"900", color:"#f8fafc", fontSize:"16px"}}>{PLAYER_NAMES[playerNum-1]}</div>
+              <div style={{fontWeight:"900", color:"#1a237e", fontSize:"16px"}}>{PLAYER_NAMES[playerNum-1]}</div>
               <div style={{color:di.color, fontSize:"11px", marginTop:"1px", fontWeight:"600"}}>{di.label} — Player {"#" + playerNum}</div>
             </div>
             <div style={{textAlign:"right"}}>
-              <div style={{fontSize:"9px", color:"#64748b", letterSpacing:"1px", textTransform:"uppercase"}}>Cash</div>
+              <div style={{fontSize:"9px", color:"#546e7a", letterSpacing:"1px", textTransform:"uppercase"}}>Cash</div>
               <div style={{fontSize:"26px", fontWeight:"900", color:clr(nwDelta)}}>{fmt(myNW)}</div>
               <div style={{fontSize:"10px", color:clr(nwDelta)}}>{nwDelta >= 0 ? "+" : ""}{nwDelta.toLocaleString()}</div>
             </div>
           </div>
         </div>
 
-        <div style={{height:"4px", background:"rgba(255,255,255,0.07)", borderRadius:"4px", overflow:"hidden", marginBottom:"6px"}}>
+        <div style={{height:"4px", background:"#bbdefb", borderRadius:"4px", overflow:"hidden", marginBottom:"6px"}}>
           <div style={{height:"100%", width:pct+"%", background:di.color, borderRadius:"4px", transition:"width 0.5s"}} />
         </div>
         <div style={{display:"flex", gap:"5px", marginBottom:"13px", alignItems:"center"}}>
@@ -1521,35 +1521,35 @@ export default function App() {
             var d=entry[0]; var info=entry[1];
             return <div key={d} style={{padding:"2px 9px", borderRadius:"20px", background:currentS&&currentS.day==d?info.color:"rgba(255,255,255,0.05)", color:currentS&&currentS.day==d?"#0f172a":"#475569", fontSize:"10px", fontWeight:"700"}}>{info.label}</div>;
           })}
-          <div style={{marginLeft:"auto", color:"#334155", fontSize:"10px"}}>{liveGlobalIdx+1}/{SCENARIOS.length}</div>
+          <div style={{marginLeft:"auto", color:"#78909c", fontSize:"10px"}}>{liveGlobalIdx+1}/{SCENARIOS.length}</div>
         </div>
 
         <div style={Object.assign({}, s.card, {padding:"22px 20px"})}>
           <div style={{display:"flex", alignItems:"center", gap:"10px", marginBottom:"13px"}}>
             <div>
               <div style={{fontSize:"9px", color:di.color, fontWeight:"800", letterSpacing:"2px", textTransform:"uppercase"}}>{currentS?currentS.tag:""}</div>
-              <h2 style={{fontSize:"17px", fontWeight:"900", color:"#f8fafc", margin:"3px 0 0", lineHeight:"1.2"}}>{currentS?currentS.title:""}</h2>
+              <h2 style={{fontSize:"17px", fontWeight:"900", color:"#1a237e", margin:"3px 0 0", lineHeight:"1.2"}}>{currentS?currentS.title:""}</h2>
             </div>
           </div>
-          <p style={{color:"#94a3b8", fontSize:"13px", lineHeight:"1.7", margin:"0 0 14px"}}>{currentS?currentS.story:""}</p>
+          <p style={{color:"#546e7a", fontSize:"13px", lineHeight:"1.7", margin:"0 0 14px"}}>{currentS?currentS.story:""}</p>
           {currentS && currentS.payoffNote && <div style={s.badge}>{currentS.payoffNote}</div>}
 
           {/* ALREADY DONE */}
           {thisDone && (
-            <div style={{background:"rgba(99,102,241,0.07)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"12px", padding:"14px", textAlign:"center"}}>
-              <div style={{color:"#a5b4fc", fontWeight:"700", fontSize:"14px", marginBottom:"8px"}}>Decision recorded!</div>
+            <div style={{background:"#e3f2fd", border:"2px solid #90caf9", borderRadius:"12px", padding:"14px", textAlign:"center"}}>
+              <div style={{color:"#1565C0", fontWeight:"700", fontSize:"14px", marginBottom:"8px"}}>Decision recorded!</div>
               {currentS && myDecisions[currentS.id] && (function(){
                 var allC=(currentS.choices||[]).concat(currentS.choices_existing||[]).concat(currentS.choices_new||[]);
                 var ch=allC.find(function(c){return c.value===myDecisions[currentS.id];});
-                return ch ? <div style={{background:"rgba(255,255,255,0.05)", borderRadius:"8px", padding:"8px 12px", marginBottom:revealResult?"10px":"0", fontSize:"13px", color:"#e2e8f0"}}>{"You chose: " + ch.label}</div> : null;
+                return ch ? <div style={{background:"#e3f2fd", borderRadius:"8px", padding:"8px 12px", marginBottom:revealResult?"10px":"0", fontSize:"13px", color:"#1a237e"}}>{"You chose: " + ch.label}</div> : null;
               })()}
               {revealResult && (
-                <div style={{padding:"12px", background:"rgba(255,255,255,0.05)", borderRadius:"9px", marginBottom:"8px"}}>
-                  <div style={{color:"#f8fafc", fontSize:"13px", fontWeight:"600", marginBottom:revealResult.gain!==0?"6px":"0"}}>{revealResult.msg}</div>
+                <div style={{padding:"12px", background:"#e3f2fd", borderRadius:"9px", marginBottom:"8px"}}>
+                  <div style={{color:"#1a237e", fontSize:"13px", fontWeight:"600", marginBottom:revealResult.gain!==0?"6px":"0"}}>{revealResult.msg}</div>
                   {revealResult.gain !== 0 && <div style={{color:revealResult.color, fontWeight:"900", fontSize:"22px"}}>{revealResult.gain>0?"+":""}{revealResult.gain.toLocaleString()}</div>}
                 </div>
               )}
-              <div style={{color:"#475569", fontSize:"11px", marginTop:"6px"}}>Waiting for next scenario...</div>
+              <div style={{color:"#546e7a", fontSize:"11px", marginTop:"6px"}}>Waiting for next scenario...</div>
             </div>
           )}
 
@@ -1567,8 +1567,8 @@ export default function App() {
                         <button style={Object.assign({}, s.cBtn, wouldGoNegative?{opacity:"0.4",cursor:"not-allowed"}:{})}
                           onClick={function(){if(!wouldGoNegative)submitDecision(currentS.id,c.value);}} disabled={wouldGoNegative}>
                           <div style={{flex:"1", textAlign:"left"}}>
-                            <div style={{color:"#e2e8f0", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
-                            <div style={{color:"#64748b", fontSize:"12px", marginTop:"1px"}}>{c.sub}</div>
+                            <div style={{color:"#1a237e", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
+                            <div style={{color:"#546e7a", fontSize:"12px", marginTop:"1px"}}>{c.sub}</div>
                           </div>
                           <span style={{fontWeight:"900", fontSize:"13px", whiteSpace:"nowrap", color:c.cost&&c.cost<0?"#f87171":c.gain?"#4ade80":"#94a3b8"}}>
                             {c.cost&&c.cost!==0?("-"+fmt(Math.abs(c.cost))):c.gain?("+"+fmt(c.gain)):"—"}
@@ -1599,8 +1599,8 @@ export default function App() {
                           <button style={Object.assign({}, s.cBtn, wouldGoNegative?{opacity:"0.4",cursor:"not-allowed"}:{})}
                             onClick={function(){if(!wouldGoNegative)submitDecision(currentS.id,c.value);}} disabled={wouldGoNegative}>
                             <div style={{flex:"1", textAlign:"left"}}>
-                              <div style={{color:"#e2e8f0", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
-                              <div style={{color:"#64748b", fontSize:"12px", marginTop:"1px"}}>{c.sub}</div>
+                              <div style={{color:"#1a237e", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
+                              <div style={{color:"#546e7a", fontSize:"12px", marginTop:"1px"}}>{c.sub}</div>
                             </div>
                             <span style={{fontWeight:"900", fontSize:"13px", whiteSpace:"nowrap", color:c.cost&&c.cost<0?"#f87171":"#94a3b8"}}>
                               {c.cost&&c.cost!==0?("-"+fmt(Math.abs(c.cost))):"—"}
@@ -1622,9 +1622,9 @@ export default function App() {
                   </div>
                   {currentS.choices.map(function(c) {
                     return (
-                      <button key={c.value} style={Object.assign({}, s.cBtn, pendingCi===c.value?{background:"rgba(99,102,241,0.18)",border:"1px solid #6366f1"}:{})}
+                      <button key={c.value} style={Object.assign({}, s.cBtn, pendingCi===c.value?{background:"#e3f2fd",border:"1px solid #6366f1"}:{})}
                         onClick={function(){setPendingCi(c.value);}}>
-                        <div style={{color:"#e2e8f0", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
+                        <div style={{color:"#1a237e", fontWeight:"700", fontSize:"14px"}}>{c.label}</div>
                       </button>
                     );
                   })}
@@ -1635,7 +1635,7 @@ export default function App() {
               {/* AUTOMATIC */}
               {currentS.type === "automatic" && (
                 <div style={{textAlign:"center"}}>
-                  <div style={{background:"rgba(99,102,241,0.07)", border:"1px solid rgba(99,102,241,0.18)", borderRadius:"10px", padding:"12px", marginBottom:"14px", fontSize:"13px", color:"#a5b4fc", lineHeight:"1.6"}}>{currentS.note}</div>
+                  <div style={{background:"#e3f2fd", border:"2px solid #90caf9", borderRadius:"10px", padding:"12px", marginBottom:"14px", fontSize:"13px", color:"#1565C0", lineHeight:"1.6"}}>{currentS.note}</div>
                   <div style={{fontSize:"34px", fontWeight:"900", marginBottom:"14px", color:currentS.gain>=0?"#4ade80":"#f87171"}}>{currentS.gain>=0?"+":"-"}{fmt(Math.abs(currentS.gain))}</div>
                   <button style={s.btnP} onClick={function(){ackAutomatic(currentS.id);}}>Got it!</button>
                 </div>
@@ -1644,17 +1644,17 @@ export default function App() {
               {/* REVEAL */}
               {currentS.type === "reveal" && !revealResult && (
                 <div style={{textAlign:"center"}}>
-                  <button style={Object.assign({}, s.btnP, {background:"linear-gradient(135deg, #f59e0b, #ea580c)"})}
+                  <button style={Object.assign({}, s.btnP, {background:"#f9a825"})}
                     onClick={function(){submitDecision(currentS.id,"revealed");}}>Reveal My Outcome!</button>
                 </div>
               )}
               {currentS.type === "reveal" && revealResult && (
                 <div style={{textAlign:"center"}}>
-                  <div style={{background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:"12px", padding:"20px", marginBottom:"14px"}}>
-                    <p style={{color:"#f8fafc", fontWeight:"700", fontSize:"15px", margin:"0 0 8px"}}>{revealResult.msg}</p>
+                  <div style={{background:"#e3f2fd", border:"2px solid #bbdefb", borderRadius:"12px", padding:"20px", marginBottom:"14px"}}>
+                    <p style={{color:"#1a237e", fontWeight:"700", fontSize:"15px", margin:"0 0 8px"}}>{revealResult.msg}</p>
                     {revealResult.gain!==0&&<p style={{color:revealResult.color, fontSize:"30px", fontWeight:"900", margin:"0"}}>{revealResult.gain>0?"+":""}{revealResult.gain.toLocaleString()}</p>}
                   </div>
-                  <div style={{color:"#475569", fontSize:"12px"}}>Waiting for next scenario...</div>
+                  <div style={{color:"#546e7a", fontSize:"12px"}}>Waiting for next scenario...</div>
                 </div>
               )}
             </div>
@@ -1682,14 +1682,14 @@ export default function App() {
                 <div style={{fontSize:"30px", marginBottom:"6px"}}>🏁</div>
                 <div style={{color:"#facc15", fontWeight:"900", fontSize:"18px", marginBottom:"4px"}}>Journey Complete!</div>
                 <div style={{fontSize:"40px", fontWeight:"900", color:clr(nwDelta)}}>{fmt(myNW)}</div>
-                <div style={{color:"#64748b", fontSize:"12px", marginTop:"4px"}}>{nwDelta>=0?"+":""}{nwDelta.toLocaleString()} from start</div>
+                <div style={{color:"#546e7a", fontSize:"12px", marginTop:"4px"}}>{nwDelta>=0?"+":""}{nwDelta.toLocaleString()} from start</div>
                 <div style={{marginTop:"8px", display:"inline-block", background:"rgba(250,204,21,0.1)", border:"1px solid rgba(250,204,21,0.3)", borderRadius:"20px", padding:"4px 16px", color:"#facc15", fontWeight:"800", fontSize:"14px"}}>
                   {"You are #" + myRank + " out of " + TOTAL_PLAYERS}
                 </div>
               </div>
 
               <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:"14px", marginBottom:"14px"}}>
-                <div style={{textAlign:"center", color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"2px", marginBottom:"14px"}}>TOP 3</div>
+                <div style={{textAlign:"center", color:"#546e7a", fontSize:"10px", fontWeight:"700", letterSpacing:"2px", marginBottom:"14px"}}>TOP 3</div>
                 <div style={{display:"flex", alignItems:"flex-end", justifyContent:"center", gap:"6px", marginBottom:"10px"}}>
                   {[top3[1],top3[0],top3[2]].map(function(p,pos) {
                     if (!p) return null;
@@ -1711,27 +1711,27 @@ export default function App() {
               </div>
 
               <div style={{borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:"14px"}}>
-                <div style={{color:"#64748b", fontSize:"10px", fontWeight:"700", letterSpacing:"1px", marginBottom:"10px"}}>YOUR ASSET BREAKDOWN</div>
+                <div style={{color:"#546e7a", fontSize:"10px", fontWeight:"700", letterSpacing:"1px", marginBottom:"10px"}}>YOUR ASSET BREAKDOWN</div>
                 {[
-                  {label:"Cash", value:nav.cash, color:"#94a3b8"},
+                  {label:"Cash", value:nav.cash, color:"#546e7a"},
                   {label:"Property", value:nav.property, color:"#4ade80"},
-                  {label:"Managed Fund", value:nav.etf, color:"#a5b4fc"},
+                  {label:"Managed Fund", value:nav.etf, color:"#1565C0"},
                   {label:"T-Bills", value:nav.tbills, color:"#4ade80"},
                   {label:"Car", value:nav.car, color:"#facc15"},
                 ].filter(function(r){return r.value>0;}).map(function(r) {
                   return (
                     <div key={r.label} style={{display:"flex", justifyContent:"space-between", padding:"6px 0", borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                      <span style={{color:"#64748b", fontSize:"13px"}}>{r.label}</span>
+                      <span style={{color:"#546e7a", fontSize:"13px"}}>{r.label}</span>
                       <span style={{color:r.color, fontWeight:"700", fontSize:"13px"}}>{fmt(r.value)}</span>
                     </div>
                   );
                 })}
                 <div style={{display:"flex", justifyContent:"space-between", padding:"10px 0 0"}}>
-                  <span style={{color:"#f8fafc", fontWeight:"800", fontSize:"14px"}}>Total NAV</span>
+                  <span style={{color:"#1a237e", fontWeight:"800", fontSize:"14px"}}>Total NAV</span>
                   <span style={{color:clr(nav.nav-BASE_NW), fontWeight:"900", fontSize:"16px"}}>{fmt(nav.nav)}</span>
                 </div>
                 <div style={{display:"flex", justifyContent:"space-between", padding:"4px 0 0"}}>
-                  <span style={{color:"#64748b", fontSize:"12px"}}>Insurance</span>
+                  <span style={{color:"#546e7a", fontSize:"12px"}}>Insurance</span>
                   <span style={{color:nav.insured?"#4ade80":"#f87171", fontSize:"12px", fontWeight:"700"}}>{nav.insured?"Protected":"Not insured"}</span>
                 </div>
               </div>
