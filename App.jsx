@@ -411,6 +411,25 @@ const SCENARIO_GIFS = {
   "SVB": SUPA_STORAGE + "/s6.gif",
 };
 
+// ── AVATAR MAP PER SCENARIO ──────────────────────────────────────────────────
+// Handbook character art, cropped to the character (headline text removed).
+// Only scenarios with a genuine thematic match are listed; any scenario absent
+// from this map simply renders no avatar.
+const SUPA_AVATARS = "https://ocqwwngewdhqzcfiisng.supabase.co/storage/v1/object/public/avatars";
+const SCENARIO_AVATARS = {
+  "S1":  SUPA_AVATARS + "/s1.png",   // Get Covered — buy insurance
+  "S2":  SUPA_AVATARS + "/s2.png",   // Own It (keys) — first home
+  "S6":  SUPA_AVATARS + "/s6.png",   // Design Your Life — vision board
+  "S7":  SUPA_AVATARS + "/s1.png",   // Get Covered — insurance check-in
+  "S9":  SUPA_AVATARS + "/s9.png",   // Create Your Path — car
+  "S10": SUPA_AVATARS + "/s10.png",  // Sandwich Generation — parents premiums
+  "S11": SUPA_AVATARS + "/s11.png",  // Managing Resources — draft will
+  "S12": SUPA_AVATARS + "/s1.png",   // Get Covered — CI claim
+  "S13": SUPA_AVATARS + "/s11.png",  // Managing Resources — grant of probate
+  "S16": SUPA_AVATARS + "/s9.png",   // Create Your Path — car resold
+  "S18": SUPA_AVATARS + "/s18.png",  // Own It (stairs) — property sold
+};
+
 var wheelColors = ["#f87171","#fb923c","#facc15","#4ade80","#60a5fa","#a78bfa","#f472b6","#34d399","#f97316","#818cf8","#22d3ee","#e879f9","#a3e635","#fb7185","#fbbf24","#6ee7b7","#93c5fd","#c4b5fd","#fda4af","#86efac","#67e8f9","#d8b4fe","#fca5a5","#fed7aa","#d9f99d","#a7f3d0","#bae6fd","#e9d5ff","#fecdd3"];
 
 function parseDec(d) { try { return d ? (typeof d === "string" ? JSON.parse(d) : d) : {}; } catch(e) { return {}; } }
@@ -1525,8 +1544,17 @@ export default function App() {
         </div>
 
         <div style={Object.assign({}, s.card, {padding:"22px 20px"})}>
-          <div style={{display:"flex", alignItems:"center", gap:"10px", marginBottom:"13px"}}>
-            <div>
+          <div style={{display:"flex", alignItems:"center", gap:"12px", marginBottom:"13px"}}>
+            {currentS && SCENARIO_AVATARS[currentS.id] && (
+              <img
+                src={SCENARIO_AVATARS[currentS.id]}
+                alt=""
+                onError={function(e){ e.target.style.display = "none"; }}
+                style={{width:"54px", height:"54px", flexShrink:0, borderRadius:"14px",
+                        objectFit:"cover", background:"#e3f2fd", border:"2px solid #bbdefb"}}
+              />
+            )}
+            <div style={{minWidth:0}}>
               <div style={{fontSize:"9px", color:di.color, fontWeight:"800", letterSpacing:"2px", textTransform:"uppercase"}}>{currentS?currentS.tag:""}</div>
               <h2 style={{fontSize:"17px", fontWeight:"900", color:"#1a237e", margin:"3px 0 0", lineHeight:"1.2"}}>{currentS?currentS.title:""}</h2>
             </div>
