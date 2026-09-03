@@ -903,7 +903,7 @@ export default function App() {
           <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
             <div style={{background:"linear-gradient(135deg,#dc2626,#991b1b)", borderRadius:"6px", padding:"3px 9px", fontSize:"10px", fontWeight:"900", color:"white", letterSpacing:"1px"}}>● LIVE</div>
             <div>
-              <div style={{color:"#546e7a", fontSize:"9px", fontWeight:"700", letterSpacing:"2px", textTransform:"uppercase"}}>{ds?ds.tag:""}</div>
+              <div style={{color:"#e3f2fd", fontSize:"10px", fontWeight:"800", letterSpacing:"2px", textTransform:"uppercase", opacity:"0.95"}}>{ds?ds.tag:""}</div>
               <div style={{color:"white", fontWeight:"900", fontSize:"16px"}}>{ds?ds.title:""}</div>
             </div>
           </div>
@@ -912,7 +912,7 @@ export default function App() {
               <span style={{fontSize:"13px"}}>⏱</span>
               <span style={{color:dashTimer<=10?"#ef4444":"white", fontWeight:"900", fontSize:"20px", fontFamily:"monospace"}}>{"0:"+(dashTimer<10?"0":"")+dashTimer}</span>
               <button onClick={function(){if(dashTimerActive){setDashTimerActive(false);}else{setDashTimer(60);setDashTimerActive(true);}}}
-                style={{background:"none",border:"none",color:"#546e7a",cursor:"pointer",fontSize:"14px",padding:"0 2px"}}>{dashTimerActive?"⏸":"▶"}</button>
+                style={{background:"none",border:"none",color:"#e3f2fd",cursor:"pointer",fontSize:"14px",padding:"0 2px"}}>{dashTimerActive?"⏸":"▶"}</button>
             </div>
             <div style={{textAlign:"center", background:"#e3f2fd", borderRadius:"8px", padding:"5px 12px"}}>
               <div style={{color:"#facc15", fontWeight:"900", fontSize:"14px"}}>{Object.keys(allPlayerData).length}/{TOTAL_PLAYERS}</div>
@@ -1215,8 +1215,45 @@ export default function App() {
   // Wheel functions
   function initWheel() {
       var nums = Array.from({length:TOTAL_PLAYERS}, function(_,i){return i+1;});
-      var shuffled = nums.slice().sort(function(){return Math.random()-0.5;});
-      var ci7 = shuffled.slice(0,7);
+      function shuffle(a){
+        var r = a.slice();
+        for (var i = r.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = r[i]; r[i] = r[j]; r[j] = t;
+        }
+        return r;
+      }
+
+      // Split the roster by insurance status. Only players who have actually
+      // joined can be classified; anyone without data is treated as unknown
+      // and left in the general pool.
+      var uninsured = [], others = [];
+      nums.forEach(function(n) {
+        var pd = allPlayerData[n];
+        if (!pd) { others.push(n); return; }
+        var dec = parseDec(pd.decisions);
+        var comp = new Set(pd.completed || []);
+        if (computeNAV(dec, comp).insured) { others.push(n); }
+        else { uninsured.push(n); }
+      });
+
+      var ci7;
+      if (uninsured.length === 0) {
+        // Nobody is uninsured — nothing to guarantee, fall back to pure random.
+        ci7 = shuffle(nums).slice(0, 7);
+      } else {
+        // Exactly one uninsured player: reserve one, then fill the remaining
+        // six from insured players only so no extra uninsured slip in by
+        // chance. If there aren't six insured players available, top up from
+        // the leftover uninsured — the wheel still needs seven names.
+        var guaranteed = shuffle(uninsured)[0];
+        var fill = shuffle(others).slice(0, 6);
+        if (fill.length < 6) {
+          var spare = shuffle(uninsured.filter(function(n){ return n !== guaranteed; }));
+          fill = fill.concat(spare.slice(0, 6 - fill.length));
+        }
+        ci7 = shuffle(fill.concat([guaranteed]));
+      }
       setWheelPool(ci7); setWheelPicked([]); setCiAffected([]); setWheelResult(null); setWheelAngle(0);
     }
   function spinWheel() {
