@@ -680,7 +680,9 @@ export default function App() {
       setPlayerNum(n);
     }
     var gi = await sGet("global_idx");
-    if (gi !== null) setLiveGlobalIdx(gi);
+    if (gi !== null && gi !== undefined) {
+      setLiveGlobalIdx(typeof gi === "object" ? gi.global_idx : gi);
+    }
     setSettingPassword(false); setAwaitingPassword(false); setPendingPlayerNum(null);
     setPasswordInput(""); setConfirmPasswordInput(""); setPasswordError(""); setShowPassword(false);
   }
@@ -1071,7 +1073,8 @@ export default function App() {
 
             {/* Main panels */}
             {hasChoices && choiceA && choiceB && (
-              <div style={{display:"grid", gridTemplateColumns:"1fr 80px 1fr", gap:"12px", padding:"0 12px", flex:"1"}}>
+              <div style={{display:"flex", flexDirection:"column", gap:"12px", flex:"1", minHeight:0}}>
+              <div style={{display:"grid", gridTemplateColumns:"1fr 80px 1fr", gap:"12px", padding:"0 12px", flex:"1", minHeight:0}}>
 
                 {/* Option A Panel */}
                 <div style={{background:"linear-gradient(135deg,rgba(30,64,175,0.3),rgba(30,58,138,0.15))", border:"2px solid #3b82f6", borderRadius:"16px", padding:"14px", display:"flex", flexDirection:"column", boxShadow:"0 0 30px rgba(59,130,246,0.2), inset 0 0 30px rgba(59,130,246,0.05)"}}>
@@ -1101,12 +1104,6 @@ export default function App() {
                 {/* VS */}
                 <div style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"12px"}}>
                   <div style={{background:"linear-gradient(135deg,#6366f1,#8b5cf6)", borderRadius:"50%", width:"64px", height:"64px", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"900", color:"white", fontSize:"18px", boxShadow:"0 0 24px rgba(99,102,241,0.6)"}}>VS</div>
-                  {notYet.length > 0 && (
-                    <div style={{textAlign:"center"}}>
-                      <div style={{color:"#facc15", fontWeight:"800", fontSize:"13px"}}>{notYet.length}</div>
-                      <div style={{color:"#546e7a", fontSize:"9px"}}>deciding</div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Option B Panel */}
@@ -1133,6 +1130,27 @@ export default function App() {
                     <div style={{color:"#f87171", fontWeight:"900", fontSize:"24px", minWidth:"52px", textAlign:"right"}}>{pctB}%</div>
                   </div>
                 </div>
+              </div>
+
+              {/* Still Deciding Panel */}
+              <div style={{margin:"0 12px 12px", background:"linear-gradient(135deg,rgba(161,98,7,0.28),rgba(120,53,15,0.15))", border:"2px solid #facc15", borderRadius:"16px", padding:"14px", boxShadow:"0 0 30px rgba(250,204,21,0.15), inset 0 0 30px rgba(250,204,21,0.04)"}}>
+                <div style={{display:"flex", alignItems:"center", gap:"10px", marginBottom: notYet.length > 0 ? "10px" : "0"}}>
+                  <div style={{background:"#facc15", borderRadius:"8px", padding:"4px 10px"}}>
+                    <span style={{color:"#422006", fontWeight:"900", fontSize:"12px", letterSpacing:"1px"}}>⏳ STILL DECIDING</span>
+                  </div>
+                  <div style={{color:"white", fontWeight:"800", fontSize:"15px", flex:"1"}}>
+                    {notYet.length > 0
+                      ? notYet.length + (notYet.length === 1 ? " player has" : " players have") + " not chosen yet"
+                      : "Everyone has locked in their choice"}
+                  </div>
+                  <div style={{color:"#facc15", fontWeight:"900", fontSize:"24px"}}>{notYet.length}</div>
+                </div>
+                {notYet.length > 0 && (
+                  <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(110px,110px))", gap:"7px", alignContent:"start"}}>
+                    {notYet.map(function(n){return PCard(n,"none");})}
+                  </div>
+                )}
+              </div>
               </div>
             )}
 
