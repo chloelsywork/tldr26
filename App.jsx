@@ -97,7 +97,10 @@ function computeCI(d, ciChoice) {
   return { gain: 0, msg: "No CI this time. Insurance stays as your safety net.", color: "#4ade80" };
 }
 function computeS14(d) {
-  if (d.S3 === "smallcap") return { gain: -10000, msg: "Your $10,000 is completely wiped out. Company delisted.", color: "#f87171" };
+  // The $10,000 already left cash as the S3 purchase cost, and small cap is not
+  // held as an asset in computeNAV — so the loss is already fully reflected.
+  // Deducting again here would charge the player twice.
+  if (d.S3 === "smallcap") return { gain: 0, msg: "The company is delisted — the $10,000 you invested in Scenario 3 is gone for good. Nothing to recover.", color: "#f87171" };
   return { gain: 0, msg: "You stayed away. That was the right call!", color: "#4ade80" };
 }
 function computeS15(d) {
