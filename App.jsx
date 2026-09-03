@@ -275,7 +275,7 @@ const FACIL_PASS = "tldr2026";
 
 
 
-function SelfieCamera({ onCapture, onSkip, onStart, stream, captured, uploading, btnP, btnG }) {
+function SelfieCamera({ onCapture, onStart, stream, captured, uploading, error, btnP, btnG }) {
   var videoRef = useRef(null);
 
   useEffect(function() {
@@ -301,8 +301,10 @@ function SelfieCamera({ onCapture, onSkip, onStart, stream, captured, uploading,
   if (!stream) return (
     <div>
       <div style={{width:"200px", height:"200px", borderRadius:"50%", background:"rgba(99,102,241,0.1)", border:"2px dashed rgba(99,102,241,0.3)", margin:"0 auto 16px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"48px"}}>👤</div>
-      <button style={Object.assign({}, btnP, {marginBottom:"8px"})} onClick={onStart}>📷 Open Camera</button>
-      <button style={btnG} onClick={onSkip}>Skip for now</button>
+      {error && (
+        <div style={{background:"#ffebee", border:"1px solid #ef9a9a", borderRadius:"10px", padding:"10px 12px", marginBottom:"12px", color:"#c62828", fontSize:"13px", lineHeight:"1.4"}}>{error}</div>
+      )}
+      <button style={btnP} onClick={onStart}>📷 {error ? "Try Again" : "Open Camera"}</button>
     </div>
   );
 
@@ -312,8 +314,10 @@ function SelfieCamera({ onCapture, onSkip, onStart, stream, captured, uploading,
         <video ref={videoRef} autoPlay playsInline muted style={{width:"200px", height:"200px", borderRadius:"50%", objectFit:"cover", border:"3px solid #6366f1", transform:"scaleX(-1)"}} />
       </div>
       <br/>
-      <button style={Object.assign({}, btnP, {marginBottom:"8px"})} onClick={function(){onCapture(videoRef.current);}}>📸 Take Selfie</button>
-      <button style={btnG} onClick={onSkip}>Skip for now</button>
+      {error && (
+        <div style={{background:"#ffebee", border:"1px solid #ef9a9a", borderRadius:"10px", padding:"10px 12px", margin:"0 0 12px", color:"#c62828", fontSize:"13px", lineHeight:"1.4"}}>{error}</div>
+      )}
+      <button style={btnP} onClick={function(){onCapture(videoRef.current);}}>📸 Take Selfie</button>
     </div>
   );
 }
@@ -518,6 +522,7 @@ export default function App() {
   var [selfieStream, setSelfieStream] = useState(null);
   var [selfieCaptured, setSelfieCaptured] = useState(null);
   var [selfieUploading, setSelfieUploading] = useState(false);
+  var [selfieError, setSelfieError] = useState("");
   var [liveGlobalIdx, setLiveGlobalIdx] = useState(0);
   var [pendingCi, setPendingCi] = useState(null);
   var [revealResult, setRevealResult] = useState(null);
@@ -678,6 +683,7 @@ export default function App() {
       setMySelfieUrl(pd.selfie_url || null);
       setMyPassword(pd.password || "");
       setPlayerNum(n);
+      if (!pd.selfie_url) setShowSelfieCamera(true);
     }
     var gi = await sGet("global_idx");
     if (gi !== null && gi !== undefined) {
@@ -688,10 +694,14 @@ export default function App() {
   }
 
   async function startCamera() {
+    setSelfieError("");
     try {
       var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
       setSelfieStream(stream);
-    } catch(e) { console.error("Camera error", e); }
+    } catch(e) {
+      console.error("Camera error", e);
+      setSelfieError("Couldn't open the camera. Please allow camera access in your browser settings, then tap Try Again. If you're on iPhone, make sure you're in Safari.");
+    }
   }
 
   function stopCamera() {
@@ -699,6 +709,7 @@ export default function App() {
   }
 
   async function captureSelfie(videoEl) {
+    setSelfieError("");
     var canvas = document.createElement("canvas");
     canvas.width = videoEl.videoWidth; canvas.height = videoEl.videoHeight;
     canvas.getContext("2d").drawImage(videoEl, 0, 0);
@@ -707,15 +718,17 @@ export default function App() {
       stopCamera();
       setSelfieUploading(true);
       var url = await uploadSelfie(playerNum, blob);
+      setSelfieUploading(false);
+      setSelfieCaptured(null);
       if (url) {
         setMySelfieUrl(url);
         var savedPd = await sGet("player_" + playerNum);
         var pw = savedPd ? (savedPd.password || "") : "";
         await sSet("player_" + playerNum, { password: pw, decisions: myDecisions, completed: Array.from(myCompleted), selfie_url: url });
+        setShowSelfieCamera(false);
+      } else {
+        setSelfieError("Upload failed — check your connection and take the photo again.");
       }
-      setSelfieUploading(false);
-      setShowSelfieCamera(false);
-      setSelfieCaptured(null);
     }, "image/jpeg", 0.8);
   }
 
@@ -801,6 +814,7 @@ export default function App() {
   // ── DASHBOARD ─────────────────────────────────────────────────────────────
   if (mode === "dashboard") {
     var ds = SCENARIOS[globalIdx];
+    var isFinalScenario = globalIdx >= SCENARIOS.length - 1;
     var hasChoices = ds && (ds.choices || ds.choices_existing);
     var allChoices = hasChoices ? ((ds.choices || []).concat(ds.choices_existing || [])) : [];
     var choiceA = allChoices[0] || null;
@@ -1013,15 +1027,16 @@ export default function App() {
               </div>
             )}
 
-            {/* QR + Leaderboard */}
-            <div style={{display:"grid", gridTemplateColumns:"200px 1fr", gap:"12px"}}>
+            {/* QR + Leaderboard (leaderboard only revealed on the final scenario) */}
+            <div style={{display:"grid", gridTemplateColumns: isFinalScenario ? "200px 1fr" : "1fr", gap:"12px"}}>
               <div style={{background:"#e3f2fd", border:"2px solid #bbdefb", borderRadius:"10px", padding:"10px", display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", justifyContent:"center"}}>
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://tldr26.vercel.app&bgcolor=080e1e&color=ffffff&format=png" style={{width:"160px", height:"160px", borderRadius:"6px"}} />
                 <div style={{color:"white", fontWeight:"800", fontSize:"15px", textAlign:"center"}}>Scan to join!</div>
                 <div style={{color:"#546e7a", fontSize:"12px"}}>tldr26.vercel.app</div>
               </div>
+              {isFinalScenario && (
               <div style={{background:"#e3f2fd", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"10px", padding:"10px 14px"}}>
-                <div style={{color:"#546e7a", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>LEADERBOARD</div>
+                <div style={{color:"#546e7a", fontSize:"10px", fontWeight:"700", marginBottom:"8px", letterSpacing:"1px", textAlign:"center"}}>FINAL LEADERBOARD</div>
                 <div style={{display:"flex", gap:"6px", alignItems:"flex-end", justifyContent:"center", marginBottom:"8px"}}>
                   {[top3[1],top3[0],top3[2]].map(function(p,pos){
                     if(!p) return null;
@@ -1050,6 +1065,7 @@ export default function App() {
                   })}
                 </div>
               </div>
+              )}
             </div>
           </div>
         )}
@@ -1460,14 +1476,14 @@ export default function App() {
         <div style={Object.assign({}, s.card, {maxWidth:"400px", textAlign:"center"})}>
           <div style={{fontSize:"32px", marginBottom:"8px"}}>📸</div>
           <h2 style={{color:"#1a237e", fontSize:"20px", fontWeight:"900", margin:"0 0 6px"}}>Take a Selfie!</h2>
-          <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 16px"}}>Your photo will show on the big screen dashboard</p>
+          <p style={{color:"#546e7a", fontSize:"13px", margin:"0 0 16px"}}>Everyone needs a photo to play — yours will show on the big screen dashboard</p>
           <SelfieCamera
             onCapture={captureSelfie}
-            onSkip={function(){stopCamera();setShowSelfieCamera(false);}}
             onStart={startCamera}
             stream={selfieStream}
             captured={selfieCaptured}
             uploading={selfieUploading}
+            error={selfieError}
             btnP={s.btnP}
             btnG={s.btnG}
           />
@@ -1607,7 +1623,7 @@ export default function App() {
                 <div>
                   {currentS.choices.map(function(c) {
                     var cash = computeNW(myDecisions, myCompleted);
-                    var wouldGoNegative = c.cost && c.cost < 0 && (cash + c.cost) < 0;
+                    var wouldGoNegative = !!(c.cost && c.cost < 0 && (cash + c.cost) < 0);
                     return (
                       <div key={c.value}>
                         <button style={Object.assign({}, s.cBtn, wouldGoNegative?{opacity:"0.4",cursor:"not-allowed"}:{})}
@@ -1639,7 +1655,7 @@ export default function App() {
                     <p style={{color:"#facc15", fontSize:"13px", lineHeight:"1.6", margin:"0 0 14px", padding:"10px 12px", background:"rgba(250,204,21,0.08)", borderRadius:"8px", border:"1px solid rgba(250,204,21,0.2)"}}>{storyOverride}</p>
                     {choices.map(function(c) {
                       var cash = computeNW(myDecisions, myCompleted);
-                      var wouldGoNegative = c.cost && c.cost < 0 && (cash + c.cost) < 0;
+                      var wouldGoNegative = !!(c.cost && c.cost < 0 && (cash + c.cost) < 0);
                       return (
                         <div key={c.value}>
                           <button style={Object.assign({}, s.cBtn, wouldGoNegative?{opacity:"0.4",cursor:"not-allowed"}:{})}
