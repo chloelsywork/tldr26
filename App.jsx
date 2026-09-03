@@ -792,7 +792,7 @@ export default function App() {
         <p style={{color:"#546e7a", fontSize:"13px", fontStyle:"italic", margin:"0 0 26px"}}>A Financial Life Simulation</p>
         <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
           <button style={s.btnP} onClick={function(){setMode("player");}}>I am a Player — Join Game</button>
-          <button style={Object.assign({}, s.btnP, {background:"#1565C0", color:"#1565C0"})} onClick={function(){setMode("facilitator");}}>Facilitator Panel</button>
+          <button style={Object.assign({}, s.btnP, {background:"#0d47a1", color:"#ffffff"})} onClick={function(){setMode("facilitator");}}>Facilitator Panel</button>
           <button style={Object.assign({}, s.btnP, {background:"rgba(250,204,21,0.15)", color:"#facc15", border:"1px solid rgba(250,204,21,0.3)"})} onClick={function(){setMode("dashboard");}}>📺 Dashboard — Big Screen</button>
         </div>
       </div>
