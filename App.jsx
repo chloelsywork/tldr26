@@ -238,40 +238,43 @@ const DAY_INFO = {
 };
 
 const PLAYER_NAMES = [
-  "Goh Xue Jun Anabelle",
-  "Torance Sim",
-  "Chang Jing Wen",
-  "Lam Yuning Nin",
-  "Lam Zhi He",
-  "Bryan Luke Lam",
-  "Wong Lup Hang",
-  "Izy Sim",
-  "Goh Zheng Le Sherlyn",
-  "Kevin Wong Hong Ming",
-  "Tan Yong Meng",
-  "Benjamin Chng",
-  "Dean Akid Bin Nasrie",
-  "Carmen Loo",
-  "Calla Loo",
-  "Chia Wan Yin Wennie",
-  "Edeline Lim",
-  "Elgin Tan",
-  "Dylan Tan Xin Yu",
-  "Yuki Justin Goh",
-  "Meng-Joon Koh",
-  "Charlene Chew",
-  "Ng Jia Xuan",
-  "Olivia Mun",
-  "Riley"
+  "Pavithra Manjyot",
+  "Glenn",
+  "Rochelle",
+  "Kyra",
+  "Marcus",
+  "Clara",
+  "Skyelar",
+  "Jun Ying",
+  "Dilys",
+  "Benoit Jerome",
+  "Eng Soo",
+  "Si Yun",
+  "Khirtiga",
+  "Issac",
+  "Shanice",
+  "Zoey",
+  "Irene",
+  "Joel",
+  "Lu Feng",
+  "Ashlynn",
+  "Hen Zi",
+  "Ulrich Ubana",
+  "Eileen",
+  "Cyon",
+  "Syabil",
+  "Lukas",
+  "Caleb"
 ];
 const DISPLAY_NAMES = [
-  "Anabelle","Torance","Jing Wen","Yuning","Zhi He",
-  "Bryan","Lup Hang","Izy","Sherlyn","Kevin",
-  "Yong Meng","Benjamin","Dean","Carmen","Calla",
-  "Wennie","Edeline","Elgin","Dylan","Yuki",
-  "Meng-Joon","Charlene","Jia Xuan","Olivia"
+  "Pavithra","Glenn","Rochelle","Kyra","Marcus",
+  "Clara","Skyelar","Jun Ying","Dilys","Benoit",
+  "Eng Soo","Si Yun","Khirtiga","Issac","Shanice",
+  "Zoey","Irene","Joel","Lu Feng","Ashlynn",
+  "Hen Zi","Ulrich","Eileen","Cyon","Syabil",
+  "Lukas","Caleb"
 ];
-const TOTAL_PLAYERS = 25;
+const TOTAL_PLAYERS = 27;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
