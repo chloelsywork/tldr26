@@ -239,6 +239,8 @@ const DAY_INFO = {
 
 const PLAYER_NAMES = [
   "Pavithra Manjyot",
+  "Joshua",
+  "Denisse",
   "Glenn",
   "Rochelle",
   "Kyra",
@@ -267,14 +269,14 @@ const PLAYER_NAMES = [
   "Caleb"
 ];
 const DISPLAY_NAMES = [
-  "Pavithra","Glenn","Rochelle","Kyra","Marcus",
-  "Clara","Skyelar","Jun Ying","Dilys","Benoit",
-  "Eng Soo","Si Yun","Khirtiga","Issac","Shanice",
-  "Zoey","Irene","Joel","Lu Feng","Ashlynn",
-  "Hen Zi","Ulrich","Eileen","Cyon","Syabil",
-  "Lukas","Caleb"
+  "Pavithra","Joshua","Denisse","Glenn","Rochelle",
+  "Kyra","Marcus","Clara","Skyelar","Jun Ying",
+  "Dilys","Benoit","Eng Soo","Si Yun","Khirtiga",
+  "Issac","Shanice","Zoey","Irene","Joel",
+  "Lu Feng","Ashlynn","Hen Zi","Ulrich","Eileen",
+  "Cyon","Syabil","Lukas","Caleb"
 ];
-const TOTAL_PLAYERS = 27;
+const TOTAL_PLAYERS = 29;
 
 const BASE_NW = 100000;
 const FACIL_PASS = "tldr2026";
